@@ -102,24 +102,6 @@ app.use(catchAsync(async (req, res, next) => {
 app.get('/', (req, res) => {
     res.render('home');
 });
-
-const { uploadFile, deleteFile } = require('./utils/fileOperations');
-
-app.post('/api/upload', catchAsync(async (req, res) => {
-    const fileDetails = await uploadFile(req);
-    console.log(fileDetails);
-
-    res.redirect('/');
-}));
-
-app.post('/api/delete', catchAsync(async (req, res) => {
-    // return res.send(req.body.key)
-    await deleteFile(req.body.key);
-    res.redirect('/');
-}));
-
-
-
 app.use('/user', userRoutes);
 app.use('/', plantRoutes);
 

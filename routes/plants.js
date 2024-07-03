@@ -3,6 +3,7 @@ const router = express.Router();
 const Seg = require('../models/seg')
 const Plant = require('../models/plant')
 const User = require('../models/user')
+const File = require('../models/file')
 const ProgramReviewed = require('../models/programReviewed')
 const catchAsync = require('../utils/catchAsync');
 
@@ -10,6 +11,27 @@ router.use((req, res, next) => {
     res.locals.plant = req.params.plant;
     next();
 })
+
+
+
+const { upload, deleteFiles } = require('../utils/fileOperations');
+
+router.route('/api/upload')
+    .post(upload.array('fileInput'), catchAsync(async (req, res) => {
+        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket }));
+        // for (let file of files) {
+        //     new File(file)
+        // }
+        console.log(files);
+        res.redirect('/');
+    }));
+
+router.route('/api/delete')
+    .post(catchAsync(async (req, res) => {
+        const keys = req.body.fileKeys.map(key => ({ Key: key }));
+        deleteFiles(keys);
+        res.redirect('/');
+    }));
 
 
 
@@ -172,7 +194,7 @@ router.route('/:plant/seg/new')
 router.route('/:plant/:seg_ID')
     .get(catchAsync(async (req, res) => {
         const { seg_ID, plant } = req.params;
-        const seg = await Seg.findOne({ seg_ID, plant }).populate('programReviewed');
+        const seg = await Seg.findOne({ seg_ID, plant }).populate('programReviewed').populate('files');
         if (!seg) {
             req.flash('error', `${seg_ID} does not exist!`);
             return res.redirect(`/${plant}`);
@@ -192,6 +214,33 @@ router.route('/:plant/:seg_ID')
         const { seg_ID, plant } = req.params;
         await Seg.findOneAndDelete({ seg_ID, plant });
         res.redirect(`/${plant}`);
+    }));
+
+
+router.route('/:plant/:segID/files')
+    .post(upload.array('fileInput'), catchAsync(async (req, res) => {
+        const { plant, segID } = req.params;
+        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, seg: segID }));
+        const seg = await Seg.findById(segID);
+        for (let upFile of files) {
+            const file =  await new File(upFile).save();
+            seg.files.push(file._id);
+            await seg.save();
+        }
+        res.redirect(`/${plant}/${seg.seg_ID}`);
+    }))
+    .delete(catchAsync(async (req, res) => {
+        const { plant, segID } = req.params;
+        const deletedFilesIDs = req.body.deletedFiles;
+        const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
+        await File.deleteMany({ _id: { $in: deletedFilesIDs } });
+        const keys = deletedFiles.map(df => ({ Key: df.key }));
+        deleteFiles(keys);
+
+        const seg = await Seg.findById(segID);
+        seg.files.pull(...deletedFilesIDs);
+        await seg.save();
+        res.redirect(`/${plant}/${seg.seg_ID}`);
     }));
 
 

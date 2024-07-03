@@ -33,6 +33,7 @@
     </form>
 <% } %>
 
+
     <h3 class="text-center fw-bold">
         <%= seg.team %> Training (Implementation and Oversight) SAT Evaluation Guide (SEG)
     </h3>
@@ -149,26 +150,7 @@
         <% }); %>
     <% } %>
 
-    <form class="mt-5" id="fileUploadForm" action="/api/upload" enctype="multipart/form-data" method="post">
-        <input name="fileInput" type="file" class="form-control mb-2" multiple>
-        <button type="submit" class="btn btn-warning" form="fileUploadForm">Upload Files</button>
-    </form>
-
-    <form class="mt-5" id="deleteFileForm" action="/api/delete" method="post">
-        <label for="">DeleteFile</label>
-        <input name="key" value="" type="checkbox" class="form-check-inline mb-2">
-        <button type="submit" class="btn btn-danger" form="deleteFileForm">DELETE Files</button>
-    </form>
-
-    <div class="my-5">
-        <embed id="pdfWindow" class="rounded d-inline" src="/images/Noah Smith Resume.pdf" width="800px" height="1000px" />
-        <embed id="pdfWindow" class="rounded d-inline" type="application/pdf" src="" width="800px" height="1000px" />
-    </div>
-
     <script>
-
-
-
         const addGroupInput = document.querySelector('#addGroupInput');
         document.querySelector('#editForm').addEventListener('submit',() => {
             if (addGroupInput.value === '') {

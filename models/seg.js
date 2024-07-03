@@ -16,6 +16,12 @@ const SegSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'ProgramReviewed'
         }
+    ],
+    files: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'File'
+        }
     ]
 });
 
