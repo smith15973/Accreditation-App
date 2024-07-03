@@ -16,26 +16,6 @@ router.use((req, res, next) => {
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
 
-router.route('/api/upload')
-    .post(upload.array('fileInput'), catchAsync(async (req, res) => {
-        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket }));
-        // for (let file of files) {
-        //     new File(file)
-        // }
-        console.log(files);
-        res.redirect('/');
-    }));
-
-router.route('/api/delete')
-    .post(catchAsync(async (req, res) => {
-        const keys = req.body.fileKeys.map(key => ({ Key: key }));
-        deleteFiles(keys);
-        res.redirect('/');
-    }));
-
-
-
-
 router.route('/new')
     .get((req, res) => {
         res.render('plants/new');
@@ -216,14 +196,22 @@ router.route('/:plant/:seg_ID')
         res.redirect(`/${plant}`);
     }));
 
+router.route('/:plant/:seg_ID/supportingData/:groupID')
+.get(catchAsync(async (req, res) => {
+    const { plant, seg_ID, groupID } = req.params;
+    const program = await ProgramReviewed.findById(groupID).populate('seg').populate({path: 'seg', populate:  'files'});
+
+    res.render('segs/programInputs/supportingData', { program, plant });
+}))
+
 
 router.route('/:plant/:segID/files')
     .post(upload.array('fileInput'), catchAsync(async (req, res) => {
         const { plant, segID } = req.params;
-        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, seg: segID }));
+        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, seg: segID, uploadDate: Date.now()}));
         const seg = await Seg.findById(segID);
         for (let upFile of files) {
-            const file =  await new File(upFile).save();
+            const file = await new File(upFile).save();
             seg.files.push(file._id);
             await seg.save();
         }

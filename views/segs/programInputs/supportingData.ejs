@@ -1,0 +1,119 @@
+<style>
+    .container {
+        max-width: 90%;
+    }
+</style>
+<% layout('/layouts/boilerplate') %>
+    <% const seg=program.seg %>
+
+        <div class="row px-auto">
+            <div class="col mb-3">
+                <a class="btn btn-primary" href="/<%= plant %>/<%= seg.seg_ID %>">Back to <%= seg.seg_ID %></a>
+                <div class="my-3">
+                    <h1 class="fs-3 d-inline">
+                        <%= seg.seg_ID %>, <%= program.group %>, Supporting Data
+                    </h1>
+                    <button class="btn btn-success d-inline">Save</button>
+                </div>
+
+
+                <textarea class="form-control" name="supportingData"><%= program.supportingData[0] !== '' ? program.supportingData[0] : '' %>
+                </textarea>
+
+                <form class="mt-5" id="fileUploadForm" action="/<%=plant%>/<%=seg._id%>/files"
+                    enctype="multipart/form-data" method="post">
+                    <input name="fileInput" type="file" accept=".pdf" class="form-control mb-2" multiple required>
+                    <button type="submit" class="btn btn-warning" form="fileUploadForm">Upload Files</button>
+                </form>
+
+                <% if (seg.files.length) { %>
+                    <form class="mt-5" id="deleteFileForm" action="/<%=plant%>/<%=seg._id%>/files?_method=DELETE" method="post">
+                        <div class="border border-dark">
+                            <div class="border border-dark d-flex align-items-center justify-content-between px-3">
+                                <div class="py-3">
+                                    <input class="border" type="checkbox" id="selectAllCheck">
+                                </div>
+                                <button disabled type="submit" form="deleteFileForm" class="btn btn-danger" id="deleteFilesButton">
+                                    Delete
+                                </button>
+                            </div>
+                            <% seg.files.forEach((file, i) => { %>
+                                <div class="border border-dark d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <div class="px-3 py-2">
+                                            <input id="file<%=i%>" name="deletedFiles[]" value="<%=file._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
+                                        </div>
+                                        <label class="form-label px-3 align-items-center" for="file<%=i%>">
+                                            <%= file.originalName %>
+                                        </label>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="px-3">
+                                            <button type="button" class="btn btn-primary" onclick="showPDF('<%=file.location%>')">View</button>
+                                        </div>
+                                        <div class="px-3">
+                                            <a href="<%=file.location%>" download="<%=file.originalName%>" class="btn btn-secondary">Download</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </form>
+                    
+                <% } %>
+            </div>
+
+            <div id="pdfSection" class="col-12 col-md-9 col-lg-7 col-xxl-6" style="display: none;">
+                <div class="text-end mb-2">
+                    <button class="btn btn-secondary" onclick="closePDF()">Close</button>
+                </div>
+                <div class="text-center">
+                    <embed id="pdfWindow" class="rounded d-inline" type="application/pdf"
+                        style="width: 100%; height:1000px ;" />
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
+            const selectAllCheck = document.getElementById('selectAllCheck');
+            const deleteFilesButton = document.getElementById('deleteFilesButton');
+
+            deleteCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    if (deleteCheckboxes.length === document.querySelectorAll('.deleteCheck:checked').length) {
+                        selectAllCheck.checked = true;
+                    } else {
+                        selectAllCheck.checked = false;
+                    }
+                    if (document.querySelectorAll('.deleteCheck:checked').length > 0) {
+                        deleteFilesButton.disabled = false;
+                    } else {
+                        deleteFilesButton.disabled = true;
+                    }
+                });
+            });
+
+            selectAllCheck.addEventListener('change', () => {
+                if (selectAllCheck.checked) {
+                    deleteCheckboxes.forEach(checkbox => {
+                        checkbox.checked = true;
+                    });
+                    deleteFilesButton.disabled = false;
+                } else {
+                    deleteCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    deleteFilesButton.disabled = true;
+                }
+            });
+
+            function closePDF() {
+                document.getElementById('pdfWindow').src = '';
+                document.getElementById('pdfSection').style.display = 'none';
+            }
+            function showPDF(location) {
+                document.getElementById('pdfWindow').src = location;
+                document.getElementById('pdfSection').style.display = 'block';
+            }
+        </script>

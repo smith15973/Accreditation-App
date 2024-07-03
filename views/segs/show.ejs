@@ -110,6 +110,7 @@
             <% } %>    
 
             <div class="col  fw-normal border border-1 border-dark text-break" data-bs-toggle="modal" data-bs-target="#<%= count %>supportingData">
+                <a class="btn btn-info" target="_blank" rel="noopener noreferrer"  href="/<%= plant %>/<%= seg.seg_ID %>/supportingData/<%= program._id %>"></a>
                 <p class="fs-6" id="ahh"><%- program.supportingData %></p>
             </div>
 
@@ -122,7 +123,7 @@
             </div>
             <div class="col-1 border border-1 border-dark">
                 <form action="/<%=seg.plant%>/<%=seg._id%>/editGroup/<%=program._id%>?_method=PUT" id="statusForm<%=count%>" method="post">
-                    <select  <%= program.status === 'Submitted' ? 'style=background-color:green' : '' %> class="statusSelect form-control text-center my-3" name="status">
+                    <select <%= program.status === 'Submitted' ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect form-control text-center my-3" name="status">
                         <option <%= program.status === 'Incomplete' ? 'selected' : '' %> value="Incomplete">Incomplete</option>
                         <option <%= program.status === 'Uploaded' ? 'selected' : '' %> value="Uploaded">Uploaded</option>
                         <option <%= program.status === 'Reviewed' ? 'selected' : '' %> value="Reviewed">Reviewed</option>
@@ -162,9 +163,9 @@
         statusSelects.forEach(select => {
             select.addEventListener('change', () => {
                 if (select.value === 'Submitted') {
-                    select.style.color = 'green';
+                    select.style.backgroundColor = 'rgb(123,187,123)';
                 } else {
-                    select.style.color = 'black';
+                    select.style.backgroundColor = 'white';
                 }
                 
                 select.parentElement.submit();
@@ -172,4 +173,15 @@
         })
 
 
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(event) { 
+            const scrollpos = localStorage.getItem('scrollpos');
+            if (scrollpos) window.scrollTo(0, scrollpos);
+        });
+
+        window.onbeforeunload = function(e) {
+            localStorage.setItem('scrollpos', window.scrollY);
+        };
     </script>

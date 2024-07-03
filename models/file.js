@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { upload } = require('../utils/fileOperations');
 const Schema = mongoose.Schema;
 
 const fileSchema = new Schema({
@@ -21,6 +22,10 @@ const fileSchema = new Schema({
     seg: {
         type: Schema.Types.ObjectId,
         ref: 'Seg'
+    },
+    uploadDate: {
+        type: Date,
+        default: Date.now
     }
 });
 
