@@ -1,0 +1,76 @@
+<% layout('/layouts/boilerplate') %>
+    <form action="/<%= plant %>/seg/new" method="post">
+
+        <div class="mb-3">
+            <label for="seg_ID" class="form-label">SEG ID</label>
+            <input type="text" name="seg_ID" id="seg_ID" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="team" class="form-label">Team</label>
+            <select name="team" id="team" class="form-control">
+                <option value="Operations">Operations</option>
+                <option value="Maintenance and Technical">Maintenance and Technical</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="applicableAOC">Applicable AO&C</label>
+            <textarea name="applicableAOC" id="applicableAOC" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="reviewActivity">Review Activity</label>
+            <textarea name="reviewActivity" id="reviewActivity" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="dataSubmittal">Data Submittal</label>
+            <textarea name="dataSubmittal" id="dataSubmittal" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="reviewGuidance">Review Guidance</label>
+            <textarea name="reviewGuidance" id="reviewGuidance" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3" id="programReviewedContainer">
+            <label for="programReviewed0">Programs that need to Review</label>
+            <input type="text" name="programReviewed" id="programReviewed0" class="form-control mb-3">
+        </div>
+
+        <div class="my-3">
+            <button type="button" class="btn btn-info" onclick="addProgramReviewed()">Add More</button>
+            <button class="btn btn-success" type="submit">Submit</button>
+        </div>
+    </form>
+
+
+
+
+
+
+    <script>
+        let programReviewedCount = 1;
+
+        function addProgramReviewed() {
+            const container = document.getElementById('programReviewedContainer');
+            const newProgramReviewed = document.createElement('div');
+            newProgramReviewed.innerHTML = `
+            <input type="text" name="programReviewed" id="programReviewed${programReviewedCount}" class="form-control mb-2">
+        `;
+            container.appendChild(newProgramReviewed);
+            programReviewedCount++;
+        }
+
+        document.querySelector('form').addEventListener('submit', (e) => {
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.value === '') {
+                    input.disabled = true;
+                } else {
+                    input.disabled = false;
+                }
+            })
+        })
+    </script>

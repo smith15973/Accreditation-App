@@ -1,0 +1,17 @@
+<% layout('/layouts/boilerplate') %>
+
+    <h1>HOME</h1>
+    <% if (currentUser) { %>
+        <% if (currentUser.admin) { %>
+        <a href="/new">Create New Plant</a>
+        <% } %>
+        
+        <h3>Your Plants:</h3>
+        <ul>
+            <% currentUser.plants.forEach(plant => { %>
+                <li><a href="/<%= plant.name %>"><%= plant.name %></a></li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <a href="/user/login">Login</a>
+    <% } %>

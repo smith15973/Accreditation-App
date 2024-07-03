@@ -1,0 +1,64 @@
+<% if (currentUser.admin) { %>
+<button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePlantModal">DELETE PLANT</button>
+
+<div class="modal fade" id="deletePlantModal" aria-labelledby="deletePlantModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="deletePlantModalLabel">Delete <%= plant %> Plant?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body my-auto ">
+                <p class="fw-bold fs-5 text-danger">Are you sure you want to delete the <%= plant %> Plant? All related plant data will be lost. This action cannot be undone!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
+                <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeletePlantModal" >Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmDeletePlantModal" aria-labelledby="confirmDeletePlantModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="confirmDeletePlantModalLabel">Confirm Delete <%= plant %> Plant?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body my-auto ">
+                <label class="form-label fw-bold" for="confirmDelete">Please Enter Plant Name to Confirm</label>
+                <input class="form-control" type="text" name="confirmDelete" id="confirmDelete">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
+                <form id="permDeleteForm" action="/<%= plant %>?_method=DELETE" method="post">
+                    <button type="submit" class="btn btn-danger" id="permDelete" disabled>PERMANENTLY DELETE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const permDeleteButton = document.querySelector('#permDelete');
+    document.querySelector('#confirmDelete').addEventListener('input', (e) => {
+        const confirmDelete = document.querySelector('#confirmDelete').value;
+        const plantName = '<%= plant %>';
+        if (confirmDelete === plantName) {
+            permDeleteButton.disabled = false;
+        } else {
+            permDeleteButton.disabled = true;
+        }
+    })
+    document.querySelector('#permDeleteForm').addEventListener('submit', (e) => {
+        const confirmDelete = document.querySelector('#confirmDelete').value;
+        const plantName = '<%= plant %>';
+        if (confirmDelete !== plantName) {
+            e.preventDefault();
+            permDeleteButton.disabled = true;
+        }
+    })
+
+</script>
+<% } %>

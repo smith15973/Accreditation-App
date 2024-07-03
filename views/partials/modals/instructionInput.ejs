@@ -1,0 +1,81 @@
+<div class="modal fade" id="applicableAOCModal"  aria-labelledby="applicableAOCModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="applicableAOCModalLabel">Applicable AO&C</h1>
+                <button type="button" class="btn-close reload" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                    <textarea style="width:90%; height: 90%;" class="form-control" name="applicableAOC" id="applicableAOC"><%= seg.applicableAOC !== '' ? seg.applicableAOC : '' %></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary reload" data-bs-dismiss="modal">Don't Save</a>
+                <button type="submit" class="btn btn-primary" form="editForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reviewActivityModal"  aria-labelledby="reviewActivityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="reviewActivityModalLabel">Review Activity</h1>
+                <button type="button" class="btn-close reload" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                    <textarea style="width:90%; height: 90%;" class="form-control" name="reviewActivity" id="reviewActivity"><%= seg.reviewActivity !== '' ? seg.reviewActivity : '' %></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary reload" data-bs-dismiss="modal">Don't Save</a>
+                <button type="submit" class="btn btn-primary" form="editForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dataSubmittalModal"  aria-labelledby="dataSubmittalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="dataSubmittalModalLabel">Data Submittal</h1>
+                <button type="button" class="btn-close reload" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                    <textarea style="width:90%; height: 90%;" class="form-control" name="dataSubmittal" id="dataSubmittal"><%= seg.dataSubmittal !== '' ? seg.dataSubmittal : '' %></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary reload" data-bs-dismiss="modal">Don't Save</a>
+                <button type="submit" class="btn btn-primary" form="editForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reviewGuidanceModal"  aria-labelledby="reviewGuidanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="reviewGuidanceModalLabel">Review Guidance</h1>
+                <button type="button" class="btn-close reload" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                    <textarea style="width:90%; height: 90%;" class="form-control" name="reviewGuidance" id="reviewGuidance"><%= seg.reviewGuidance !== '' ? seg.reviewGuidance : '' %></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary reload" data-bs-dismiss="modal">Don't Save</a>
+                <button type="submit" class="btn btn-primary" form="editForm">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <label class="form-label" for="applicableAOC">Applicable AO&C</label>
+    <textarea name="applicableAOC" id="applicableAOC" class="form-control"></textarea>
+
+    <label class="form-label" for="reviewActivity">Review Activity</label>
+    <textarea name="reviewActivity" id="reviewActivity" class="form-control"></textarea>
+
+    <label class="form-label" for="dataSubmittal">Data Submittal</label>
+    <textarea name="dataSubmittal" id="dataSubmittal" class="form-control"></textarea>
+
+    <label class="form-label" for="reviewGuidance">Review Guidance</label>
+    <textarea name="reviewGuidance" id="reviewGuidance" class="form-control"></textarea> -->

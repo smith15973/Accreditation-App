@@ -1,0 +1,66 @@
+<% layout('layouts/boilerplate')%>
+<div class="container d-flex justify-content-center align-items-center mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+            <div class="card shadow">
+                <img src="/images/DavisBessePic.jpg"
+                    alt="" class="card-img-top" />
+                <div class="card-body">
+                    <h5 class="card-title">Register</h5>
+                    <form action="/user/register" method="POST" class="validated-form" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="firstName">First Name</label>
+                            <input class="form-control" type="text" id="firstName" name="firstName" required autofocus>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="lastName">Last Name</label>
+                            <input class="form-control" type="text" id="lastName" name="lastName" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="username">Username</label>
+                            <input class="form-control" type="text" id="username" name="username" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-control" type="email" id="email" name="email" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-control" type="password" id="password" name="password" required>
+                            <div class="valid-feedback">
+                                Looks good!
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="" class="form-label mb-2">Associated Plants</label>
+                            <br>    
+                            <% for (plant of plants) { %>
+                                <div class="mb-3">
+                                    <label for="<%= plant.name %>"> <%= plant.name %></label>
+                                    <input id="<%= plant.name %>" type="checkbox" value="<%= plant._id %>" name="plants[]">
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-success btn-block">Register</button>
+                            <a class="my-auto" href="/user/login">Login</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

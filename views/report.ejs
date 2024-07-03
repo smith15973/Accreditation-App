@@ -1,0 +1,145 @@
+<% 
+const incomplete = [];
+const uploaded = [];
+const reviewed = [];
+const approved = [];
+const submitted = [];
+
+
+for (let program of programs) { 
+    if (program.status === 'Incomplete') {
+        incomplete.push(program);
+    } else if (program.status === 'Uploaded') {
+        uploaded.push(program);
+    } else if (program.status === 'Reviewed') {
+        reviewed.push(program);
+    } else if (program.status === 'Approved') {
+        approved.push(program);
+    } else if (program.status === 'Submitted') {
+        submitted.push(program);
+    }
+} 
+let category;
+if (categories === 'Incomplete') {
+    category = incomplete;
+} else if (categories === 'Uploaded') {
+    category = uploaded;
+} else if (categories === 'Reviewed') {
+    category = reviewed;
+} else if (categories === 'Approved') {
+    category = approved;
+} else if (categories === 'Submitted') {
+    category = submitted;
+}
+%>
+
+
+<% layout('/layouts/boilerplate') %>
+    <h1>Reports</h1>
+
+    <input hidden id="incomplete" value="<%= incomplete.length %>">
+    <input hidden id="uploaded" value="<%= uploaded.length %>">
+    <input hidden id="reviewed" value="<%= reviewed.length %>">
+    <input hidden id="approved" value="<%= approved.length %>">
+    <input hidden id="submitted" value="<%= submitted.length %>">
+
+    <style>
+        .chart-container {
+            width: 50% !important;
+            height: 100% !important;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row justify-content-between chart-container">
+            <div class="col">
+
+                <a href="?categories=Incomplete" class="btn <%= categories === 'Incomplete' ? 'disabled' : '' %>" id="incompleteButton" style="background-color: red;">Incomplete</a>
+                <a href="?categories=Uploaded" class="btn <%= categories === 'Uploaded' ? 'disabled' : '' %>" id="uploadedButton" style="background-color: skyblue;">Uploaded</a>
+                <a href="?categories=Reviewed" class="btn <%= categories === 'Reviewed' ? 'disabled' : '' %>" id="reviewedButton" style="background-color: yellow;">Reviewed</a>
+                <a href="?categories=Approved" class="btn <%= categories === 'Approved' ? 'disabled' : '' %>" id="approvedButton" style="background-color: aquamarine;">Approved</a>
+                <a href="?categories=Submitted" class="btn <%= categories === 'Submitted' ? 'disabled' : '' %>" id="submittedButton" style="background-color: violet;">Submitted</a>
+                
+                <div id="reviewList">
+
+                </div>
+                <h2><%= categories %> <%= category.length %>/<%= programs.length %></h2>
+                <ul>
+                    <% for (let cat of category) { %>
+                        <li><a href="/<%= cat.plant %>/<%= cat.seg.seg_ID %>"><%= cat.seg.seg_ID %>, <%= cat.group %></a></li>
+                    <% } %>
+                </ul>
+            </div>
+            
+            <div class="col text-end">
+                <div class="text-end">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <script src="/js/pieChart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('pieChart').getContext('2d');
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Incomplete', 'Uploaded', 'Reviewed', 'Approved', 'Submitted'],
+                    datasets: [{
+                        label: 'Program Statuses',
+                        data: [document.querySelector('#incomplete').value, document.querySelector('#uploaded').value, document.querySelector('#reviewed').value, document.querySelector('#approved').value, document.querySelector('#submitted').value],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(153, 102, 255, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            console.log(e)
+        })
+    </script>
+
+
+<script>
+    const incompleteButton = document.querySelector('#incompleteButton');
+    const uploadedButton = document.querySelector('#uploadedButton');
+    const reviewedButton = document.querySelector('#reviewedButton');
+    const approvedButton = document.querySelector('#approvedButton');
+    const submittedButton = document.querySelector('#submittedButton');
+</script>

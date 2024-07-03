@@ -1,0 +1,148 @@
+<style>
+    div.offcanvas-body {
+
+        /* Basic styles */
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 5px 0;
+            position: relative;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        li:hover {
+            background-color: #f8f9fa;
+        }
+
+        li ul li:hover {
+            background-color: #e0e1e2;
+        }
+
+        li ul li ul li:hover {
+            background-color: #c8c9ca;
+        }
+
+        .clickable-li {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        ul ul {
+            padding-left: 50px;
+            /* Indentation for nested lists */
+            display: none;
+            /* Hide nested lists by default */
+        }
+
+        /* Arrow indicators for nested lists */
+        li>ul::before {
+            content: '\25B6';
+            /*Right arrow*/
+            position: absolute;
+            left: -20px;
+            transition: transform 2s ease;
+        }
+
+        li.expanded>ul::before {
+            content: '\25BC';
+            /* Down arrow */
+        }
+    }
+</style>
+<div class="container">
+    <ul class="">
+        <li class="clickable-li" data-url="/<%=plant%>/search">Search</li>
+        <li class="clickable-li" data-url="/<%=plant%>/reports">Reports</li>
+        <li class="">Schedule
+            <ul class="">
+                <li class="clickable-li" data-url="/<%=plant%>/schedule/Operations">Operations</li>
+                <li class="clickable-li" data-url="/<%=plant%>/schedule/maintenanceTech">Maintenance and Technical</li>
+            </ul>
+        </li>
+        <li class="">Operations
+            <ul class="">
+                <li class="">Program Administration
+                    <ul class="">
+                        <% for (let i=1; i <=20; ++i) { %>
+                            <li class="clickable-li" data-url="/<%=plant%>/SEG-OPPA-<%=i%>">SEG-OPPA-<%=i%></li>
+                            <% } %>
+                    </ul>
+                </li>
+                <li class="">Implementation and Oversight
+                    <ul class="">
+                        <% for (let i=1; i <=13; ++i) { %>
+                            <li class="clickable-li" data-url="/<%=plant%>/SEG-OPIO-<%=i%>">SEG-OPIO-<%=i%></li>
+                            <% } %>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="">Maintenance and Technical
+            <ul class="">
+                <li class="">Program Administration
+                    <ul class="">
+                        <% for (let i=1; i <=20; ++i) { %>
+                            <li class="clickable-li" data-url="/<%=plant%>/SEG-MTPA-<%=i%>">SEG-MTPA-<%=i%></li>
+                            <% } %>
+                    </ul>
+                </li>
+                <li class="">Implementation and Oversight
+                    <ul class="">
+                        <% for (let i=1; i <=12; ++i) { %>
+                            <li class="clickable-li" data-url="/<%=plant%>/SEG-MTIO-<%=i%>">SEG-MTIO-<%=i%></li>
+                            <% } %>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="">Observations
+            <ul class="">
+                <li class="clickable-li" data-url="">Operations</li>
+                <li class="clickable-li" data-url="">Maintenance and Technical</li>
+            </ul>
+        </li>
+        <li class="clickable-li" data-url="/<%=plant%>/acads">ACADS</li>
+        <li class="clickable-li" data-url="/<%=plant%>/iers">IERs</li>
+        <li class="clickable-li" data-url="/<%=plant%>/siftif">SIF/TIF</li>
+        <li class="clickable-li" data-url="/<%=plant%>/aosr">AOSR</li>
+        <li class="clickable-li" data-url="/<%=plant%>/powerhistory">Power History</li>
+        <li class="clickable-li" data-url="/<%=plant%>/performanceMatrix">Performance Matrix</li>
+        <li class="clickable-li" data-url="/<%=plant%>/saMatrix">Self-Assesment Matrix</li>
+        <li class="clickable-li" data-url="/<%=plant%>/other">Other Resources</li>
+    </ul>
+</div>
+
+<script>
+    // JavaScript to handle toggling of nested lists
+    document.addEventListener('DOMContentLoaded', function () {
+        const nestedLists = document.querySelectorAll('li > ul');
+
+        nestedLists.forEach(nestedList => {
+            const parentLi = nestedList.parentElement;
+
+            parentLi.addEventListener('click', function (e) {
+                if (e.target === parentLi || e.target.tagName === 'A') {
+                    e.stopPropagation();
+                    const isExpanded = parentLi.classList.contains('expanded');
+
+                    nestedList.style.display = isExpanded ? 'none' : 'block';
+                    parentLi.classList.toggle('expanded', !isExpanded);
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    document.querySelectorAll('.clickable-li').forEach(item => {
+        item.addEventListener('click', function() {
+            window.location.href = this.dataset.url;
+        });
+    });
+</script>

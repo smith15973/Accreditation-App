@@ -1,0 +1,12 @@
+<% layout('/layouts/boilerplate') %>
+<h1><%= plant %></h1>
+<h2><a href="/<%= plant %>/seg/new">New Seg</a></h2>
+
+<ul>
+    <% for (let seg of currentPlant.segs) { %>
+        <li>
+            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+        </li>
+    <% } %>
+</ul>
+<%- include('../partials/modals/deletePlant')%>

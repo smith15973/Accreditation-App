@@ -1,0 +1,20 @@
+<div class="modal fade" id="deleteRow<%=count%>Modal" aria-labelledby="deleteRow<%=count%>ModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="deleteRow<%=count%>ModalLabel">Delete <%=program.group%> Program Review?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body my-auto ">
+                <p class="fw-bold">Are you sure you want to delete <%=program.group%> Progream Review? All associated data will also be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
+                <form id="deleteRow<%=count%>" action="/<%=plant%>/<%=seg._id%>/editGroup/<%= program._id %>?_method=DELETE" method="POST" >
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

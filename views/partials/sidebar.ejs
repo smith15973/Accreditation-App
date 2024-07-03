@@ -1,0 +1,29 @@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasLabel"><%= plant %></h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <%- include('sidebarContent') %>
+    </div>
+  </div>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var offcanvasElement = document.getElementById('offcanvas');
+        var sidebarToggleButton = document.getElementById('sidebarToggleButton');
+        const sidebarArrow = document.getElementById('sidebarArrow');
+
+        offcanvasElement.addEventListener('show.bs.offcanvas', function () {
+            sidebarToggleButton.style.left = '399px'; // Adjust this value to match the sidebar width
+            sidebarArrow.style.transform = 'rotate(180deg)';
+
+        });
+
+        offcanvasElement.addEventListener('hide.bs.offcanvas', function () {
+            sidebarToggleButton.style.left = '0px'; // Reset to original position
+            sidebarArrow.style.transform = 'rotate(0deg)';
+        });
+    });
+</script>

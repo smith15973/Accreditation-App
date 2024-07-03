@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accredidation App</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/printStyle.css">
+</head>
+<!-- <body class="text-bg-dark"> -->
+
+<body>
+
+    <style>
+        #sidebarToggleButton {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 55px;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 1);
+            position: fixed;
+            top: 15%;
+            left: 0px;
+            z-index: 10000;
+            transition: left 0.3s ease-in-out;
+            
+
+            @media print {
+                display: none;
+            }
+        }
+
+        .nic-edit-main {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+
+
+    <% var plant = plant || '' %>
+    <%- include('../partials/navbar', { plant }) %>
+        <% if (plant !== '') { %>
+        <%- include('../partials/sidebar') %>
+        <div id="sidebarToggleButton" class="bg-primary border rounded-end-5 border-0 border-start-0 border"
+                type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvasStart">
+                <img id="sidebarArrow" src="/images/svg/arrow.svg" style="width: 40px; height: 40px;" alt="">
+            </div>
+        <% } %>
+            
+            <main class="container mt-3">
+                <div class=" container mt-2">
+                    <%- include('../partials/flash') %>
+                </div>
+                <%- body %>
+            </main>
+
+            <%- include('../partials/footer') %>
+
+                <!-- Bootstrap -->
+                <script src="/js/bootstrap.min.js"></script>
+                <script src="/js/jquery.js"></script>
+                <script src="/js/validateForms.js"></script>
+
+                <!-- NicEdit -->
+                <script src="/js/nicEdit.js" type="text/javascript"></script>
+                <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script> 
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
+                        element.setAttribute('style', 'width: 100%'); // Add width property
+                        element.setAttribute('style', 'min-height: 300px;'); // Add height property
+                    });
+                    });
+                </script>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function(event) { 
+                        const scrollpos = localStorage.getItem('scrollpos');
+                        if (scrollpos) window.scrollTo(0, scrollpos);
+                    });
+
+                    window.onbeforeunload = function(e) {
+                        localStorage.setItem('scrollpos', window.scrollY);
+                    };
+                </script>
+
+</body>
+
+</html>

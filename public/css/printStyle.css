@@ -1,0 +1,27 @@
+@media print {
+    nav {
+        display: none !important;
+    }
+    * {
+        font-size: 11px !important;
+    }
+    .fs-5 {
+        font-size: 13px !important;
+    }
+
+    div.btn, .btn, .trashcans {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important; /* Adjust as necessary */
+        margin: 0 auto !important; /* Centers the container */
+        padding-left: 5% !important;
+        padding-right: 5% !important;
+    }
+    @page {
+        margin-left: 2% !important;
+        margin-right: 2% !important;
+        orientation: landscape;
+    }
+}
