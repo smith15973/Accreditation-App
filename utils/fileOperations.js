@@ -6,7 +6,7 @@ const catchAsync = require('./catchAsync');
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 const region = process.env.S3_REGION;
-const Bucket = process.env.S3_BUCKET;
+const bucket = process.env.S3_BUCKET;
 
 const s3 = new S3Client({
     credentials: {
@@ -19,7 +19,7 @@ const s3 = new S3Client({
 const upload = multer({
     storage: multerS3({
         s3: s3,
-        bucket: Bucket,
+        bucket: bucket,
         contentType: multerS3.AUTO_CONTENT_TYPE || 'application/octet-stream',
         metadata: function (req, file, cb) {
             cb(null, {fieldName: file.fieldname});

@@ -1,5 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
+} else {
+    require('dotenv').config({ path: '/etc/app.env' });
 }
 const express = require('express');
 const mongoose = require('mongoose');
@@ -117,7 +119,7 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err });
 })
 
-
-app.listen(8080, () => {
-    console.log('LISTENING ON PORT 8080!');
+const port = process.env.PORT || 3001;
+app.listen(port, () => {
+    console.log(`LISTENING ON PORT ${port}!`);
 });
