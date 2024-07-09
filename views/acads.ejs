@@ -1,0 +1,145 @@
+
+<% layout('/layouts/boilerplate') %>
+<style>
+    .loading {
+        display: none;
+        position: fixed;
+        top: 40%;
+        left: 45%;
+        transform: translate(-50%, -50%);
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+<div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
+
+<h1>ACADS</h1>
+<div class="row">
+    <div class="col-12 col-lg-5 mb-3">
+        <form id="fileUploadForm" action="/<%= plant %>/acads" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="files" class="form-label">Upload ACAD File</label>
+                <input type="file" name="files" id="fileInput" class="form-control" accept=".pdf" multiple required>
+            </div>
+            <button class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <div class="col-12 col-lg-7 mb-3">
+        <% if (acads.length) { %>
+            <form class="" id="deleteFileForm" action="/<%=plant%>/acads?_method=DELETE" method="post">
+                <ul class="list-group">
+                    <li class="list-group-item d-flex align-items-center justify-content-between px-3">
+                        <div class="py-2">
+                            <input class="border" type="checkbox" id="selectAllCheck">
+                        </div>
+                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger" id="deleteFilesButton">
+                            Delete
+                        </button>
+                    </li>
+                <% acads.forEach((acad, i) =>  { %>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <div class="d-flex pt-2">
+                            <div class="">
+                                <input id="file<%=i%>" name="deletedFiles[]" value="<%=acad._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
+                            </div>
+                            <label class="form-label px-3 text-wrap" for="file<%=i%>">
+                                <%= acad.file.originalName %>
+                            </label>
+                        </div>
+                        <div class="d-flex">
+                            <div class="row my-auto">
+                                <div class="col">
+                                    <button type="button" class="btn btn-primary" onclick="showPDF('<%=acad.file.location%>')">View</button>
+                                </div>
+                                <div class="col">
+                                    <a href="<%=acad.file.location%>" download="<%=acad.file.originalName%>" class="btn btn-secondary">Open</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                <% }) %>
+                </ul>
+        <% } %>
+    </div>
+
+    <div id="pdfSection" class="" style="position: relative; display: none;">
+        <div class="text-end mb-2">
+            <button type="button" class="btn btn-secondary" onclick="closePDF()">Close</button>
+        </div>
+        <div class="text-center">
+            <embed id="pdfWindow" class="rounded d-inline" type="application/pdf"
+                style="width: 100%; height: 1000px;" onload="hideLoading()" />
+        </div>
+        <div class="loading" id="loadingPDF" style="display: block; position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); z-index: 1000;">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function closePDF() {
+                document.getElementById('pdfWindow').src = '';
+                document.getElementById('pdfSection').style.display = 'none';
+            }
+    function showPDF(location) {
+        document.getElementById('pdfWindow').src = location;
+        document.getElementById('pdfSection').style.display = 'block';
+    }
+    const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
+    const selectAllCheck = document.getElementById('selectAllCheck');
+    const deleteFilesButton = document.getElementById('deleteFilesButton');
+
+    deleteCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            if (deleteCheckboxes.length === document.querySelectorAll('.deleteCheck:checked').length) {
+                selectAllCheck.checked = true;
+            } else {
+                selectAllCheck.checked = false;
+            }
+            if (document.querySelectorAll('.deleteCheck:checked').length > 0) {
+                deleteFilesButton.disabled = false;
+            } else {
+                deleteFilesButton.disabled = true;
+            }
+        });
+    });
+    
+    if (selectAllCheck) {
+        selectAllCheck.addEventListener('change', () => {
+            if (selectAllCheck.checked) {
+                deleteCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                deleteFilesButton.disabled = false;
+            } else {
+                deleteCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                deleteFilesButton.disabled = true;
+            }
+        });
+        }
+</script>
+
+<script>
+    function fileInputSubmit() {
+        document.querySelector('#loadingCircle').style.display = 'block';
+        document.querySelector('#fileUploadForm').submit();
+    }
+
+    document.querySelector('#fileInput').onchange = fileInputSubmit;
+
+    function hideLoading() {
+        document.querySelector('#loadingPDF').style.display = 'none';
+    }
+</script>

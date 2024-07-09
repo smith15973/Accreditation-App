@@ -1,8 +1,7 @@
 <!-- Modal -->
 <% if (currentUser.admin) { %>
     <form action="/<%=seg.plant%>/<%=seg._id%>/editGroup/<%=program._id%>?_method=PUT" method="post">
-        <div class="modal fade" id="<%= count %>groupModal" aria-labelledby="<%= count %>groupLabel" aria-hidden="true"
-            data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal fade" id="<%= count %>groupModal" aria-labelledby="<%= count %>groupLabel" aria-hidden="true" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">

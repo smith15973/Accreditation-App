@@ -102,6 +102,9 @@ app.use(catchAsync(async (req, res, next) => {
 
 
 app.get('/', (req, res) => {
+    if (!req.user) {
+        return res.redirect('/user/login');
+    }
     res.render('home');
 });
 app.use('/user', userRoutes);

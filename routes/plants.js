@@ -5,6 +5,7 @@ const Plant = require('../models/plant')
 const User = require('../models/user')
 const File = require('../models/file')
 const DueDate = require('../models/dueDate')
+const Acad = require('../models/acad')
 const ProgramReviewed = require('../models/programReviewed')
 const catchAsync = require('../utils/catchAsync');
 
@@ -22,8 +23,13 @@ router.route('/new')
     .get(isLoggedIn, (req, res) => {
         res.render('plants/new');
     })
-    .post(isLoggedIn, async (req, res) => {
+    .post(isLoggedIn, upload.single('image'), async (req, res) => {
+        const file = req.file;
         const plant = new Plant(req.body);
+        plant.image.location = file.location;
+        plant.image.key = file.key;
+        plant.image.bucket = file.bucket;
+        plant.image.originalName = file.originalname
         plant.users.push(req.user._id);
         await plant.save();
         const user = await User.findById(req.user._id);
@@ -56,6 +62,27 @@ router.route('/:plant')
         res.redirect('/');
     }));
 
+router.route('/:plant/edit')
+    .get(isLoggedIn, catchAsync(async (req, res) => {
+        const { plant } = req.params;
+        const currentPlant = await Plant.findOne({ name: plant });
+        res.render('plants/edit', { plant, currentPlant })
+
+    }))
+    .put(isLoggedIn, upload.single('image'), catchAsync(async (req, res) => {
+        const plant = await Plant.findOne({ name: req.params.plant });
+        plant.name = req.body.name
+        const file = req.file;
+        if (file) {
+            plant.image.location = file.location;
+            plant.image.key = file.key;
+            plant.image.bucket = file.bucket;
+            plant.image.originalName = file.originalname
+        }
+        await plant.save();
+        res.redirect(`/${plant.name}`);
+    }))
+
 router.route('/:plant/search')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
@@ -82,72 +109,80 @@ router.route('/:plant/reports/editDueDate')
     }))
 
 router.route('/:plant/acads')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('plants/home', { plant });
-    });
+    .get(isLoggedIn, catchAsync(async (req, res) => {
+        const { plant } = req.params;
+        const acads = await Acad.find({});
+        res.render('acads', { plant, acads });
+    }))
+    .post(isLoggedIn, upload.array('files'), catchAsync(async (req, res) => {
+        const { plant } = req.params;
+        const files = req.files.map(f => ({ 'file.location': f.location, 'file.originalName': f.originalname, 'file.key': f.key, 'file.bucket': f.bucket }));
+        for (let upFile of files) {
+            const acad = new Acad(upFile);
+            const planti = await Plant.find({ name: plant });
+            acad.plant = planti._id;
+            await acad.save();
+        }
+        res.redirect(`/${plant}/acads`);
+    }))
+    .delete(isLoggedIn, catchAsync(async (req, res) => {
+        const { plant } = req.params;
+        const deletedFilesIDs = req.body.deletedFiles;
+        const deletedFiles = await Acad.find({ _id: { $in: deletedFilesIDs } });
+        const keys = deletedFiles.map(df => ({ Key: df.file.key }));
+        await Acad.deleteMany({ _id: { $in: deletedFilesIDs } });
+        deleteFiles(keys);
+        res.redirect(`/${plant}/acads`)
+    }));
 
 router.route('/:plant/iers')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('iers', { plant });
     });
 
 router.route('/:plant/siftif')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('siftif', { plant });
     });
 
 router.route('/:plant/aosr')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('aosr', { plant });
     });
 
 router.route('/:plant/powerhistory')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('powerHistory', { plant });
     });
 
 router.route('/:plant/performanceMatrix')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('performanceMatrix', { plant });
     });
 
 router.route('/:plant/samatrix')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('selfAssesmentMatrix', { plant });
     });
 
 router.route('/:plant/other')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('otherResources', { plant });
     });
-
-router.route('/:plant/schedule/:team')
+router.route('/:plant/archives')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;
-        res.render('plants/home', { plant });
+        res.render('archives', { plant });
     });
 
 
-
-// router.route('/:plant/:team')
-//     .get((req, res) => {
-//         const { plant, team } = req.params;
-//         res.render('plants/home', { plant });
-//     });
-
-// router.route('/:plant/:team/:job')
-//     .get((req, res) => {
-//         const { plant, team } = req.params;
-//         res.render('plants', { plant, team, job });
-//     })
 
 router.route('/:plant/seg/new')
     .get(isLoggedIn, (req, res) => {

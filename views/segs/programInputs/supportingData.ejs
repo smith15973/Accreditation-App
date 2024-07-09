@@ -130,6 +130,7 @@
                 });
             });
 
+            if (selectAllCheck) {
             selectAllCheck.addEventListener('change', () => {
                 if (selectAllCheck.checked) {
                     deleteCheckboxes.forEach(checkbox => {
@@ -143,6 +144,7 @@
                     deleteFilesButton.disabled = true;
                 }
             });
+            }
 
             function closePDF() {
                 document.getElementById('pdfWindow').src = '';

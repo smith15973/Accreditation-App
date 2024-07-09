@@ -1,9 +1,13 @@
 <% layout('/layouts/boilerplate') %>
     <h1>Create New Plant</h1>
-    <form action="/new" method="post">
+    <form action="/new" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Plant Name</label>
             <input type="text" name="name" id="name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">Plant Picture</label>
+            <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
         </div>
         <button class="btn btn-primary">Submit</button>
     </form>

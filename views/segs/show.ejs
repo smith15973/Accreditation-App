@@ -96,49 +96,53 @@
         </div>
 
         <div class="row bg-secondary">
-            <div class="col-2 text-center fw-bold border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Program Reviewed</p>
-            </div>
             <div class="col-1 text-center fw-bold border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Status</p>
+                <p class="my-auto fs-6">Program</p>
             </div>
-            <div class="col text-center fw-bold border border-1 border-dark text-break">
+            <div class="col-5 text-center fw-bold border border-1 border-dark text-break">
                 <p class="my-auto fs-6">Supporting Data</p>
             </div>
             <div class="col text-center fw-bold border border-1 border-dark text-break">
                 <p class="my-auto fs-6">Conclusion</p>
             </div>
-            <!-- <div class="col text-center fw-bold border border-1 border-dark text-break">
+            <div class="col text-center fw-bold border border-1 border-dark text-break">
                 <p class="my-auto fs-6">AOSR</p>
-            </div> -->
+            </div>
         </div>
         
         <%seg.programReviewed.forEach((program,count) => { %>  
         <div class="row">
 
             <% if (currentUser.admin) { %>
-                <div class="col-2 fw-bold border border-1 border-dark fs-6 text-break" data-bs-toggle="modal" data-bs-target="#<%= count %>groupModal">
-                    <img class="trashcans d-inline my-3" style="height: 25px;" src="/images/svg/trash.svg" data-bs-toggle="modal" data-bs-target="#deleteRow<%=count%>Modal"><p class="d-inline"><%= program.group %></p>
+                <div class="clickable-div col-1 fw-bold border border-1 border-dark fs-6 text-break" data-bs-toggle="modal" data-bs-target="#<%= count %>groupModal">
+                    <img class="trashcans d-inline my-3" style="height: 25px;" src="/images/svg/trash.svg" data-bs-toggle="modal" data-bs-target="#deleteRow<%=count%>Modal">
+                    <p class="d-inline"><%= program.group %></p>
+                    <form action="/<%=seg.plant%>/<%=seg._id%>/editGroup/<%=program._id%>?_method=PUT" id="statusForm<%=count%>" method="post">
+                        <select <%= program.status === 'Submitted' ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect form-control text-center my-3" name="status">
+                            <option <%= program.status === 'Incomplete' ? 'selected' : '' %> value="Incomplete">Incomplete</option>
+                            <option <%= program.status === 'Uploaded' ? 'selected' : '' %> value="Uploaded">Uploaded</option>
+                            <option <%= program.status === 'Reviewed' ? 'selected' : '' %> value="Reviewed">Reviewed</option>
+                            <option <%= program.status === 'Approved' ? 'selected' : '' %> value="Approved">Approved</option>
+                            <option <%= program.status === 'Submitted' ? 'selected' : '' %> value="Submitted">Submitted</option>
+                        </select>
+                    </form>
                 </div>
             <% } else { %>
-                <div class="col-2 fw-bold border border-1 border-dark fs-6 text-break">
+                <div class="col-1 fw-bold border border-1 border-dark fs-6 text-break">
                     <p class=""><%= program.group %></p>
+                    <form action="/<%=seg.plant%>/<%=seg._id%>/editGroup/<%=program._id%>?_method=PUT" id="statusForm<%=count%>" method="post">
+                        <select <%= program.status === 'Submitted' ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect form-control text-center my-3" name="status">
+                            <option <%= program.status === 'Incomplete' ? 'selected' : '' %> value="Incomplete">Incomplete</option>
+                            <option <%= program.status === 'Uploaded' ? 'selected' : '' %> value="Uploaded">Uploaded</option>
+                            <option <%= program.status === 'Reviewed' ? 'selected' : '' %> value="Reviewed">Reviewed</option>
+                            <option <%= program.status === 'Approved' ? 'selected' : '' %> value="Approved">Approved</option>
+                            <option <%= program.status === 'Submitted' ? 'selected' : '' %> value="Submitted">Submitted</option>
+                        </select>
+                    </form>
                 </div>
             <% } %>    
 
-            <div class="col-1 border border-1 border-dark">
-                <form action="/<%=seg.plant%>/<%=seg._id%>/editGroup/<%=program._id%>?_method=PUT" id="statusForm<%=count%>" method="post">
-                    <select <%= program.status === 'Submitted' ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect form-control text-center my-3" name="status">
-                        <option <%= program.status === 'Incomplete' ? 'selected' : '' %> value="Incomplete">Incomplete</option>
-                        <option <%= program.status === 'Uploaded' ? 'selected' : '' %> value="Uploaded">Uploaded</option>
-                        <option <%= program.status === 'Reviewed' ? 'selected' : '' %> value="Reviewed">Reviewed</option>
-                        <option <%= program.status === 'Approved' ? 'selected' : '' %> value="Approved">Approved</option>
-                        <option <%= program.status === 'Submitted' ? 'selected' : '' %> value="Submitted">Submitted</option>
-                    </select>
-                </form>
-            </div>
-
-            <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
+            <div class="col-5 fw-normal border border-1 border-dark text-break clickable-div" 
             onclick="window.open('/<%= plant %>/<%= seg.seg_ID %>/supportingData/<%= program._id %>', '_blank', 'noopener,noreferrer')">
                 <p class="fs-6"><%- program.supportingData %></p>
             </div>
@@ -147,11 +151,10 @@
             onclick="window.open('/<%= plant %>/<%= seg.seg_ID %>/conclusion/<%= program._id %>', '_blank', 'noopener,noreferrer')">
                 <p class="fs-6"><%- program.conclusion %></p>
             </div>
-
-            <!-- <div class="col  fw-normal border border-1 border-dark fs-6 text-break">
-                <a class="btn btn-info" target="_blank" rel="noopener noreferrer"  href="/<%= plant %>/<%= seg.seg_ID %>/aosr/<%= program._id %>">Edit</a>
+            <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
+            onclick="window.open('/<%= plant %>/<%= seg.seg_ID %>/aosr/<%= program._id %>', '_blank', 'noopener,noreferrer')">
                 <p class="fs-6"><%- program.aosr %></p>
-            </div> -->
+            </div>
         </div>
 
         <%- include('../partials/modals/inputData', {program, count})%>

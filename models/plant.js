@@ -18,7 +18,25 @@ const PlantSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Seg',
         }
-    ]
+    ],
+    image: {
+        location: {
+            type: String,
+            required: true
+        },
+        originalName: {
+            type: String,
+            required: true
+        },
+        key: {
+            type: String,
+            required: true
+        },
+        bucket: {
+            type: String,
+            required: true
+        },
+    }
 });
 
 PlantSchema.post('findOneAndDelete', async function (doc) {
