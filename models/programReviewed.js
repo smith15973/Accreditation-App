@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Seg = require('./seg');
+const File = require('./file');
 
 const ProgramReviewedSchema = new Schema({
 
@@ -11,11 +12,11 @@ const ProgramReviewedSchema = new Schema({
     },
     plant: {
         type: String,
-        required: true,
+        // required: true,
     },
     group: {
         type: String,
-        required: true,
+        // required: true,
     },
     supportingData: [
         {
@@ -38,11 +39,10 @@ const ProgramReviewedSchema = new Schema({
         enum: ['Incomplete', 'Uploaded', 'Reviewed', 'Approved', 'Submitted'],
         required: true,
     },
-    fileInput: [
+    files: [
         {
-            url: String,
-            fileName: String,
-            originalName: String,
+            type: Schema.Types.ObjectId,
+            ref: 'File'
         }
     ]
 });
@@ -53,6 +53,13 @@ const ProgramReviewedSchema = new Schema({
 //         const seg = await Seg.findOneAndUpdate({ _id: doc.seg._id }, { $pull: { programReviewed: doc._id } }); 
 //     }
 // });
+
+ProgramReviewedSchema.post('findOneAndDelete', async function (doc) {
+    if (doc) {
+        // Delete all files associated with this programReviewed document
+        await File.deleteMany({ _id: { $in: doc.files } });
+    }
+});
 
 
 

@@ -6,6 +6,8 @@ const Schema = mongoose.Schema;
 const SegSchema = new Schema({
     plant: String,
     team: String,
+    department: String,
+    segNum: Number,
     seg_ID: String,
     applicableAOC: [],
     reviewActivity: [],
@@ -17,12 +19,6 @@ const SegSchema = new Schema({
             ref: 'ProgramReviewed'
         }
     ],
-    files: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'File'
-        }
-    ]
 });
 
 

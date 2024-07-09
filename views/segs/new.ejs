@@ -2,11 +2,6 @@
     <form action="/<%= plant %>/seg/new" method="post">
 
         <div class="mb-3">
-            <label for="seg_ID" class="form-label">SEG ID</label>
-            <input type="text" name="seg_ID" id="seg_ID" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
             <label for="team" class="form-label">Team</label>
             <select name="team" id="team" class="form-control">
                 <option value="Operations">Operations</option>
@@ -15,28 +10,40 @@
         </div>
 
         <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <select name="department" id="department" class="form-control">
+                <option value="Program Administration">Program Administration</option>
+                <option value="Implementation and Oversight">Implementation and Oversight</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="segNum" class="form-label">Department</label>
+            <input min="1" class="form-control" type="number" name="segNum" id="segNum" required>
+        </div>
+
+        <div class="mb-3">
             <label class="form-label" for="applicableAOC">Applicable AO&C</label>
-            <textarea name="applicableAOC" id="applicableAOC" class="form-control"></textarea>
+            <textarea name="applicableAOC" id="applicableAOC" class="form-control"> </textarea>
         </div>
 
         <div class="mb-3">
             <label class="form-label" for="reviewActivity">Review Activity</label>
-            <textarea name="reviewActivity" id="reviewActivity" class="form-control"></textarea>
+            <textarea name="reviewActivity" id="reviewActivity" class="form-control"> </textarea>
         </div>
 
         <div class="mb-3">
             <label class="form-label" for="dataSubmittal">Data Submittal</label>
-            <textarea name="dataSubmittal" id="dataSubmittal" class="form-control"></textarea>
+            <textarea name="dataSubmittal" id="dataSubmittal" class="form-control"> </textarea>
         </div>
 
         <div class="mb-3">
             <label class="form-label" for="reviewGuidance">Review Guidance</label>
-            <textarea name="reviewGuidance" id="reviewGuidance" class="form-control"></textarea>
+            <textarea name="reviewGuidance" id="reviewGuidance" class="form-control"> </textarea>
         </div>
 
         <div class="mb-3" id="programReviewedContainer">
             <label for="programReviewed0">Programs that need to Review</label>
-            <input type="text" name="programReviewed" id="programReviewed0" class="form-control mb-3">
+            <input type="text" name="programReviewed[]" id="programReviewed0" class="form-control mb-3">
         </div>
 
         <div class="my-3">
@@ -57,7 +64,7 @@
             const container = document.getElementById('programReviewedContainer');
             const newProgramReviewed = document.createElement('div');
             newProgramReviewed.innerHTML = `
-            <input type="text" name="programReviewed" id="programReviewed${programReviewedCount}" class="form-control mb-2">
+            <input type="text" name="programReviewed[]" id="programReviewed${programReviewedCount}" class="form-control mb-2">
         `;
             container.appendChild(newProgramReviewed);
             programReviewedCount++;

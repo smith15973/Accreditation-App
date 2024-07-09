@@ -1,0 +1,90 @@
+<h2><%= team %> : <%= department %></h2>
+<% const dateTeam = `${team}${department}`.replace(/\s+/g, '') %>
+<div class="row">
+    <div class="col border border-dark">Due Date</div>
+    <div class="col border border-dark"></div>
+    <%- include('./modals/dueDate', {dateTeam, dateInstance:'Uploaded'}) %>
+    <%- include('./modals/dueDate', {dateTeam, dateInstance:'Reviewed'}) %>
+    <%- include('./modals/dueDate', {dateTeam, dateInstance:'Approved'}) %>
+    <%- include('./modals/dueDate', {dateTeam, dateInstance:'Submitted'}) %>
+
+</div>
+<div class="row">
+    <div class="col border border-dark">SEG Number</div>
+    <div class="col border border-dark">Incomplete</div>
+    <div class="col border border-dark">Uploaded</div>
+    <div class="col border border-dark">Reviewed</div>
+    <div class="col border border-dark">Approved</div>
+    <div class="col border border-dark">Submitted</div>
+</div>
+
+<% 
+let total = 0;
+let totalIncomplete = 0;
+let totalUploaded = 0;
+let totalReviewed = 0;
+let totalApproved = 0;
+let totalSubmitted = 0;
+ %>
+<% for (let seg of segs.filter(seg => seg.team === team && seg.department === department)) { %>
+    <% 
+    const numPrograms = seg.programReviewed.length
+    const incomplete = [];
+    const uploaded = [];
+    const reviewed = [];
+    const approved = [];
+    const submitted = [];
+    total+=numPrograms;
+    for (let program of seg.programReviewed) {
+        if (program.status === 'Incomplete') {
+            incomplete.push(program);
+            totalIncomplete++;
+        } else if (program.status === 'Uploaded') {
+            uploaded.push(program)
+            totalUploaded++;
+        } else if (program.status === 'Reviewed') {
+            uploaded.push(program);
+            reviewed.push(program);
+            totalUploaded++;
+            totalReviewed++;
+        } else if (program.status === 'Approved') {
+            uploaded.push(program);
+            reviewed.push(program);
+            approved.push(program);
+            totalUploaded++;
+            totalReviewed++;
+            totalApproved++;
+        } else if (program.status === 'Submitted') {
+            uploaded.push(program);
+            reviewed.push(program);
+            approved.push(program);
+            submitted.push(program);
+            totalUploaded++;
+            totalReviewed++;
+            totalApproved++;
+            totalSubmitted;
+        }
+    }
+    %>
+    
+    <div class="row">
+        <div class="col border border-dark">
+            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+        </div>
+        <div <%= incomplete.length === 0 ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=incomplete.length%>/<%=numPrograms%></div>
+        <div <%= uploaded.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=uploaded.length%>/<%=numPrograms%></div>
+        <div <%= reviewed.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=reviewed.length%>/<%=numPrograms%></div>
+        <div <%= approved.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=approved.length%>/<%=numPrograms%></div>
+        <div <%= submitted.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=submitted.length%>/<%=numPrograms%></div>
+    </div>
+<% } %>
+
+    <div class="row">
+        <div class="col border border-dark">Total</div>
+        <div <%= totalIncomplete === 0 ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%= totalIncomplete %>/<%= total %></div>
+        <div <%= totalUploaded === total ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%= totalUploaded %>/<%= total %></div>
+        <div <%= totalReviewed === total ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%= totalReviewed %>/<%= total %></div>
+        <div <%= totalApproved === total ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%= totalApproved %>/<%= total %></div>
+        <div <%= totalSubmitted === total ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%= totalSubmitted %>/<%= total %></div>
+        
+    </div>

@@ -1,0 +1,40 @@
+
+
+<% let date = dueDates.filter(date => date.dateTeam === dateTeam)[0] %>
+<% 
+if (date && dateInstance === 'Uploaded') {
+    date = date.Uploaded
+} else if (date && dateInstance === 'Reviewed') {
+    date = date.Reviewed
+} else if (date && dateInstance === 'Approved') {
+    date = date.Approved
+} else if (date && dateInstance === 'Submitted') {
+    date = date.Submitted
+}
+ %>
+<div class="col border border-dark" data-bs-toggle="modal" data-bs-target="#<%= dateTeam %>[<%= dateInstance %>]">
+    <%= date ? date.toISOString().split('T')[0] : 'TBD' %>
+</div>
+
+
+<div class="modal fade" id="<%= dateTeam %>[<%= dateInstance %>]" aria-labelledby="<%= dateTeam %>[<%= dateInstance %>]ModalLabel" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="<%= dateTeam %>[<%= dateInstance %>]DueDateModalLabel"><%= team %> <%=department %> <%= dateInstance %> Due Date</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body my-auto ">
+                <form id="<%= dateTeam %><%= dateInstance %>Form" action="/<%= plant %>/reports/editDueDate" method="post">
+                    <input type="hidden" name="dateTeam" value="<%= dateTeam %>">
+                    <input type="date" name="<%= dateInstance %>" id="<%= dateTeam %>[<%= dateInstance %>]" class="form-control" value="<%= date ? date.toISOString().split('T')[0] : '' %>">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
+                <button type="submit" form="<%= dateTeam %><%= dateInstance %>Form" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+

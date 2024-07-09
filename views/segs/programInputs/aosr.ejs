@@ -1,0 +1,36 @@
+<style>
+    .container {
+        max-width: 90%;
+    }
+</style>
+<% layout('/layouts/boilerplate') %>
+    <% const seg=program.seg %>
+
+        <div class="row px-auto">
+            <div class="col mb-3">
+                <a id="backToSegButton" class="btn btn-primary" href="/<%= plant %>/<%= seg.seg_ID %>">Back to <%=
+                        seg.seg_ID %></a>
+                <form action="/<%= plant %>/<%= seg.seg_ID %>/aosr/<%= program._id %>?_method=PUT"
+                    method="post">
+                    <div class="my-3">
+                        <h1 class="fs-3 d-inline">
+                            <%= seg.seg_ID %>, <%= program.group %>, AOSR
+                        </h1>
+                        <button id="saveTextButton" class="btn btn-success d-inline">Save</button>
+                    </div>
+
+                    <textarea class="form-control"
+                        name="aosr"><%= program.aosr[0] !== '' ? program.aosr[0] : '' %></textarea>
+                </form>
+            </div>
+        </div>
+
+
+        <script>
+            window.addEventListener('beforeunload', (e) => {
+                let newText = document.querySelector('.nicEdit-main').innerHTML;
+                if (newText !== originalText && e.target.activeElement.id !== 'saveTextButton') {
+                    e.preventDefault();
+                }
+            })
+        </script>

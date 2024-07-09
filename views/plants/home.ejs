@@ -1,12 +1,62 @@
 <% layout('/layouts/boilerplate') %>
-<h1><%= plant %></h1>
+<div class="d-flex justify-content-end">
+    <%- include('../partials/modals/deletePlant')%>
+</div>
+
+<h1 class=""><%= plant %></h1>
 <h2><a href="/<%= plant %>/seg/new">New Seg</a></h2>
 
-<ul>
-    <% for (let seg of currentPlant.segs) { %>
-        <li>
-            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
-        </li>
-    <% } %>
-</ul>
-<%- include('../partials/modals/deletePlant')%>
+<% const segs = currentPlant.segs %>
+<div class="row">
+    <div class="col text-center">
+        <h3 class="mb-5">Operations</h3>
+        <div class="row">
+            <div class="col">
+                <h4>Program Administration</h4>
+                <ul>
+                    <% for (let seg of segs.filter(seg => seg.team === 'Operations' && seg.department === 'Program Administration')) { %>
+                        <li>
+                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>Implementation and Oversight</h4>
+                <ul>
+                    <% for (let seg of segs.filter(seg => seg.team === 'Operations' && seg.department === 'Implementation and Oversight')) { %>
+                        <li>
+                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col text-center">
+        <h3 class="mb-5">Maintenance and Technical</h3>
+        <div class="row">
+            <div class="col">
+                <h4>Program Administration</h4>
+                <ul>
+                    <% for (let seg of segs.filter(seg => seg.team === 'Maintenance and Technical' && seg.department === 'Program Administration')) { %>
+                        <li>
+                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="col">
+                <h4>Implementation and Oversight</h4>
+                <ul>
+                    <% for (let seg of segs.filter(seg => seg.team === 'Maintenance and Technical' && seg.department === 'Implementation and Oversight')) { %>
+                        <li>
+                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+

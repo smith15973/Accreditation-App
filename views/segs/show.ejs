@@ -15,6 +15,14 @@
         .bg-secondary {
             background-color: #7c838944 !important;
         }
+
+        .trashcans {
+            cursor: pointer;
+        }
+
+        select {
+            cursor: pointer;
+        }
     
 </style>
 
@@ -27,10 +35,15 @@
 
 <% if (currentUser.admin) { %>
     <form action="/<%=plant%>/<%=seg.seg_ID%>?_method=DELETE" method="post">
-        <div class="d-flex justify-content-end mb-2">
-            <button class="text-end btn btn-danger" type="submit">Delete <%= seg.seg_ID %></button>
+        <div class="d-flex justify-content-between mb-2">
+            <a class="btn btn-primary" href="/<%=plant%>">Back to <%=plant%></a>
+            <button id="backToPlantButton" class="text-end btn btn-danger" type="submit">Delete <%= seg.seg_ID %></button>
         </div>  
     </form>
+<% } else {%>
+    <div class="d-flex justify-content-between mb-2">
+        <a id="backToPlantButton" class="btn btn-primary" href="/<%=plant%>">Back to <%=plant%></a>
+    </div>
 <% } %>
 
 
@@ -109,16 +122,18 @@
                 </div>
             <% } %>    
 
-            <div class="col  fw-normal border border-1 border-dark text-break" data-bs-toggle="modal" data-bs-target="#<%= count %>supportingData">
-                <a class="btn btn-info" target="_blank" rel="noopener noreferrer"  href="/<%= plant %>/<%= seg.seg_ID %>/supportingData/<%= program._id %>"></a>
+            <div class="col fw-normal border border-1 border-dark text-break">
+                <a class="btn btn-info" target="_blank" rel="noopener noreferrer"  href="/<%= plant %>/<%= seg.seg_ID %>/supportingData/<%= program._id %>">Edit</a>
                 <p class="fs-6" id="ahh"><%- program.supportingData %></p>
             </div>
 
-            <div class="col  fw-normal border border-1 border-dark fs-6 text-break" data-bs-toggle="modal" data-bs-target="#<%= count %>conclusion">
+            <div class="col  fw-normal border border-1 border-dark fs-6 text-break">
+                <a class="btn btn-info" target="_blank" rel="noopener noreferrer"  href="/<%= plant %>/<%= seg.seg_ID %>/conclusion/<%= program._id %>">Edit</a>
                 <p class="fs-6"><%- program.conclusion %></p>
             </div>
 
-            <div class="col  fw-normal border border-1 border-dark fs-6 text-break" data-bs-toggle="modal" data-bs-target="#<%= count %>aosr">
+            <div class="col  fw-normal border border-1 border-dark fs-6 text-break">
+                <a class="btn btn-info" target="_blank" rel="noopener noreferrer"  href="/<%= plant %>/<%= seg.seg_ID %>/aosr/<%= program._id %>">Edit</a>
                 <p class="fs-6"><%- program.aosr %></p>
             </div>
             <div class="col-1 border border-1 border-dark">
@@ -185,3 +200,10 @@
             localStorage.setItem('scrollpos', window.scrollY);
         };
     </script>
+
+    <script>
+        document.querySelector('#backToPlantButton').addEventListener('click', () => {
+            localStorage.removeItem('scrollpos');
+        })
+    </script>
+

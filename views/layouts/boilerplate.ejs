@@ -74,6 +74,14 @@
                     });
                     });
                 </script>
+                <script>
+                    let originalText;
+                    document.addEventListener('DOMContentLoaded', () => {
+                        if (document.querySelector('.nicEdit-main')) {
+                            originalText = document.querySelector('.nicEdit-main').innerHTML;
+                        }
+                    })
+                </script>
 
 
 
