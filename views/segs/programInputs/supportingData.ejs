@@ -9,7 +9,6 @@
         position: fixed;
         top: 40%;
         left: 45%;
-        z-index: 10000;
         transform: translate(-50%, -50%);
         border: 16px solid #f3f3f3;
         border-radius: 50%;
@@ -24,7 +23,7 @@
         100% { transform: rotate(360deg); }
     }
 </style>
-<div id="loadingCircle" class="loading"></div>
+<div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
 <% layout('/layouts/boilerplate') %>
     <% const seg=program.seg %>
 
@@ -96,13 +95,16 @@
                 
             </div>
 
-            <div id="pdfSection" class="col-xxl-6" style="display: none;">
+            <div id="pdfSection" class="col-xxl-6" style="position: relative; display: none;">
                 <div class="text-end mb-2">
                     <button class="btn btn-secondary" onclick="closePDF()">Close</button>
                 </div>
                 <div class="text-center">
                     <embed id="pdfWindow" class="rounded d-inline" type="application/pdf"
-                        style="width: 100%; height:1000px ;" />
+                        style="width: 100%; height: 1000px;" onload="hideLoading()" />
+                </div>
+                <div class="loading" id="loading" style="display: block; position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); z-index: 1000;">
+
                 </div>
             </div>
         </div>
@@ -168,5 +170,9 @@
             }
 
             document.querySelector('#fileInput').onchange = fileInputSubmit;
+
+            function hideLoading() {
+                document.getElementById('loading').style.display = 'none';
+            }
         </script>
 
