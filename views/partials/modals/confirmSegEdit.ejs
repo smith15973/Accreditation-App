@@ -1,0 +1,19 @@
+<button type="button" class="btn btn-warning" data-bs-toggle=modal data-bs-target=#confirmSegEditModal >Save Changes</button>
+<!-- Modal -->
+<div class="modal fade" id="confirmSegEditModal" aria-labelledby="confirmSegEditModalLabel" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="confirmSegEditLabel">Confirm Changes</h1>
+                <button type="button" class="btn-close reload" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body my-auto ">
+                Are you sure you want to make changes to <%= segInstruction.segInstructionID %>? This will  affect all data associated with <%= segInstruction.segInstructionID %> across all plants!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
+                <button type="submit" class="btn btn-danger" form="confirmSegEditForm">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
