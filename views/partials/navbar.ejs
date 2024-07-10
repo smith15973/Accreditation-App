@@ -1,7 +1,7 @@
-<% if (currentUser) { %>
+<% if (typeof currentUser !== 'undefined') { %>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/<%= plant || '' %>"><img src="/images/svg/logo.svg" class="p-0" style="width: 60px; height: 40px;" alt=""><%= plant %></a>
+        <a class="navbar-brand" href="/"><img src="/images/svg/logo.svg" class="p-0" style="width: 60px; height: 40px;" alt="Logo"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -9,11 +9,9 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a class="nav-link text-center <%= url === '/' ? 'active' : '' %>" href="/">Home</a>
-                <% currentUser.plants.map(cu => cu.name).sort().forEach(userPlant => { %>
-                    <a class="nav-link text-center <%= plant === userPlant ? 'active' : '' %>" href="/plant/<%= userPlant %>"><%= userPlant %></a>
-                    
-                <%})%>
-                <a class="nav-link text-center" href="/plant/667b1e426d74c169d01240b9">Davis-Besse</a>
+                <% for (let plant of currentUser.plants.sort((a, b) => a.name.localeCompare(b.name))) { %>
+                    <a class="nav-link text-center <%= typeof currentPlant !== 'undefined' && currentPlant.equals(plant)  ? 'active' : '' %>" href="/plant/<%= plant._id %>"><%= plant.name %></a>
+                <%}%>
             </div>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link text-center active" href="/user/logout">Logout</a>
@@ -36,11 +34,8 @@
                     
                 </div>
                 <div class="navbar-nav ms-auto">
-                    <% if (currentUser) { %>
-                        <a class="nav-link text-center active" href="/user/logout">Logout</a>
-                    <% } else { %>
                         <a class="nav-link text-center active" href="/user/login">Login</a>
-                    <% } %>
+                        <a class="nav-link text-center active" href="/user/register">Register</a>
                 </div>
             </div>
         </div>

@@ -39,24 +39,21 @@
     </style>
 
 
-    <% var plant = plant || '' %>
-    <%- include('../partials/navbar', { plant }) %>
-        <% if (plant !== '') { %>
+    <%- include('../partials/navbar') %>
         <%- include('../partials/sidebar') %>
         <div id="sidebarToggleButton" class="bg-primary border rounded-end-5 border-0 border-start-0 border"
                 type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-controls="offcanvasStart">
-                <img id="sidebarArrow" src="/images/svg/arrow.svg" style="width: 40px; height: 40px;" alt="">
-            </div>
-        <% } %>
+            <img id="sidebarArrow" src="/images/svg/arrow.svg" style="width: 40px; height: 40px;" alt="">
+        </div>
             
             <main class="container mt-3">
                 <div class=" container mt-2">
-                    <%- include('../partials/flash') %>
+                    <%#- include('../partials/flash') %>
                 </div>
                 <%- body %>
             </main>
 
-            <%- include('../partials/footer') %>
+            <%#- include('../partials/footer') %>
 
                 <!-- Bootstrap -->
                 <script src="/js/bootstrap.min.js"></script>
@@ -69,9 +66,9 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
                         const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
-                        element.setAttribute('style', 'width: 100%'); // Add width property
-                        element.setAttribute('style', 'min-height: 300px;'); // Add height property
-                    });
+                            element.setAttribute('style', 'width: 100%'); // Add width property
+                            element.setAttribute('style', 'min-height: 300px;'); // Add height property
+                        });
                     });
                 </script>
                 <script>

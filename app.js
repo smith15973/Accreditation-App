@@ -92,63 +92,13 @@ passport.deserializeUser(User.deserializeUser());
 
 
 app.use(catchAsync(async (req, res, next) => {
-    // console.log(req.user)
     if (req.user) {
         res.locals.currentUser = await User.findById(req.user._id).populate('plants');
-    } else {
-        res.locals.currentUser = req.user;
     }
-
     res.locals.url = req.originalUrl;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
-}));
-
-// app.use('/plant/:plantID', catchAsync(async (req, res, next) => {
-//     const plantID = req.params.plantID;
-
-//     if (!mongoose.isValidObjectId(plantID)) {
-//         req.flash('error', 'Plant not Found!');
-//         return res.redirect('/');
-//     }
-
-//     const currentPlant = await Plant.findById(plantID);
-//     if (!currentPlant) {
-//         req.flash('error', 'Plant does not exist!');
-//         return res.redirect('/');
-//     }
-//     res.locals.currentPlant = currentPlant;
-//     next()
-    
-// }))
-
-
-
-app.get('/plant/:plantID/seg/:segInstructionID', isLoggedIn, catchAsync(async (req, res) => {
-    const { segInstructionID, plantID } = req.params;
-    const segInstruction = await SegInstruction.findById(segInstructionID);
-    if (!segInstruction) {
-        req.flash('error', `Seg does not exist! ${segInstructionID}`);
-        return res.redirect(`/`);
-    }
-    let seg = await Seg.findOne({ plant: plantID, segInstruction: segInstruction._id });
-    console.log('created')
-    if (!seg) {
-        console.log('not created')
-        seg = new Seg({ plant: plantID, segInstruction: segInstruction._id });
-
-
-        for (let program of segInstruction.programs) {
-            const segProgram = new SegProgram({ seg: seg._id, plant: plantID, name: program });
-            await segProgram.save();
-            seg.segPrograms.push(segProgram);
-        }
-        await seg.save();
-    }
-
-    await seg.populate(['plant', 'segInstruction', 'segPrograms']);
-    res.render('segs/show copy', { seg, plant: seg.plant.name })
 }));
 
 app.get('/', (req, res) => {

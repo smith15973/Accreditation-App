@@ -5,11 +5,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-4" id="deletePlantModalLabel">Delete <%= plant %> Plant?</h1>
+                <h1 class="modal-title fs-4" id="deletePlantModalLabel">Delete <%= currentPlant.name %> Plant?</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body my-auto ">
-                <p class="fw-bold fs-5 text-danger">Are you sure you want to delete the <%= plant %> Plant? All related plant data will be lost. This action cannot be undone!</p>
+                <p class="fw-bold fs-5 text-danger">Are you sure you want to delete the <%= currentPlant.name %> Plant? All related plant data will be lost. This action cannot be undone!</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
@@ -23,7 +23,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-4" id="confirmDeletePlantModalLabel">Confirm Delete <%= plant %> Plant?</h1>
+                <h1 class="modal-title fs-4" id="confirmDeletePlantModalLabel">Confirm Delete <%= currentPlant.name %> Plant?</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body my-auto ">
@@ -32,7 +32,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
-                <form id="permDeleteForm" action="/<%= plant %>?_method=DELETE" method="post">
+                <form id="permDeleteForm" action="/plant/<%= currentPlant.id %>?_method=DELETE" method="post">
                     <button type="submit" class="btn btn-danger" id="permDelete" disabled>PERMANENTLY DELETE</button>
                 </form>
             </div>
@@ -44,7 +44,7 @@
     const permDeleteButton = document.querySelector('#permDelete');
     document.querySelector('#confirmDelete').addEventListener('input', (e) => {
         const confirmDelete = document.querySelector('#confirmDelete').value;
-        const plantName = '<%= plant %>';
+        const plantName = '<%= currentPlant.name %>';
         if (confirmDelete === plantName) {
             permDeleteButton.disabled = false;
         } else {
@@ -53,7 +53,7 @@
     })
     document.querySelector('#permDeleteForm').addEventListener('submit', (e) => {
         const confirmDelete = document.querySelector('#confirmDelete').value;
-        const plantName = '<%= plant %>';
+        const plantName = '<%= currentPlant.name %>';
         if (confirmDelete !== plantName) {
             e.preventDefault();
             permDeleteButton.disabled = true;

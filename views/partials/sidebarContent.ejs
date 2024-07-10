@@ -57,28 +57,28 @@
 </style>
 <div class="container">
     <ul class="">
-        <li class="clickable-li" data-url="/<%=plant%>/search">Search</li>
-        <li class="clickable-li" data-url="/<%=plant%>/reports">Reports</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/search">Search</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/reports">Reports</li>
         <li class="">Schedule
             <ul class="">
-                <li class="clickable-li" data-url="/<%=plant%>/schedule/Operations">Operations</li>
-                <li class="clickable-li" data-url="/<%=plant%>/schedule/maintenanceTech">Maintenance and Technical</li>
+                <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/schedule/Operations">Operations</li>
+                <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/schedule/maintenanceTech">Maintenance and Technical</li>
             </ul>
         </li>
         <li class="">Operations
             <ul class="">
                 <li class="">Program Administration
                     <ul class="">
-                        <% for (let i=1; i <=20; ++i) { %>
-                            <li class="clickable-li" data-url="/<%=plant%>/SEG-OPPA-<%=i%>">SEG-OPPA-<%=i%></li>
-                            <% } %>
+                        <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Program Administration')) { %>
+                            <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></li>
+                        <% } %>
                     </ul>
                 </li>
                 <li class="">Implementation and Oversight
                     <ul class="">
-                        <% for (let i=1; i <=13; ++i) { %>
-                            <li class="clickable-li" data-url="/<%=plant%>/SEG-OPIO-<%=i%>">SEG-OPIO-<%=i%></li>
-                            <% } %>
+                        <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Implementation and Oversight')) { %>
+                            <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></li>
+                        <% } %>
                     </ul>
                 </li>
             </ul>
@@ -87,16 +87,16 @@
             <ul class="">
                 <li class="">Program Administration
                     <ul class="">
-                        <% for (let i=1; i <=20; ++i) { %>
-                            <li class="clickable-li" data-url="/<%=plant%>/SEG-MTPA-<%=i%>">SEG-MTPA-<%=i%></li>
-                            <% } %>
+                        <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Program Administration')) { %>
+                            <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></li>
+                        <% } %>
                     </ul>
                 </li>
                 <li class="">Implementation and Oversight
                     <ul class="">
-                        <% for (let i=1; i <=12; ++i) { %>
-                            <li class="clickable-li" data-url="/<%=plant%>/SEG-MTIO-<%=i%>">SEG-MTIO-<%=i%></li>
-                            <% } %>
+                        <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Implementation and Oversight')) { %>
+                            <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></li>
+                        <% } %>
                     </ul>
                 </li>
             </ul>
@@ -107,15 +107,15 @@
                 <li class="clickable-li" data-url="">Maintenance and Technical</li>
             </ul>
         </li>
-        <li class="clickable-li" data-url="/<%=plant%>/acads">ACADS</li>
-        <li class="clickable-li" data-url="/<%=plant%>/iers">IERs</li>
-        <li class="clickable-li" data-url="/<%=plant%>/siftif">SIF/TIF</li>
-        <li class="clickable-li" data-url="/<%=plant%>/aosr">AOSR</li>
-        <li class="clickable-li" data-url="/<%=plant%>/powerhistory">Power History</li>
-        <li class="clickable-li" data-url="/<%=plant%>/performanceMatrix">Performance Matrix</li>
-        <li class="clickable-li" data-url="/<%=plant%>/saMatrix">Self-Assesment Matrix</li>
-        <li class="clickable-li" data-url="/<%=plant%>/other">Other Resources</li>
-        <li class="clickable-li" data-url="/<%=plant%>/archives">Archives</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/performanceMatrix">Performance Matrix</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/acads">ACADS</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/other">Other Resources</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/iers">IERs</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/siftif">SIF/TIF</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/aosr">AOSR</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/powerhistory">Power History</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/saMatrix">Self-Assesment Matrix</li>
+        <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/archives">Archives</li>
     </ul>
 </div>
 

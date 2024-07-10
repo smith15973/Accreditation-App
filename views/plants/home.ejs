@@ -1,7 +1,7 @@
 <% layout('/layouts/boilerplate') %>
 <div class="d-flex justify-content-between">
     <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>/edit">Edit <%= currentPlant.name %></a>
-    <%#- include('../partials/modals/deletePlant')%>
+    <%- include('../partials/modals/deletePlant')%>
 </div>
 
 <h1 class=""><%= currentPlant.name %></h1>

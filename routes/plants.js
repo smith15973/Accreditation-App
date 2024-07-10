@@ -12,7 +12,6 @@ const SegProgram = require('../models/segProgram')
 const catchAsync = require('../utils/catchAsync');
 
 
-
 const { upload, deleteFiles } = require('../utils/fileOperations');
 const { isLoggedIn } = require('../middleware');
 
@@ -51,6 +50,7 @@ router.use('/:plantID', catchAsync(async (req, res, next) => {
         return res.redirect('/');
     }
     res.locals.currentPlant = currentPlant;
+    res.locals.segInstructions = await SegInstruction.find({}).sort({segNum: 1});
     next()
 
 }))
@@ -60,22 +60,12 @@ router.use('/:plantID', catchAsync(async (req, res, next) => {
 
 router.route('/:plantID')
     .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plantID } = req.params;
-        const segInstructions = await SegInstruction.find({});
-
-        res.render('plants/home', { segInstructions });
+        res.render('plants/home');
     }))
     .delete(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const deletedPlant = await Plant.findOneAndDelete({ name: plant });
-
-
-        const segs = (await Seg.find({ _id: { $in: deletedPlant.segs } })).map(seg => seg.programReviewed);
-        for (let seg of segs) {
-            await ProgramReviewed.deleteMany({ _id: { $in: seg } })
-        }
-        await Seg.deleteMany({ _id: { $in: deletedPlant.segs } })
-
+        const { plantID } = req.params;
+        const deletedPlant = await Plant.findByIdAndDelete(plantID)
+        req.flash('success', `Successfully deleted plant: ${deletedPlant.name}`)
         res.redirect('/');
     }));
 
@@ -89,7 +79,7 @@ router.route('/:plantID/edit')
         plant.name = req.body.name
         const file = req.file;
         if (file) {
-            const replacedFileKey = [{Key:plant.image.key}]
+            const replacedFileKey = [{ Key: plant.image.key }]
             plant.image.location = file.location;
             plant.image.key = file.key;
             plant.image.bucket = file.bucket;
@@ -199,51 +189,31 @@ router.route('/:plant/archives')
         res.render('archives', { plant });
     });
 
-
-
-
-
-router.route('/:plant/:segInstructionID/plant')
+router.route('/:plantID/seg/:segInstructionID')
     .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { segInstructionID, plant } = req.params;
-        const segInstruction = await SegInstruction.findOne({ segInstructionID });
+        const { segInstructionID, plantID } = req.params;
+        const segInstruction = await SegInstruction.findById(segInstructionID);
         if (!segInstruction) {
-            req.flash('error', 'Seg does not exist!');
-            return res.redirect(`/${plant}`);
+            req.flash('error', `Seg does not exist! ${segInstructionID}`);
+            return res.redirect(`/`);
         }
-        let seg = await Seg.findOne({ plant, segInstruction: segInstruction._id });
+        let seg = await Seg.findOne({ plant: plantID, segInstruction: segInstruction._id });
+        console.log('created')
         if (!seg) {
-            seg = new Seg({ plant, segInstruction: segInstruction._id });
+            console.log('not created')
+            seg = new Seg({ plant: plantID, segInstruction: segInstruction._id });
+
 
             for (let program of segInstruction.programs) {
-                const segProgram = new SegProgram({ seg: seg._id, plant, name: program });
+                const segProgram = new SegProgram({ seg: seg._id, plant: plantID, name: program });
                 await segProgram.save();
                 seg.segPrograms.push(segProgram);
             }
             await seg.save();
         }
 
-        await seg.populate('plant').populate('segInstruction').populate('segPrograms');
-        console.log(seg);
-        return res.send(seg);
-
+        await seg.populate(['plant', 'segInstruction', 'segPrograms']);
         res.render('segs/show copy', { seg, plant: seg.plant.name })
-
-
-    }))
-    .put(isLoggedIn, catchAsync(async (req, res) => {
-        const { seg_ID, plant } = req.params;
-        const seg = await Seg.findOneAndUpdate({ seg_ID, plant }, req.body, { runValidators: true, new: true });
-        if (req.body.programReviewed) {
-            const programReviewed = ProgramReviewed.findByIdAndUpdate(seg.programReviewed, req.body.programReviewed, { runValidators: true, new: true });
-            seg.programReviewed.push(...req.body.programReviewed);
-        }
-        res.redirect(`/${plant}/${seg_ID}`);
-    }))
-    .delete(isLoggedIn, catchAsync(async (req, res) => {
-        const { seg_ID, plant } = req.params;
-        await Seg.findOneAndDelete({ seg_ID, plant });
-        res.redirect(`/${plant}`);
     }));
 
 router.route('/:plant/:seg_ID/supportingData/:groupID')
@@ -262,98 +232,104 @@ router.route('/:plant/:seg_ID/supportingData/:groupID')
     }))
 
 
-router.route('/:plant/:segID/supportingData/:groupID/files')
-    .post(isLoggedIn, upload.array('fileInput'), catchAsync(async (req, res) => {
-        const { plant, segID, groupID } = req.params;
-        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, seg: segID, uploadDate: Date.now() }));
-        const seg = await Seg.findById(segID);
-        const program = await ProgramReviewed.findById(groupID);
-        for (let upFile of files) {
-            const file = await new File(upFile).save();
-            program.files.push(file._id);
-            await program.save();
-        }
-        res.redirect(`/${plant}/${seg._id}/supportingData/${groupID}`);
-    }))
-    .delete(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, segID, groupID } = req.params;
-        const deletedFilesIDs = req.body.deletedFiles;
-        const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
-        await File.deleteMany({ _id: { $in: deletedFilesIDs } });
-        const keys = deletedFiles.map(df => ({ Key: df.key }));
-        deleteFiles(keys);
-
-        const seg = await Seg.findById(segID);
-        const program = await ProgramReviewed.findById(groupID);
-        program.files.pull(...deletedFilesIDs);
-        await program.save();
-        res.redirect(`/${plant}/${seg._id}/supportingData/${groupID}`);
-    }));
-
-
-router.route('/:plant/:seg_ID/conclusion/:groupID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, seg_ID, groupID } = req.params;
-        const program = await ProgramReviewed.findById(groupID).populate('seg');
-
-        res.render('segs/programInputs/conclusion', { program, plant });
-    }))
-    .put(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, seg_ID, groupID } = req.params;
-        const program = await ProgramReviewed.findById(groupID);
-        program.conclusion = req.body.conclusion;
-        await program.save();
-        res.redirect(`/${plant}/${seg_ID}/conclusion/${groupID}`)
-    }))
-
-router.route('/:plant/:seg_ID/aosr/:groupID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, seg_ID, groupID } = req.params;
-        const program = await ProgramReviewed.findById(groupID).populate('seg');
-
-        res.render('segs/programInputs/aosr', { program, plant });
-    }))
-    .put(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, seg_ID, groupID } = req.params;
-        const program = await ProgramReviewed.findById(groupID);
-        program.aosr = req.body.aosr;
-        await program.save();
-        res.redirect(`/${plant}/${seg_ID}/aosr/${groupID}`)
-    }))
 
 
 
+    
 
 
-router.route('/:plant/:segID/editGroup/new')
-    .post(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, segID, groupID } = req.params;
-        req.body.plant = plant;
-        const programReviewed = new ProgramReviewed(req.body);
-        programReviewed.seg = segID;
-        await programReviewed.save();
-        const seg = await Seg.findOne({ _id: segID });
-        seg.programReviewed.push(programReviewed);
-        await seg.save();
-        res.redirect(`/${plant}/${seg.seg_ID}`);
-    }))
+// router.route('/:plant/:segID/supportingData/:groupID/files')
+//     .post(isLoggedIn, upload.array('fileInput'), catchAsync(async (req, res) => {
+//         const { plant, segID, groupID } = req.params;
+//         const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, seg: segID, uploadDate: Date.now() }));
+//         const seg = await Seg.findById(segID);
+//         const program = await ProgramReviewed.findById(groupID);
+//         for (let upFile of files) {
+//             const file = await new File(upFile).save();
+//             program.files.push(file._id);
+//             await program.save();
+//         }
+//         res.redirect(`/${plant}/${seg._id}/supportingData/${groupID}`);
+//     }))
+//     .delete(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, segID, groupID } = req.params;
+//         const deletedFilesIDs = req.body.deletedFiles;
+//         const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
+//         await File.deleteMany({ _id: { $in: deletedFilesIDs } });
+//         const keys = deletedFiles.map(df => ({ Key: df.key }));
+//         deleteFiles(keys);
 
-router.route('/:plant/:segID/editGroup/:groupID')
-    .put(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, segID, groupID } = req.params;
-        const programReviewed = await ProgramReviewed.findByIdAndUpdate({ _id: groupID }, req.body, { runValidators: true, new: true }).populate('seg');
-        res.redirect(`/${plant}/${programReviewed.seg.seg_ID}`);
+//         const seg = await Seg.findById(segID);
+//         const program = await ProgramReviewed.findById(groupID);
+//         program.files.pull(...deletedFilesIDs);
+//         await program.save();
+//         res.redirect(`/${plant}/${seg._id}/supportingData/${groupID}`);
+//     }));
 
-    }))
 
-    .delete(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant, segID, groupID } = req.params;
-        const programReviewed = await ProgramReviewed.findByIdAndDelete(groupID).populate('seg');
-        const seg = await Seg.findOne({ _id: segID });
-        seg.programReviewed.pull(programReviewed);
-        await seg.save();
-        res.redirect(`/${plant}/${programReviewed.seg.seg_ID}`);
-    }))
+// router.route('/:plant/:seg_ID/conclusion/:groupID')
+//     .get(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, seg_ID, groupID } = req.params;
+//         const program = await ProgramReviewed.findById(groupID).populate('seg');
+
+//         res.render('segs/programInputs/conclusion', { program, plant });
+//     }))
+//     .put(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, seg_ID, groupID } = req.params;
+//         const program = await ProgramReviewed.findById(groupID);
+//         program.conclusion = req.body.conclusion;
+//         await program.save();
+//         res.redirect(`/${plant}/${seg_ID}/conclusion/${groupID}`)
+//     }))
+
+// router.route('/:plant/:seg_ID/aosr/:groupID')
+//     .get(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, seg_ID, groupID } = req.params;
+//         const program = await ProgramReviewed.findById(groupID).populate('seg');
+
+//         res.render('segs/programInputs/aosr', { program, plant });
+//     }))
+//     .put(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, seg_ID, groupID } = req.params;
+//         const program = await ProgramReviewed.findById(groupID);
+//         program.aosr = req.body.aosr;
+//         await program.save();
+//         res.redirect(`/${plant}/${seg_ID}/aosr/${groupID}`)
+//     }))
+
+
+
+
+
+// router.route('/:plant/:segID/editGroup/new')
+//     .post(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, segID, groupID } = req.params;
+//         req.body.plant = plant;
+//         const programReviewed = new ProgramReviewed(req.body);
+//         programReviewed.seg = segID;
+//         await programReviewed.save();
+//         const seg = await Seg.findOne({ _id: segID });
+//         seg.programReviewed.push(programReviewed);
+//         await seg.save();
+//         res.redirect(`/${plant}/${seg.seg_ID}`);
+//     }))
+
+// router.route('/:plant/:segID/editGroup/:groupID')
+//     .put(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, segID, groupID } = req.params;
+//         const programReviewed = await ProgramReviewed.findByIdAndUpdate({ _id: groupID }, req.body, { runValidators: true, new: true }).populate('seg');
+//         res.redirect(`/${plant}/${programReviewed.seg.seg_ID}`);
+
+//     }))
+
+//     .delete(isLoggedIn, catchAsync(async (req, res) => {
+//         const { plant, segID, groupID } = req.params;
+//         const programReviewed = await ProgramReviewed.findByIdAndDelete(groupID).populate('seg');
+//         const seg = await Seg.findOne({ _id: segID });
+//         seg.programReviewed.pull(programReviewed);
+//         await seg.save();
+//         res.redirect(`/${plant}/${programReviewed.seg.seg_ID}`);
+//     }))
 
 
 module.exports = router;
