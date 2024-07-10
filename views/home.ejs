@@ -25,14 +25,14 @@
 <h1>HOME</h1>
 <% if (currentUser) { %>
     <% if (currentUser.admin) { %>
-        <a href="/new">Create New Plant</a>
+        <a href="/plant/new">Create New Plant</a>
     <% } %>
     
     <h3>Your Plants:</h3>
     <div class="container">
         <div class="row">
             <% currentUser.plants.forEach((plant) => { %>
-                <div data-url="/<%= plant.name %>" class="clickable-div col-12 col-sm-6 col-lg-4 col-xl-4 mb-4">
+                <div data-url="/plant/<%= plant._id %>" class="clickable-div col-12 col-sm-6 col-lg-4 col-xl-4 mb-4">
                     <div class="card shadow">
                         <div class="img-container">
                             <img src="<%= plant.image.location ? plant.image.location : '/images/DavisBessePic.jpg' %>" alt="" class="card-img-top img-cropped" />

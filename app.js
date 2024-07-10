@@ -7,6 +7,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const plantRoutes = require('./routes/plants');
 const userRoutes = require('./routes/users');
+const segRoutes = require('./routes/segs');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const session = require('express-session');
@@ -20,6 +21,7 @@ const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
 const Seg = require('./models/seg');
+const Plant = require('./models/plant');
 const SegInstruction = require('./models/segInstruction');
 const SegProgram = require('./models/segProgram');
 const { isLoggedIn } = require('./middleware');
@@ -96,11 +98,30 @@ app.use(catchAsync(async (req, res, next) => {
     } else {
         res.locals.currentUser = req.user;
     }
+
     res.locals.url = req.originalUrl;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 }));
+
+// app.use('/plant/:plantID', catchAsync(async (req, res, next) => {
+//     const plantID = req.params.plantID;
+
+//     if (!mongoose.isValidObjectId(plantID)) {
+//         req.flash('error', 'Plant not Found!');
+//         return res.redirect('/');
+//     }
+
+//     const currentPlant = await Plant.findById(plantID);
+//     if (!currentPlant) {
+//         req.flash('error', 'Plant does not exist!');
+//         return res.redirect('/');
+//     }
+//     res.locals.currentPlant = currentPlant;
+//     next()
+    
+// }))
 
 
 
@@ -137,7 +158,8 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 app.use('/user', userRoutes);
-app.use('/', plantRoutes);
+app.use('/plant', plantRoutes);
+app.use('/seg', segRoutes);
 
 
 app.all('*', (req, res, next) => {

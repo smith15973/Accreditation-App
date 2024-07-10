@@ -1,15 +1,12 @@
 <% layout('/layouts/boilerplate') %>
 <div class="d-flex justify-content-between">
-    <a class="btn btn-primary" href="/<%= plant %>/edit">Edit <%= plant %></a>
-    <%- include('../partials/modals/deletePlant')%>
+    <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>/edit">Edit <%= currentPlant.name %></a>
+    <%#- include('../partials/modals/deletePlant')%>
 </div>
 
-<h1 class=""><%= plant %></h1>
-<h2><a href="/<%= plant %>/seg/new">New Seg</a></h2>
+<h1 class=""><%= currentPlant.name %></h1>
+<h2><a href="/seg/instruction/new">Create new Seg Template</a></h2>
 
-<a href="/plant/<%= currentPlant._id %>/seg/668d93f582f5b9e9463011d1">/plant/<%= currentPlant._id %>/668d93f582f5b9e9463011d1</a>
-
-<% const segs = currentPlant.segs %>
 <div class="row">
     <div class="col text-center">
         <h3 class="mb-5">Operations</h3>
@@ -17,9 +14,9 @@
             <div class="col">
                 <h4>Program Administration</h4>
                 <ul>
-                    <% for (let seg of segs.filter(seg => seg.team === 'Operations' && seg.department === 'Program Administration')) { %>
+                    <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Program Administration')) { %>
                         <li>
-                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                            <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
                 </ul>
@@ -27,9 +24,9 @@
             <div class="col">
                 <h4>Implementation and Oversight</h4>
                 <ul>
-                    <% for (let seg of segs.filter(seg => seg.team === 'Operations' && seg.department === 'Implementation and Oversight')) { %>
+                    <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Implementation and Oversight')) { %>
                         <li>
-                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                            <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
                 </ul>
@@ -42,9 +39,9 @@
             <div class="col">
                 <h4>Program Administration</h4>
                 <ul>
-                    <% for (let seg of segs.filter(seg => seg.team === 'Maintenance and Technical' && seg.department === 'Program Administration')) { %>
+                    <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Program Administration')) { %>
                         <li>
-                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                            <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
                 </ul>
@@ -52,9 +49,9 @@
             <div class="col">
                 <h4>Implementation and Oversight</h4>
                 <ul>
-                    <% for (let seg of segs.filter(seg => seg.team === 'Maintenance and Technical' && seg.department === 'Implementation and Oversight')) { %>
+                    <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Implementation and Oversight')) { %>
                         <li>
-                            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+                            <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
                 </ul>

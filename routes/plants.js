@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router();
+const mongoose = require('mongoose');
 const Seg = require('../models/seg')
 const SegInstruction = require('../models/segInstruction')
 const Plant = require('../models/plant')
@@ -9,11 +10,6 @@ const DueDate = require('../models/dueDate')
 const Acad = require('../models/acad')
 const SegProgram = require('../models/segProgram')
 const catchAsync = require('../utils/catchAsync');
-
-router.use((req, res, next) => {
-    res.locals.plant = req.params.plant;
-    next();
-})
 
 
 
@@ -36,18 +32,38 @@ router.route('/new')
         const user = await User.findById(req.user._id);
         user.plants.push(plant._id);
         user.save();
-        res.redirect(`/${plant.name}`);
+        res.redirect(`/plant/${plant._id}`);
     })
 
-router.route('/:plant')
+
+
+router.use('/:plantID', catchAsync(async (req, res, next) => {
+    const plantID = req.params.plantID;
+
+    if (!mongoose.isValidObjectId(plantID)) {
+        req.flash('error', 'Plant not Found!');
+        return res.redirect('/');
+    }
+
+    const currentPlant = await Plant.findById(plantID);
+    if (!currentPlant) {
+        req.flash('error', 'Plant does not exist!');
+        return res.redirect('/');
+    }
+    res.locals.currentPlant = currentPlant;
+    next()
+
+}))
+
+
+
+
+router.route('/:plantID')
     .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const currentPlant = await Plant.findOne({ name: plant }).populate('segs');
-        if (!currentPlant) {
-            req.flash('error', 'Plant does not exist!');
-            return res.redirect('/');
-        }
-        res.render('plants/home', { plant, currentPlant });
+        const { plantID } = req.params;
+        const segInstructions = await SegInstruction.find({});
+
+        res.render('plants/home', { segInstructions });
     }))
     .delete(isLoggedIn, catchAsync(async (req, res) => {
         const { plant } = req.params;
@@ -63,25 +79,25 @@ router.route('/:plant')
         res.redirect('/');
     }));
 
-router.route('/:plant/edit')
+router.route('/:plantID/edit')
     .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const currentPlant = await Plant.findOne({ name: plant });
-        res.render('plants/edit', { plant, currentPlant })
+        res.render('plants/edit')
 
     }))
     .put(isLoggedIn, upload.single('image'), catchAsync(async (req, res) => {
-        const plant = await Plant.findOne({ name: req.params.plant });
+        const plant = await Plant.findById(req.params.plantID);
         plant.name = req.body.name
         const file = req.file;
         if (file) {
+            const replacedFileKey = [{Key:plant.image.key}]
             plant.image.location = file.location;
             plant.image.key = file.key;
             plant.image.bucket = file.bucket;
             plant.image.originalName = file.originalname
+            await plant.save();
+            deleteFiles(replacedFileKey)
         }
-        await plant.save();
-        res.redirect(`/${plant.name}`);
+        res.redirect(`/plant/${plant._id}`);
     }))
 
 router.route('/:plant/search')
@@ -185,55 +201,7 @@ router.route('/:plant/archives')
 
 
 
-router.route('/:plant/seg/new')
-    .get(isLoggedIn, (req, res) => {
-        const { plant } = req.params;
-        res.render('segs/new', { plant })
-    })
 
-    .post(isLoggedIn, async (req, res) => {
-        const { plant } = req.params;
-        const segInstruction = new SegInstruction(req.body)
-
-
-        let teamLetters;
-        let departmentLetters;
-        if (req.body.team === 'Operations') {
-            teamLetters = 'OP';
-        } else {
-            teamLetters = 'MT';
-        }
-        if (req.body.department === 'Program Administration') {
-            departmentLetters = 'PA';
-        } else {
-            departmentLetters = 'IO';
-        }
-
-        segInstruction.segInstructionID = `SEG-${teamLetters}${departmentLetters}-${req.body.segNum}`
-
-        await segInstruction.save()
-
-        return res.redirect(`/${plant}`);
-
-        segInstruction.programs = [];
-        if (req.body.programs) {
-            for (let program of req.body.programReviewed) {
-                const programReviewed = new ProgramReviewed({ group: program, plant });
-                programReviewed.seg = seg._id;
-                seg.programReviewed.push(programReviewed._id);
-                await programReviewed.save();
-            }
-        }
-
-        await seg.save();
-
-
-        const plantObject = await Plant.findOne({ name: plant });
-        plantObject.segs.push(seg._id);
-        await plantObject.save();
-
-        res.redirect(`/${plant}/${seg.seg_ID}`);
-    })
 
 router.route('/:plant/:segInstructionID/plant')
     .get(isLoggedIn, catchAsync(async (req, res) => {

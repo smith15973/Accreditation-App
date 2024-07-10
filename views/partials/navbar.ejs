@@ -10,9 +10,10 @@
             <div class="navbar-nav">
                 <a class="nav-link text-center <%= url === '/' ? 'active' : '' %>" href="/">Home</a>
                 <% currentUser.plants.map(cu => cu.name).sort().forEach(userPlant => { %>
-                    <a class="nav-link text-center <%= plant === userPlant ? 'active' : '' %>" href="/<%= userPlant %>"><%= userPlant %></a>
+                    <a class="nav-link text-center <%= plant === userPlant ? 'active' : '' %>" href="/plant/<%= userPlant %>"><%= userPlant %></a>
                     
                 <%})%>
+                <a class="nav-link text-center" href="/plant/667b1e426d74c169d01240b9">Davis-Besse</a>
             </div>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link text-center active" href="/user/logout">Logout</a>
