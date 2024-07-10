@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router();
 const Seg = require('../models/seg')
+const SegInstruction = require('../models/segInstruction')
 const Plant = require('../models/plant')
 const User = require('../models/user')
 const File = require('../models/file')
 const DueDate = require('../models/dueDate')
 const Acad = require('../models/acad')
-const ProgramReviewed = require('../models/programReviewed')
+const SegProgram = require('../models/segProgram')
 const catchAsync = require('../utils/catchAsync');
 
 router.use((req, res, next) => {
@@ -192,9 +193,8 @@ router.route('/:plant/seg/new')
 
     .post(isLoggedIn, async (req, res) => {
         const { plant } = req.params;
-        const seg = new Seg(req.body)
-        seg.plant = plant;
-        seg.programReviewed = [];
+        const segInstruction = new SegInstruction(req.body)
+
 
         let teamLetters;
         let departmentLetters;
@@ -209,9 +209,14 @@ router.route('/:plant/seg/new')
             departmentLetters = 'IO';
         }
 
-        seg.seg_ID = `SEG-${teamLetters}${departmentLetters}-${req.body.segNum}`
+        segInstruction.segInstructionID = `SEG-${teamLetters}${departmentLetters}-${req.body.segNum}`
 
-        if (req.body.programReviewed) {
+        await segInstruction.save()
+
+        return res.redirect(`/${plant}`);
+
+        segInstruction.programs = [];
+        if (req.body.programs) {
             for (let program of req.body.programReviewed) {
                 const programReviewed = new ProgramReviewed({ group: program, plant });
                 programReviewed.seg = seg._id;
@@ -230,15 +235,33 @@ router.route('/:plant/seg/new')
         res.redirect(`/${plant}/${seg.seg_ID}`);
     })
 
-router.route('/:plant/:seg_ID')
+router.route('/:plant/:segInstructionID/plant')
     .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { seg_ID, plant } = req.params;
-        const seg = await Seg.findOne({ seg_ID, plant }).populate('programReviewed');
-        if (!seg) {
-            req.flash('error', `${seg_ID} does not exist!`);
+        const { segInstructionID, plant } = req.params;
+        const segInstruction = await SegInstruction.findOne({ segInstructionID });
+        if (!segInstruction) {
+            req.flash('error', 'Seg does not exist!');
             return res.redirect(`/${plant}`);
         }
-        res.render('segs/show', { seg, plant });
+        let seg = await Seg.findOne({ plant, segInstruction: segInstruction._id });
+        if (!seg) {
+            seg = new Seg({ plant, segInstruction: segInstruction._id });
+
+            for (let program of segInstruction.programs) {
+                const segProgram = new SegProgram({ seg: seg._id, plant, name: program });
+                await segProgram.save();
+                seg.segPrograms.push(segProgram);
+            }
+            await seg.save();
+        }
+
+        await seg.populate('plant').populate('segInstruction').populate('segPrograms');
+        console.log(seg);
+        return res.send(seg);
+
+        res.render('segs/show copy', { seg, plant: seg.plant.name })
+
+
     }))
     .put(isLoggedIn, catchAsync(async (req, res) => {
         const { seg_ID, plant } = req.params;

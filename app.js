@@ -19,6 +19,10 @@ const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
+const Seg = require('./models/seg');
+const SegInstruction = require('./models/segInstruction');
+const SegProgram = require('./models/segProgram');
+const { isLoggedIn } = require('./middleware');
 
 
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accredidationApp'
@@ -100,6 +104,31 @@ app.use(catchAsync(async (req, res, next) => {
 
 
 
+app.get('/plant/:plantID/seg/:segInstructionID', isLoggedIn, catchAsync(async (req, res) => {
+    const { segInstructionID, plantID } = req.params;
+    const segInstruction = await SegInstruction.findById(segInstructionID);
+    if (!segInstruction) {
+        req.flash('error', `Seg does not exist! ${segInstructionID}`);
+        return res.redirect(`/`);
+    }
+    let seg = await Seg.findOne({ plant: plantID, segInstruction: segInstruction._id });
+    console.log('created')
+    if (!seg) {
+        console.log('not created')
+        seg = new Seg({ plant: plantID, segInstruction: segInstruction._id });
+
+
+        for (let program of segInstruction.programs) {
+            const segProgram = new SegProgram({ seg: seg._id, plant: plantID, name: program });
+            await segProgram.save();
+            seg.segPrograms.push(segProgram);
+        }
+        await seg.save();
+    }
+
+    await seg.populate(['plant', 'segInstruction', 'segPrograms']);
+    res.render('segs/show copy', { seg, plant: seg.plant.name })
+}));
 
 app.get('/', (req, res) => {
     if (!req.user) {

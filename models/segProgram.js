@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const Seg = require('./seg');
 const File = require('./file');
 
-const ProgramReviewedSchema = new Schema({
+const SegProgramSchema = new Schema({
 
     seg: {
         type: Schema.Types.ObjectId,
@@ -11,12 +11,13 @@ const ProgramReviewedSchema = new Schema({
         required: true,
     },
     plant: {
-        type: String,
-        // required: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Plant',
+        required: true,
     },
-    group: {
+    name: {
         type: String,
-        // required: true,
+        required: true,
     },
     supportingData: [
         {
@@ -26,7 +27,7 @@ const ProgramReviewedSchema = new Schema({
     conclusion: [
         {
             type: String,
-        }
+        },
     ],
     aosr: [
         {
@@ -39,7 +40,7 @@ const ProgramReviewedSchema = new Schema({
         enum: ['Incomplete', 'Uploaded', 'Reviewed', 'Approved', 'Submitted'],
         required: true,
     },
-    files: [
+    supportingDataFiles: [
         {
             type: Schema.Types.ObjectId,
             ref: 'File'
@@ -54,7 +55,7 @@ const ProgramReviewedSchema = new Schema({
 //     }
 // });
 
-ProgramReviewedSchema.post('findOneAndDelete', async function (doc) {
+SegProgramSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
         // Delete all files associated with this programReviewed document
         await File.deleteMany({ _id: { $in: doc.files } });
@@ -64,4 +65,4 @@ ProgramReviewedSchema.post('findOneAndDelete', async function (doc) {
 
 
 
-module.exports = mongoose.model('ProgramReviewed', ProgramReviewedSchema);
+module.exports = mongoose.model('SegProgram', SegProgramSchema);

@@ -1,24 +1,28 @@
 const mongoose = require('mongoose');
 const Plant = require('./plant');
-const ProgramReviewed = require('./programReviewed');
+const Program = require('./segProgram');
+const segInstructions = require('./segInstruction');
+const segProgram = require('./segProgram');
 const Schema = mongoose.Schema;
 
 const SegSchema = new Schema({
-    plant: String,
-    team: String,
-    department: String,
-    segNum: Number,
-    seg_ID: String,
-    applicableAOC: [],
-    reviewActivity: [],
-    dataSubmittal: [],
-    reviewGuidance: [],
-    programReviewed: [
+    plant: {
+        type: Schema.Types.ObjectId,
+        ref: 'Plant',
+        required: true,
+    },
+    segInstruction: {
+        type: Schema.Types.ObjectId,
+        ref: 'SegInstruction',
+        required: true,
+    },
+    segPrograms: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'ProgramReviewed'
+            ref: 'SegProgram',
         }
     ],
+    
 });
 
 

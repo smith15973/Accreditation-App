@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const User = require('./user');
-const ProgramReviewed = require('./programReviewed');
+const ProgramReviewed = require('./segProgram');
 const Seg = require('./seg')
 
 
@@ -11,12 +11,6 @@ const PlantSchema = new Schema({
         {
             type: Schema.Types.ObjectId,
             ref: 'User'
-        }
-    ],
-    segs: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Seg',
         }
     ],
     image: {
