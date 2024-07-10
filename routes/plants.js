@@ -198,12 +198,8 @@ router.route('/:plantID/seg/:segInstructionID')
             return res.redirect(`/`);
         }
         let seg = await Seg.findOne({ plant: plantID, segInstruction: segInstruction._id });
-        console.log('created')
         if (!seg) {
-            console.log('not created')
             seg = new Seg({ plant: plantID, segInstruction: segInstruction._id });
-
-
             for (let program of segInstruction.programs) {
                 const segProgram = new SegProgram({ seg: seg._id, plant: plantID, name: program });
                 await segProgram.save();

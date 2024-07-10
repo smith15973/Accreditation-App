@@ -6,16 +6,16 @@
         <div class="mb-3">
             <label for="team" class="form-label">Team</label>
             <select name="team" id="team" class="form-control">
-                <option value="Operations">Operations</option>
-                <option value="Maintenance and Technical">Maintenance and Technical</option>
+                <option <%= segInstruction.team === 'Operations' ? 'selected' : '' %> value="Operations">Operations</option>
+                <option <%= segInstruction.team === 'Maintenance and Technical' ? 'selected' : '' %> value="Maintenance and Technical">Maintenance and Technical</option>
             </select>
         </div>
 
         <div class="mb-3">
             <label for="department" class="form-label">Department</label>
             <select name="department" id="department" class="form-control">
-                <option value="Program Administration">Program Administration</option>
-                <option value="Implementation and Oversight">Implementation and Oversight</option>
+                <option <%= segInstruction.department === 'Program Administration' ? 'selected' : '' %> value="Program Administration">Program Administration</option>
+                <option <%= segInstruction.department === 'Implementation and Oversight' ? 'selected' : '' %> value="Implementation and Oversight">Implementation and Oversight</option>
             </select>
         </div>
         <div class="mb-3">
@@ -48,7 +48,7 @@
                     <label for="program0">Programs that need to Review</label>
                 <% segInstruction.programs.forEach((program, i) => { %>
                     <div class="d-flex mb-3">
-                        <input type="text" name="programs[]" id="program<%= i %>" class="form-control" value="<%= program %>" required>
+                        <input disabled type="text" name="programs[]" id="program<%= i %>" class="disabledPrograms form-control" value="<%= program %>" required>
                         <button onclick="deleteRow(this)" type="button" class="btn btn-danger ms-2">DELETE</button>
                     </div>
                 <% }) %>
@@ -95,6 +95,12 @@
                 } else {
                     input.disabled = false;
                 }
+            })
+        })
+
+        document.querySelector('#confirmSegEditForm').addEventListener('submit', (e) => {
+            document.querySelectorAll('.disabledPrograms').forEach(input => {
+                input.disabled = false;
             })
         })
     </script>

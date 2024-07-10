@@ -37,6 +37,10 @@
 }
 </style>
 
+    <div>
+        <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>" id="backToPlantButton">Back to <%= currentPlant.name %> Plant</a>
+    </div>
+
     <h2><a href="/seg/instruction/<%= seg.segInstruction._id %>?fromPlant=<%= currentPlant._id %>">Edit Seg Template</a></h2>
 
     <h3 class="text-center fw-bold">
@@ -125,23 +129,7 @@
 
 
 
-    <% if (currentUser.admin) { %>
-        <button type="button" id="addRowButton" class="btn btn-info my-2" data-bs-toggle="modal" data-bs-target="#addRowModal">Add Row</button>
-        <%#- include('../partials/modals/addRow')%>
-
-        <%#seg.programReviewed.forEach((program,count) => { %>  
-            <%#- include('../partials/modals/deleteRow', {program, count})%>
-        <%# }); %>
-    <% } %>
-
     <script>
-        const addGroupInput = document.querySelector('#addGroupInput');
-        document.querySelector('#editForm').addEventListener('submit',() => {
-            if (addGroupInput.value === '') {
-                addGroupInput.setAttribute('disabled', true);
-            }
-        })
-
         const statusSelects = document.querySelectorAll('.statusSelect');
         statusSelects.forEach(select => {
             select.addEventListener('change', () => {

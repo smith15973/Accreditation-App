@@ -27,7 +27,7 @@ const SegProgram = require('./models/segProgram');
 const { isLoggedIn } = require('./middleware');
 
 
-const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accredidationApp'
+const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accreditationApp'
 mongoose.connect(dbURL);
 
 const db = mongoose.connection;
