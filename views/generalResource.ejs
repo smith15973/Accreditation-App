@@ -22,21 +22,21 @@
 </style>
 <div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
 
-<h1>ACADS</h1>
+<h1><%= type %></h1>
 <div class="row">
     <div class="col-12 col-lg-5 mb-3">
-        <form id="fileUploadForm" action="/acads" method="post" enctype="multipart/form-data">
+        <form id="fileUploadForm" action="/generalResources?type=<%= type %>" method="post" enctype="multipart/form-data">
             <div class="mb-3">
-                <label for="files" class="form-label">Upload ACAD File</label>
+                <label for="files" class="form-label">Upload Document</label>
                 <input type="file" name="files" id="fileInput" class="form-control" accept=".pdf" multiple required>
             </div>
-            <button class="btn btn-primary">Submit</button>
+            <!-- <button class="btn btn-primary">Submit</button> -->
         </form>
     </div>
 
     <div class="col-12 col-lg-7 mb-3">
-        <% if (acads.length) { %>
-            <form class="" id="deleteFileForm" action="/acads?_method=DELETE" method="post">
+        <% if (resources.length) { %>
+            <form class="" id="deleteFileForm" action="/generalResources?_method=DELETE&type=<%= type %>" method="post">
                 <ul class="list-group">
                     <li class="list-group-item d-flex align-items-center justify-content-between px-3">
                         <div class="py-2">
@@ -46,23 +46,23 @@
                             Delete
                         </button>
                     </li>
-                <% acads.forEach((acad, i) =>  { %>
+                <% resources.forEach((resource, i) =>  { %>
                     <li class="list-group-item d-flex justify-content-between">
                         <div class="d-flex pt-2">
                             <div class="">
-                                <input id="file<%=i%>" name="deletedFiles[]" value="<%=acad._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
+                                <input id="file<%=i%>" name="deletedFiles[]" value="<%=resource._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
                             </div>
                             <label class="form-label px-3 text-wrap" for="file<%=i%>">
-                                <%= acad.file.originalName %>
+                                <%= resource.file.originalName %>
                             </label>
                         </div>
                         <div class="d-flex">
                             <div class="row my-auto">
                                 <div class="col">
-                                    <button type="button" class="btn btn-primary" onclick="showPDF('<%=acad.file.location%>')">View</button>
+                                    <button type="button" class="btn btn-primary" onclick="showPDF('<%=resource.file.location%>')">View</button>
                                 </div>
                                 <div class="col">
-                                    <a href="<%=acad.file.location%>" download="<%=acad.file.originalName%>" class="btn btn-secondary">Open</a>
+                                    <a href="<%=resource.file.location%>" download="<%=resource.file.originalName%>" class="btn btn-secondary">Open</a>
                                 </div>
                             </div>
                         </div>

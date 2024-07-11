@@ -29,11 +29,11 @@
 
         <div class="row px-auto">
             <div class="col mb-3">
-                <a id="backToSegButton" class="btn btn-primary" href="/<%= plant %>/<%= seg.seg_ID %>">Back to <%= seg.seg_ID %></a>
-                <form action="/<%= plant %>/<%= seg.seg_ID %>/supportingData/<%= program._id %>?_method=PUT" method="post">
+                <a id="backToSegButton" class="btn btn-primary" href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%= seg.segInstruction.segInstructionID %></a>
+                <form action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=PUT" method="post">
                     <div class="my-3">
                         <h1 class="fs-3 d-inline">
-                            <%= seg.seg_ID %>, <%= program.group %>, Supporting Data
+                            <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Supporting Data
                         </h1>
                         <button id="saveTextButton" class="btn btn-success d-inline">Save</button>
                     </div>
@@ -44,7 +44,7 @@
                 <div class="row">
 
                     <div class="col-12 col-lg-5">
-                        <form class="mt-5" id="fileUploadForm" action="/<%=plant%>/<%=seg._id%>/supportingData/<%= program._id %>/files"
+                        <form class="mt-5" id="fileUploadForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/files/<%= program._id %>"
                             enctype="multipart/form-data" method="post">
                             <input id="fileInput" name="fileInput" type="file" accept=".pdf" class="form-control mb-2" multiple required>
                             <button type="submit" class="btn btn-warning" form="fileUploadForm">Upload Files</button>
@@ -52,8 +52,8 @@
                     </div>
     
                     <div class="col-12 col-lg-7 ">
-                        <% if (program.files.length) { %>
-                            <form class="mt-5" id="deleteFileForm" action="/<%=plant%>/<%=seg._id%>/supportingData/<%= program._id %>/files?_method=DELETE" method="post">
+                        <% if (program.supportingDataFiles.length) { %>
+                            <form class="mt-5" id="deleteFileForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/files/<%= program._id %>?_method=DELETE" method="post">
                                 <ul class="list-group">
                                     <li class="list-group-item d-flex align-items-center justify-content-between px-3">
                                         <div class="py-2">
@@ -63,7 +63,7 @@
                                             Delete
                                         </button>
                                     </li>
-                                    <% program.files.forEach((file, i) => { %>
+                                    <% program.supportingDataFiles.forEach((file, i) => { %>
                                         <li class="list-group-item d-flex justify-content-between">
                                             <div class="d-flex pt-2">
                                                 <div class="">
@@ -157,6 +157,16 @@
         </script>
 
         <script>
+            let textBox = document.querySelector('.nicEdit-main');
+            console.dir(textBox)
+            // textBox.addEventListener('change', (e) => {
+            //     if (textBox.innerHTML !== originalText) {
+            //         document.querySelector('#fileInput').disabled = true;
+            //         console.log('disabled')
+            //     } else {
+            //         document.querySelector('#fileInput').disabled = false;
+            //     }
+            // })
             window.addEventListener('beforeunload', (e) => {
                 let newText = document.querySelector('.nicEdit-main').innerHTML;
                 if (newText !== originalText && e.target.activeElement.id !== 'saveTextButton') {

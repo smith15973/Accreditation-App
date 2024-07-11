@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
-const plant = require('./plant');
 const Schema = mongoose.Schema;
 
 
-const AcadSchema = new Schema({
+const GeneralResourcePDF = new Schema({
+    resourceType: {
+        type: String,
+        enum: ['ACADS', 'IERs', 'SIF/TIF', 'Power History', 'Other Resources'],
+        required: true
+    },
     file: {
         location: {
             type: String,
@@ -25,4 +29,4 @@ const AcadSchema = new Schema({
 });
 
 
-module.exports = mongoose.model('Acad', AcadSchema);
+module.exports = mongoose.model('GeneralResourcePDF', GeneralResourcePDF);

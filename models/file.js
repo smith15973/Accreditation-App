@@ -18,9 +18,9 @@ const fileSchema = new Schema({
         type: String,
         required: true
     },
-    seg: {
+    program: {
         type: Schema.Types.ObjectId,
-        ref: 'Seg'
+        ref: 'SegProgram'
     },
     uploadDate: {
         type: Date,

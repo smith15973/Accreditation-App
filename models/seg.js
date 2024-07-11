@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
-const Plant = require('./plant');
-const Program = require('./segProgram');
-const segInstructions = require('./segInstruction');
-const segProgram = require('./segProgram');
+const SegProgram = require('./segProgram');
 const Schema = mongoose.Schema;
 
 const SegSchema = new Schema({
@@ -28,9 +25,8 @@ const SegSchema = new Schema({
 
 SegSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
-        await Plant.findOneAndUpdate({ name: doc.plant }, { $pull: { segs: doc._id } });
-        for (let programReviewed of doc.programReviewed) {
-            const program = await ProgramReviewed.findByIdAndDelete(programReviewed);
+        for (let program of doc.programs) {
+            await SegProgram.findByIdAndDelete(program);
         }
     }
 })

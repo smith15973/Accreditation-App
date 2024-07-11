@@ -9,14 +9,10 @@ const plantRoutes = require('./routes/plants');
 const userRoutes = require('./routes/users');
 const segRoutes = require('./routes/segs');
 const reportRoutes = require('./routes/reports');
-const acadRoutes = require('./routes/acad');
-const ierRoutes = require('./routes/iers');
-const siftifRoutes = require('./routes/siftif');
 const aosrRoutes = require('./routes/aosr');
-const powerHistoryRoutes = require('./routes/powerHistory');
 const performanceMatrixRoutes = require('./routes/performanceMatrix');
 const saMatrixRoutes = require('./routes/saMatrix');
-const otherRoutes = require('./routes/other');
+const generalResourceRoutes = require('./routes/generalResources');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const session = require('express-session');
@@ -29,11 +25,6 @@ const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
-const Seg = require('./models/seg');
-const Plant = require('./models/plant');
-const SegInstruction = require('./models/segInstruction');
-const SegProgram = require('./models/segProgram');
-const { isLoggedIn } = require('./middleware');
 
 
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accreditationApp'
@@ -120,14 +111,10 @@ app.use('/user', userRoutes);
 app.use('/plant', plantRoutes);
 app.use('/seg', segRoutes);
 app.use('/reports', reportRoutes);
-app.use('/acads', acadRoutes);
-app.use('/iers', ierRoutes);
-app.use('/siftif', siftifRoutes);
 app.use('/aosr', aosrRoutes);
-app.use('/powerHistory', powerHistoryRoutes);
 app.use('/performanceMatrix', performanceMatrixRoutes);
 app.use('/saMatrix', saMatrixRoutes);
-app.use('/other', otherRoutes);
+app.use('/generalResources', generalResourceRoutes);
 
 
 

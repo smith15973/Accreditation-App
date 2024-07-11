@@ -8,13 +8,12 @@
 
         <div class="row px-auto">
             <div class="col mb-3">
-                <a id="backToSegButton" class="btn btn-primary" href="/<%= plant %>/<%= seg.seg_ID %>">Back to <%=
-                        seg.seg_ID %></a>
-                <form action="/<%= plant %>/<%= seg.seg_ID %>/aosr/<%= program._id %>?_method=PUT"
+                <a id="backToSegButton" class="btn btn-primary" href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%=seg.segInstruction.segInstructionID %></a>
+                <form action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>?_method=PUT"
                     method="post">
                     <div class="my-3">
                         <h1 class="fs-3 d-inline">
-                            <%= seg.seg_ID %>, <%= program.group %>, AOSR
+                            <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, AOSR
                         </h1>
                         <button id="saveTextButton" class="btn btn-success d-inline">Save</button>
                     </div>
@@ -26,11 +25,11 @@
         </div>
 
 
-        <script>
-            window.addEventListener('beforeunload', (e) => {
-                let newText = document.querySelector('.nicEdit-main').innerHTML;
-                if (newText !== originalText && e.target.activeElement.id !== 'saveTextButton') {
-                    e.preventDefault();
-                }
-            })
-        </script>
+            <script>
+                window.addEventListener('beforeunload', (e) => {
+                    let newText = document.querySelector('.nicEdit-main').innerHTML;
+                    if (newText !== originalText && e.target.activeElement.id !== 'saveTextButton') {
+                        e.preventDefault();
+                    }
+                })
+            </script>
