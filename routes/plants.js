@@ -13,7 +13,7 @@ const catchAsync = require('../utils/catchAsync');
 
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, getCurrentPlantandInstructions } = require('../middleware');
 
 router.route('/new')
     .get(isLoggedIn, (req, res) => {
@@ -36,27 +36,7 @@ router.route('/new')
 
 
 
-router.use('/:plantID', catchAsync(async (req, res, next) => {
-    const plantID = req.params.plantID;
-
-    if (!mongoose.isValidObjectId(plantID)) {
-        req.flash('error', 'Plant not Found!');
-        return res.redirect('/');
-    }
-
-    const currentPlant = await Plant.findById(plantID);
-    if (!currentPlant) {
-        req.flash('error', 'Plant does not exist!');
-        return res.redirect('/');
-    }
-    res.locals.currentPlant = currentPlant;
-    res.locals.segInstructions = await SegInstruction.find({}).sort({segNum: 1});
-    next()
-
-}))
-
-
-
+router.use('/:plantID', getCurrentPlantandInstructions);
 
 router.route('/:plantID')
     .get(isLoggedIn, catchAsync(async (req, res) => {
@@ -96,93 +76,7 @@ router.route('/:plant/search')
         res.render('search', { plant });
     });
 
-router.route('/:plant/reports')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const segs = (await Seg.find({ plant }).populate('programReviewed').sort({ segNum: 1 }));
-        const dueDates = await DueDate.find({});
-        res.render('report', { plant, segs, dueDates });
-    }));
 
-router.route('/:plant/reports/editDueDate')
-    .post(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        let dueDate = await DueDate.findOneAndUpdate({ dateTeam: req.body.dateTeam }, req.body, { runValidators: true, new: true })
-        if (!dueDate) {
-            dueDate = new DueDate(req.body);
-            await dueDate.save();
-        };
-        res.redirect(`/${plant}/reports`);
-    }))
-
-router.route('/:plant/acads')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const acads = await Acad.find({});
-        res.render('acads', { plant, acads });
-    }))
-    .post(isLoggedIn, upload.array('files'), catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const files = req.files.map(f => ({ 'file.location': f.location, 'file.originalName': f.originalname, 'file.key': f.key, 'file.bucket': f.bucket }));
-        for (let upFile of files) {
-            const acad = new Acad(upFile);
-            const planti = await Plant.find({ name: plant });
-            acad.plant = planti._id;
-            await acad.save();
-        }
-        res.redirect(`/${plant}/acads`);
-    }))
-    .delete(isLoggedIn, catchAsync(async (req, res) => {
-        const { plant } = req.params;
-        const deletedFilesIDs = req.body.deletedFiles;
-        const deletedFiles = await Acad.find({ _id: { $in: deletedFilesIDs } });
-        const keys = deletedFiles.map(df => ({ Key: df.file.key }));
-        await Acad.deleteMany({ _id: { $in: deletedFilesIDs } });
-        deleteFiles(keys);
-        res.redirect(`/${plant}/acads`)
-    }));
-
-router.route('/:plant/iers')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('iers', { plant });
-    });
-
-router.route('/:plant/siftif')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('siftif', { plant });
-    });
-
-router.route('/:plant/aosr')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('aosr', { plant });
-    });
-
-router.route('/:plant/powerhistory')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('powerHistory', { plant });
-    });
-
-router.route('/:plant/performanceMatrix')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('performanceMatrix', { plant });
-    });
-
-router.route('/:plant/samatrix')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('selfAssesmentMatrix', { plant });
-    });
-
-router.route('/:plant/other')
-    .get(isLoggedIn, (req, res) => {
-        const { plant, team } = req.params;
-        res.render('otherResources', { plant });
-    });
 router.route('/:plant/archives')
     .get(isLoggedIn, (req, res) => {
         const { plant, team } = req.params;

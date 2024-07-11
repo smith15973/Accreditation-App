@@ -16,7 +16,6 @@ if (date && dateInstance === 'Uploaded') {
     <%= date ? date.toISOString().split('T')[0] : 'TBD' %>
 </div>
 
-
 <div class="modal fade" id="<%= dateTeam %>[<%= dateInstance %>]" aria-labelledby="<%= dateTeam %>[<%= dateInstance %>]ModalLabel" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -25,7 +24,7 @@ if (date && dateInstance === 'Uploaded') {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body my-auto ">
-                <form id="<%= dateTeam %><%= dateInstance %>Form" action="/<%= plant %>/reports/editDueDate" method="post">
+                <form id="<%= dateTeam %><%= dateInstance %>Form" action="/reports/<%= currentPlant._id %>/editDueDate" method="post">
                     <input type="hidden" name="dateTeam" value="<%= dateTeam %>">
                     <input type="date" name="<%= dateInstance %>" id="<%= dateTeam %>[<%= dateInstance %>]" class="form-control" value="<%= date ? date.toISOString().split('T')[0] : '' %>">
                 </form>

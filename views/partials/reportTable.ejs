@@ -26,16 +26,16 @@ let totalReviewed = 0;
 let totalApproved = 0;
 let totalSubmitted = 0;
  %>
-<% for (let seg of segs.filter(seg => seg.team === team && seg.department === department)) { %>
+<% for (let seg of segs.filter(seg => seg.segInstruction.team === team && seg.segInstruction.department === department)) { %>
     <% 
-    const numPrograms = seg.programReviewed.length
+    const numPrograms = seg.segPrograms.length
     const incomplete = [];
     const uploaded = [];
     const reviewed = [];
     const approved = [];
     const submitted = [];
     total+=numPrograms;
-    for (let program of seg.programReviewed) {
+    for (let program of seg.segPrograms) {
         if (program.status === 'Incomplete') {
             incomplete.push(program);
             totalIncomplete++;
@@ -69,7 +69,7 @@ let totalSubmitted = 0;
     
     <div class="row">
         <div class="col border border-dark">
-            <a href="/<%= plant %>/<%= seg.seg_ID %>"> <%= seg.seg_ID %> </a>
+            <a href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>"> <%= seg.segInstruction.segInstructionID %> </a>
         </div>
         <div <%= incomplete.length === 0 ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=incomplete.length%>/<%=numPrograms%></div>
         <div <%= uploaded.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="col border border-dark"><%=uploaded.length%>/<%=numPrograms%></div>

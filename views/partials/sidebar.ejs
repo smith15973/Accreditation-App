@@ -1,8 +1,24 @@
+<style>
+  h5 a {
+    color: black;
+    text-decoration: none;
+  }
+
+  hr, .offcanvas-body {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+</style>
+
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasLabel"><%= typeof currentPlant !== 'undefined' ? currentPlant.name : 'Home' %></h5>
+      <h5 class="offcanvas-title" id="offcanvasLabel">
+        <a href="<%= typeof currentPlant !== 'undefined' ? `/plant/${currentPlant._id}` : '/' %>"><%= typeof currentPlant !== 'undefined' ? currentPlant.name : 'Home' %></a>
+      </h5>
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <hr>
+  
     <div class="offcanvas-body">
       <% if (typeof currentPlant !== 'undefined') { %>
       <%- include('sidebarContent') %>

@@ -22,11 +22,6 @@ const AcadSchema = new Schema({
             required: true
         },
     }
-    ,
-    plant: {
-        type: Schema.Types.ObjectId,
-        ref: 'Plant'
-    }
 });
 
 

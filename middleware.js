@@ -1,10 +1,13 @@
 // Description: This file contains all the middleware functions that are used in the application.
-//const { PlantSchema } = require('./schemas.js');
-// const ExpressError = require('./utils/ExpressError');
-// const Seg = require('./models/seg');
-// const catchAsync = require('./utils/catchAsync.js');
 
-module.exports.isLoggedIn = (req,res,next) => {
+// const ExpressError = require('./utils/ExpressError');
+
+const catchAsync = require('./utils/catchAsync.js');
+const Plant = require('./models/plant');
+const SegInstruction = require('./models/segInstruction');
+const mongoose = require('mongoose');
+
+module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
         req.session.returnTo = req.originalUrl;
         req.flash('error', 'You Must Be Signed In');
@@ -19,6 +22,25 @@ module.exports.storeReturnTo = (req, res, next) => {
     }
     next();
 }
+
+
+module.exports.getCurrentPlantandInstructions = catchAsync(async (req, res, next) => {
+    const plantID = req.params.plantID;
+
+    if (!mongoose.isValidObjectId(plantID)) {
+        req.flash('error', 'Plant not Found!');
+        return res.redirect('/');
+    }
+
+    const currentPlant = await Plant.findById(plantID);
+    if (!currentPlant) {
+        req.flash('error', 'Plant does not exist!');
+        return res.redirect('/');
+    }
+    res.locals.currentPlant = currentPlant;
+    res.locals.segInstructions = await SegInstruction.find({}).sort({ segNum: 1 });
+    next()
+});
 
 
 // module.exports.validateTicket = (req, res, next) => {

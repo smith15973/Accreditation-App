@@ -6,6 +6,10 @@ const dueDateSchema = new Schema({
         type: String,
         required: true,
     },
+    plant: {
+        type: Schema.Types.ObjectId,
+        ref: 'Plant',
+    },
     Uploaded: {
         type: Date,
     },
