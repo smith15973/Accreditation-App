@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, isAuthorized } = require('../middleware');
 
 
 router.route('/')
@@ -19,7 +19,7 @@ router.route('/')
     const resources = await GeneralResourcePDF.find({resourceType: type});
     res.render('generalResource', { resources, type });
 }))
-.post(isLoggedIn, upload.array('files'), catchAsync(async (req, res) => {
+.post(isLoggedIn, isAuthorized, upload.array('files'), catchAsync(async (req, res) => {
     const { type } = req.query;
     const files = req.files.map(f => ({ 'file.location': f.location, 'file.originalName': f.originalname, 'file.key': f.key, 'file.bucket': f.bucket }));
     for (let upFile of files) {
@@ -29,7 +29,7 @@ router.route('/')
     }
     res.redirect(`/generalResources?type=${type}`);
 }))
-.delete(isLoggedIn, catchAsync(async (req, res) => {
+.delete(isLoggedIn, isAuthorized, catchAsync(async (req, res) => {
     const { type } = req.query;
     const deletedFilesIDs = req.body.deletedFiles;
     const deletedFiles = await GeneralResourcePDF.find({ _id: { $in: deletedFilesIDs } });

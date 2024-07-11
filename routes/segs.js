@@ -7,15 +7,15 @@ const Seg = require('../models/seg')
 const SegProgram = require('../models/segProgram')
 const Plant = require('../models/plant')
 const catchAsync = require('../utils/catchAsync');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, isAuthorized } = require('../middleware');
 
 
 router.route('/instruction/new')
-    .get(isLoggedIn, (req, res) => {
+    .get(isLoggedIn, isAuthorized, (req, res) => {
         res.render('segs/new')
     })
 
-    .post(isLoggedIn, catchAsync(async (req, res) => {
+    .post(isLoggedIn, isAuthorized, catchAsync(async (req, res) => {
         const segInstruction = new SegInstruction(req.body)
         let teamLetters;
         let departmentLetters;
@@ -39,13 +39,13 @@ router.route('/instruction/new')
 
 
 router.route('/instruction/:segInstructionID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(isLoggedIn, isAuthorized, catchAsync(async (req, res) => {
         const {segInstructionID} = req.params
         const segInstruction = await SegInstruction.findById(segInstructionID)
 
         res.render('segs/edit', {segInstruction, fromPlant:req.query.fromPlant});
     }))
-    .put(isLoggedIn, catchAsync(async(req,res) => {
+    .put(isLoggedIn, isAuthorized, catchAsync(async(req,res) => {
         const {segInstructionID} = req.params
         const segInstruction = await SegInstruction.findById(segInstructionID)
         segInstruction.set(req.body)

@@ -4,7 +4,7 @@ const Seg = require('../models/seg')
 const DueDate = require('../models/dueDate')
 const catchAsync = require('../utils/catchAsync');
 
-const { isLoggedIn, getCurrentPlantandInstructions } = require('../middleware');
+const { isLoggedIn, getCurrentPlantandInstructions, isAuthorized } = require('../middleware');
 
 router.route('/:plantID')
     .get(isLoggedIn, getCurrentPlantandInstructions, catchAsync(async (req, res) => {
@@ -15,7 +15,7 @@ router.route('/:plantID')
     }));
 
 router.route('/:plantID/editDueDate')
-    .post(isLoggedIn, getCurrentPlantandInstructions, catchAsync(async (req, res) => {
+    .post(isLoggedIn, isAuthorized, getCurrentPlantandInstructions, catchAsync(async (req, res) => {
         const { plantID } = req.params;
         let dueDate = await DueDate.findOneAndUpdate({ dateTeam: req.body.dateTeam, plant: plantID }, req.body, { runValidators: true, new: true })
         if (!dueDate) {

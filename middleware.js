@@ -53,13 +53,12 @@ module.exports.getCurrentPlantandInstructions = catchAsync(async (req, res, next
 //     }
 // }
 
-// module.exports.isAuthor = catchAsync(async (req,res,next) => {
-//     const {id} =req.params;
-//     const ticket = await Ticket.findById(id);
-//     if ((!ticket.author || !ticket.author._id.equals(req.user._id)) && !req.user.admin) {
-//         req.flash('error', 'You do not have permission to do that!');
-//         return res.redirect(`/tickets`);
-//     }
-//     next();
-// });
+module.exports.isAuthorized = catchAsync(async (req,res,next) => {;
+    if (!req.user.admin) {
+        req.flash('error', 'You do not have permission to do that!');
+        const redirectUrl = req.get('referer') || '/';
+        return res.redirect(redirectUrl);
+    }
+    next();
+});
 
