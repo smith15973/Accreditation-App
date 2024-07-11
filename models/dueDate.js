@@ -10,6 +10,9 @@ const dueDateSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Plant',
     },
+    Incomplete: {
+        type: Date,
+    },
     Uploaded: {
         type: Date,
     },

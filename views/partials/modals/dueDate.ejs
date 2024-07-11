@@ -1,8 +1,8 @@
-
-
 <% let date = dueDates.filter(date => date.dateTeam === dateTeam)[0] %>
 <% 
-if (date && dateInstance === 'Uploaded') {
+if (date && dateInstance === 'Incomplete') {
+    date = date.Incomplete
+} else if (date && dateInstance === 'Uploaded') {
     date = date.Uploaded
 } else if (date && dateInstance === 'Reviewed') {
     date = date.Reviewed
@@ -11,9 +11,19 @@ if (date && dateInstance === 'Uploaded') {
 } else if (date && dateInstance === 'Submitted') {
     date = date.Submitted
 }
+
+const formatDate = (date) => {
+    date = date.toISOString().split('T')[0]
+    const year = date.substring(0, 4);
+    const month = date.substring(5,7);
+    const day = date.substring(8,10);
+    return `${month}-${day}-${year}`;
+}
  %>
-<div class="col border border-dark" data-bs-toggle="modal" data-bs-target="#<%= dateTeam %>[<%= dateInstance %>]">
-    <%= date ? date.toISOString().split('T')[0] : 'TBD' %>
+
+
+<div class="tableData col-2 border border-dark" data-bs-toggle="modal" data-bs-target="#<%= dateTeam %>[<%= dateInstance %>]">
+    <%= date ? formatDate(date) : 'TBD' %>
 </div>
 
 <div class="modal fade" id="<%= dateTeam %>[<%= dateInstance %>]" aria-labelledby="<%= dateTeam %>[<%= dateInstance %>]ModalLabel" aria-hidden="true" tabindex="-1">

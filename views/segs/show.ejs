@@ -1,8 +1,38 @@
 <% layout('/layouts/boilerplate') %>
 <style>
-     .formattedText {
-    white-space: pre-wrap;
-}
+    .crop {
+        height: 500px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        line-clamp: 4; /* Adjust the number of lines as needed */
+        -webkit-box-orient: vertical;
+        line-height: 2; /* Adjust line height to fit the content better */
+        font-size: 5px;
+    }
+    .container{
+        max-width: 95%;
+    }
+    .bg-secondary {
+        background-color: #7c838944 !important;
+    }
+
+    .trashcans {
+        cursor: pointer;
+    }
+
+    select {
+        cursor: pointer;
+    }
+    
+    .clickable-div {
+        cursor: pointer;
+    }
+
+    .formattedText {
+        white-space: pre-wrap;
+    }
+
 </style>
 
     <div>
