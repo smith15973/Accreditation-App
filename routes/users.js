@@ -36,7 +36,7 @@ router.route('/login')
         }
         res.render('users/login');
     })
-    .post(storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }), (req, res) => {
+    .post(storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/user/login' }), (req, res) => {
         req.flash('success', 'Welcome Back!');
         
         const redirectUrl = res.locals.returnTo || '/';

@@ -39,6 +39,14 @@
 </style>
 <h3><%= team %> : <%= department %></h3>
 <% const dateTeam = `${team}${department}`.replace(/\s+/g, '') %>
+<div style="background-color: #7c838944;" class="tableLabel row">
+    <div class="col-2 border border-dark">Status</div>
+    <div class="col-2 border border-dark">Incomplete</div>
+    <div class="col-2 border border-dark">Uploaded</div>
+    <div class="col-2 border border-dark">Reviewed</div>
+    <div class="col-2 border border-dark">Approved</div>
+    <div class="col-2 border border-dark">Submitted</div>
+</div>
 <div class="row">
     <div class="tableLabel col-2 border border-dark">Due Date</div>
     <%- include('./modals/dueDate', {dateTeam, dateInstance:'Incomplete'}) %>
@@ -48,14 +56,7 @@
     <%- include('./modals/dueDate', {dateTeam, dateInstance:'Submitted'}) %>
 
 </div>
-<div class="tableLabel row">
-    <div class="col-2 border border-dark">SEG Number</div>
-    <div class="col-2 border border-dark">Incomplete</div>
-    <div class="col-2 border border-dark">Uploaded</div>
-    <div class="col-2 border border-dark">Reviewed</div>
-    <div class="col-2 border border-dark">Approved</div>
-    <div class="col-2 border border-dark">Submitted</div>
-</div>
+
 
 <% 
 let total = 0;

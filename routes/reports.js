@@ -9,7 +9,8 @@ const { isLoggedIn, getCurrentPlantandInstructions, isAuthorized } = require('..
 router.route('/:plantID')
     .get(isLoggedIn, getCurrentPlantandInstructions, catchAsync(async (req, res) => {
         const { plantID } = req.params;
-        const segs = (await Seg.find({ plant: plantID }).populate(['segInstruction', 'segPrograms'])) //.sort({ segNum: 1 }));
+        const segs = await Seg.find({ plant: plantID }).populate(['segInstruction', 'segPrograms']);
+        segs.sort((a, b) => a.segInstruction.segNum - b.segInstruction.segNum);
         const dueDates = await DueDate.find({plant: plantID});
         res.render('reports/show', {segs, dueDates});
     }));

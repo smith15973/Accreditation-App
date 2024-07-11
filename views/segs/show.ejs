@@ -39,7 +39,9 @@
         <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>" id="backToPlantButton">Back to <%= currentPlant.name %> Plant</a>
     </div>
 
+    <% if (currentUser.admin) { %>
     <h2><a href="/seg/instruction/<%= seg.segInstruction._id %>?fromPlant=<%= currentPlant._id %>">Edit Seg Template</a></h2>
+    <% } %>
 
     <h3 class="text-center fw-bold">
         <%= seg.segInstruction.team %> Training (Implementation and Oversight) SAT Evaluation Guide (SEG)

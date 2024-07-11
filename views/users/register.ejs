@@ -44,12 +44,11 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="" class="form-label mb-2">Associated Plants</label>
-                            <br>    
+                            <label for="" class="form-label mb-2 fw-bold">Associated Plants</label>
                             <% for (plant of plants) { %>
                                 <div class="mb-3">
-                                    <label for="<%= plant.name %>"> <%= plant.name %></label>
                                     <input id="<%= plant.name %>" type="checkbox" value="<%= plant._id %>" name="plants[]">
+                                    <label for="<%= plant.name %>"> <%= plant.name %></label>
                                 </div>
                             <% } %>
                         </div>

@@ -55,6 +55,7 @@
                         <% if (program.supportingDataFiles.length) { %>
                             <form class="mt-5" id="deleteFileForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/files/<%= program._id %>?_method=DELETE" method="post">
                                 <ul class="list-group">
+                                    <% if (currentUser.admin) { %>
                                     <li class="list-group-item d-flex align-items-center justify-content-between px-3">
                                         <div class="py-2">
                                             <input class="border" type="checkbox" id="selectAllCheck">
@@ -63,15 +64,24 @@
                                             Delete
                                         </button>
                                     </li>
+                                    <% } %>
                                     <% program.supportingDataFiles.forEach((file, i) => { %>
                                         <li class="list-group-item d-flex justify-content-between">
                                             <div class="d-flex pt-2">
+                                                <% if (currentUser.admin) { %>
                                                 <div class="">
+                            
                                                     <input id="file<%=i%>" name="deletedFiles[]" value="<%=file._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
+                                                
                                                 </div>
                                                 <label class="form-label px-3 text-wrap" for="file<%=i%>">
                                                     <%= file.originalName %>
                                                 </label>
+                                                <% } else { %>
+                                                    <div class="">
+                                                        <%= file.originalName %>
+                                                    </div>
+                                                <% } %>
                                             </div>
                                             <div class="d-flex">
                                                 <div class="row my-auto">
