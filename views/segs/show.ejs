@@ -35,21 +35,24 @@
 
 </style>
 
-    <div>
-        <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>" id="backToPlantButton">Back to <%= currentPlant.name %> Plant</a>
-    </div>
 
-    <% if (currentUser.admin) { %>
-    <h2><a href="/seg/instruction/<%= seg.segInstruction._id %>?fromPlant=<%= currentPlant._id %>">Edit Seg Template</a></h2>
-    <% } %>
+
+    <div class="d-flex justify-content-between">
+        <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>" id="backToPlantButton">Back to <%= currentPlant.name %> Plant</a>
+        <h4 class="d-flex align-items-center inline-elements">
+            <select
+                onchange="window.location=`/plant/${this.value}/seg/<%=seg.segInstruction._id%>`"
+                class="ms-2 border-0 fw-light" name="plantSelect" id="plantSelect">
+                <% for (let plant of currentUser.plants) { %>
+                <option <%= currentPlant._id.toString() === plant._id.toString() ? 'selected' : '' %> value="<%= plant._id %>"><%= plant.name %></option>
+                <% } %>
+            </select>
+        </h4>
+    </div>
 
     <h3 class="text-center fw-bold">
         <%= seg.segInstruction.team %> Training (Implementation and Oversight) SAT Evaluation Guide (SEG)
     </h3>
-
-   
-
-
 
     <div class="mb-5">
         <div class="row bg-secondary fw-bold text-center">
@@ -116,6 +119,8 @@
                 <div class="col-5 fw-normal border border-1 border-dark text-break clickable-div" 
                 onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>', '_blank', 'noopener,noreferrer')">
                     <p class="fs-6"><%- program.supportingData %></p>
+                    <p class="fs-6"><%- program.supportingDataFiles.length %> Attachments</p>
+
                 </div>
 
                 <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
@@ -128,6 +133,11 @@
                 </div>
             </div>
         <% }); %>
+        <% if (currentUser.admin) { %>
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-warning mt-2" href="/seg/instruction/<%= seg.segInstruction._id %>?fromPlant=<%= currentPlant._id %>">Edit Seg Template</a>
+            </div>
+        <% } %>
 
         
 
