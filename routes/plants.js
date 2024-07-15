@@ -114,14 +114,16 @@ router.route('/:plant/:seg_ID/supportingData/:groupID')
 router.route('/:plantID/seg/:segID/supportingData/files/:programID')
     .post(isLoggedIn, upload.array('fileInput'), catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
-        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
-
         const program = await SegProgram.findById(programID);
-        for (let upFile of files) {
-            const file = await new File(upFile).save();
-            program.supportingDataFiles.push(file._id);
-            await program.save();
+        program.supportingData = req.body.supportingData;
+        if (req.files.length !== 0) {
+        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
+            for (let upFile of files) {
+                const file = await new File(upFile).save();
+                program.supportingDataFiles.push(file._id);
+            }
         }
+        await program.save();
         res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
     }))
     .delete(isLoggedIn, catchAsync(async (req, res) => {
@@ -147,12 +149,19 @@ router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
         res.render('segs/programInputs/supportingData', { program });
     }))
 
-    .put(isLoggedIn, catchAsync(async (req, res) => {
+    .put(isLoggedIn, upload.array('fileInput'), catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const program = await SegProgram.findById(programID);
         program.supportingData = req.body.supportingData;
+        if (req.files.length !== 0) {
+        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
+            for (let upFile of files) {
+                const file = await new File(upFile).save();
+                program.supportingDataFiles.push(file._id);
+            }
+        }
         await program.save();
-        res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`)
+        res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
     }))
 
 

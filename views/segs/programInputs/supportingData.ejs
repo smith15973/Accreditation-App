@@ -30,27 +30,22 @@
         <div class="row px-auto">
             <div class="col mb-3">
                 <a id="backToSegButton" class="btn btn-primary" href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%= seg.segInstruction.segInstructionID %></a>
-                <form action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=PUT" method="post">
+                <form id="putForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=PUT" method="post" enctype="multipart/form-data">
                     <div class="my-3">
                         <h1 class="fs-3 d-inline">
                             <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Supporting Data
                         </h1>
-                        <button id="saveTextButton" class="btn btn-success d-inline">Save</button>
+                        <button form="putForm" id="saveTextButton" class="btn btn-success d-inline" disabled>Save</button>
                     </div>
 
                     <textarea class="form-control" name="supportingData"><%= program.supportingData[0] !== '' ? program.supportingData[0] : '' %></textarea>
+                
+
+                    <div class="row">
+                        <div class="mt-5 col-12 col-lg-5">
+                            <input id="fileInput" name="fileInput" type="file" accept=".pdf" class="form-control mb-2" multiple>
+                        </div>
                 </form>
-
-                <div class="row">
-
-                    <div class="col-12 col-lg-5">
-                        <form class="mt-5" id="fileUploadForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/files/<%= program._id %>"
-                            enctype="multipart/form-data" method="post">
-                            <input id="fileInput" name="fileInput" type="file" accept=".pdf" class="form-control mb-2" multiple required>
-                            <button type="submit" class="btn btn-warning" form="fileUploadForm">Upload Files</button>
-                        </form>
-                    </div>
-    
                     <div class="col-12 col-lg-7 ">
                         <% if (program.supportingDataFiles.length) { %>
                             <form class="mt-5" id="deleteFileForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/files/<%= program._id %>?_method=DELETE" method="post">
@@ -132,12 +127,29 @@
             });
         </script>
         <script>
-            let originalText;
-            document.addEventListener('DOMContentLoaded', () => {
-                if (document.querySelector('.nicEdit-main')) {
-                    originalText = document.querySelector('.nicEdit-main').innerHTML;
-                }
-            })
+            let isFormSubmitted = false;
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const nicEditElement = document.querySelector('.nicEdit-main');
+                let originalText = nicEditElement.innerHTML;
+                nicEditElement.addEventListener('input', (e) => {
+                    if (nicEditElement.innerHTML !== originalText) {
+                        document.querySelector('#saveTextButton').disabled = false;
+                    } else {
+                        document.querySelector('#saveTextButton').disabled = true;
+                    }
+                });
+    
+                // Handle beforeunload event to warn the user if text has changed and form not submitted
+                window.addEventListener('beforeunload', (e) => {
+                    let newText = nicEditElement.innerHTML;
+                    if (newText !== originalText && e.target.activeElement.tagName !== 'BUTTON' && !isFormSubmitted) {
+                        const confirmationMessage = 'You have unsaved changes. Are you sure you want to leave?';
+                        e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+                        return confirmationMessage; // Gecko, WebKit, Chrome <34
+                    }
+                });
+
+            });
         </script>
 
 
@@ -192,28 +204,13 @@
         </script>
 
         <script>
-            let textBox = document.querySelector('.nicEdit-main');
-            console.dir(textBox)
-            // textBox.addEventListener('change', (e) => {
-            //     if (textBox.innerHTML !== originalText) {
-            //         document.querySelector('#fileInput').disabled = true;
-            //         console.log('disabled')
-            //     } else {
-            //         document.querySelector('#fileInput').disabled = false;
-            //     }
-            // })
-            window.addEventListener('beforeunload', (e) => {
-                let newText = document.querySelector('.nicEdit-main').innerHTML;
-                if (newText !== originalText && e.target.activeElement.id !== 'saveTextButton') {
-                    e.preventDefault();
-                }
-            })
-        </script>
-
-        <script>
             function fileInputSubmit() {
                 document.querySelector('#loadingCircle').style.display = 'block';
-                document.querySelector('#fileUploadForm').submit();
+                document.querySelector('#saveTextButton').disabled = false;
+                isFormSubmitted = true;
+                document.querySelector('#saveTextButton').click();
+                
+
             }
 
             document.querySelector('#fileInput').onchange = fileInputSubmit;
