@@ -1,0 +1,72 @@
+<% layout('layouts/boilerplate')%>
+<h1>Manage Access to <%= currentPlant.name %></h1>
+
+<% if (requestingUsers.length) { %>
+<h3>Requests for Access</h3>
+<ul class="list-group mb-3">
+    <% for (let user of requestingUsers) { %>
+        <li class="list-group-item d-flex justify-content-between">
+            <div class="my-auto">
+                <%= user.firstName %> <%= user.lastName %>
+            </div>
+            <div>
+                <form class="d-inline" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=DELETE&status=requested" method="post">
+                    <button class="btn btn-danger">Deny</button>
+                </form>
+                <form class="d-inline" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=PUT&status=requested" method="post">
+                    <button class="btn btn-success">Approve</button>
+                </form>
+
+            </div>
+        </li>
+    <% } %>
+</ul>
+<% } %>
+
+<h3>Has Access</h3>
+<ul class="list-group mb-3">
+    <% for (let user of approvedUsers) { %>
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-3 col-sm- my-auto">
+                    <b>Name:</b> <%= user.firstName %> <%= user.lastName %>
+                </div>
+                <div class="col-3 col-sm- my-auto">
+                    <b>Email:</b> <%= user.email %>
+                </div>
+                <div class="col-3 col-sm- text-center my-auto">
+                    <% if (currentUser.admin) { %>
+                    <form class="d-flex align-items-center" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=PUT&rank=changed" method="post">
+                        <label class="me-2" for="adminSelect"><b>Rank:</b></label>
+                        <select class="rankSelect form-control" name="rank" id="adminSelect">
+                            <option value="member">Member</option>
+                            <option <%= user.admin ? 'selected' : '' %> value="admin">Admin</option>
+                        </select>
+                    </form>
+                    <% } else { %>
+                        <b>Rank:</b> <%= user.admin ? 'Admin' : 'Member' %>
+                    <% } %>
+                </div>
+                <div class="col-3 col-sm- text-end my-auto">
+                    <% if (currentUser.admin && !user.admin) { %>
+                    <form class="" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=DELETE" method="post">
+                        <button class="btn btn-danger">Remove Access</button>
+                    </form>
+                    <% } %>
+                </div>
+            </div>
+        </li>
+    <% } %>
+</ul>
+
+
+<script>
+    const rankSelects = document.querySelectorAll('.rankSelect');
+    rankSelects.forEach(select => {
+        select.addEventListener('change', () => {            
+            select.parentElement.submit();
+        })
+    })
+
+
+</script>

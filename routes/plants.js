@@ -11,13 +11,13 @@ const catchAsync = require('../utils/catchAsync');
 
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
-const { isLoggedIn, getCurrentPlantandInstructions, isAuthorized } = require('../middleware');
+const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
 
 router.route('/new')
-    .get(isLoggedIn, isAuthorized, (req, res) => {
+    .get(isLoggedIn, isAdmin, (req, res) => {
         res.render('plants/new');
     })
-    .post(isLoggedIn, isAuthorized, upload.single('image'), async (req, res) => {
+    .post(isLoggedIn, isAdmin, upload.single('image'), async (req, res) => {
         const file = req.file;
         const plant = new Plant(req.body);
         plant.image.location = file.location;
@@ -32,7 +32,7 @@ router.route('/new')
         res.redirect(`/plant/${plant._id}`);
     })
 
-router.use('/:plantID', getCurrentPlantandInstructions);
+router.use('/:plantID', getCurrentPlantandInstructions, hasPlantAccess);
 
 router.route('/:plantID')
     .get(isLoggedIn, catchAsync(async (req, res) => {
@@ -46,11 +46,11 @@ router.route('/:plantID')
     }));
 
 router.route('/:plantID/edit')
-    .get(isLoggedIn, isAuthorized, catchAsync(async (req, res) => {
+    .get(isLoggedIn, isAdmin, catchAsync(async (req, res) => {
         res.render('plants/edit')
 
     }))
-    .put(isLoggedIn, isAuthorized, upload.single('image'), catchAsync(async (req, res) => {
+    .put(isLoggedIn, isAdmin, upload.single('image'), catchAsync(async (req, res) => {
         const plant = await Plant.findById(req.params.plantID);
         plant.name = req.body.name
         const file = req.file;

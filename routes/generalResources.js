@@ -6,7 +6,7 @@ const catchAsync = require('../utils/catchAsync');
 
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
-const { isLoggedIn, isAuthorized } = require('../middleware');
+const { isLoggedIn, isAdmin } = require('../middleware');
 
 
 router.route('/')
@@ -21,7 +21,7 @@ router.route('/')
     const resources = await GeneralResourcePDF.find({resourceType: type});
     res.render('generalResource', { resources, type });
 }))
-.post(isLoggedIn, isAuthorized, upload.array('files'), catchAsync(async (req, res) => {
+.post(isLoggedIn, isAdmin, upload.array('files'), catchAsync(async (req, res) => {
     const types = ['ACADS', 'IERs', 'SIF/TIF', 'Power History', 'Other Resources'];
     const { type } = req.query;
     if (!types.includes(type)) {
@@ -37,7 +37,7 @@ router.route('/')
     }
     res.redirect(`/generalResources?type=${type}`);
 }))
-.delete(isLoggedIn, isAuthorized, catchAsync(async (req, res) => {
+.delete(isLoggedIn, isAdmin, catchAsync(async (req, res) => {
     const types = ['ACADS', 'IERs', 'SIF/TIF', 'Power History', 'Other Resources'];
     const { type } = req.query;
     if (!types.includes(type)) {

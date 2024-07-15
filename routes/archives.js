@@ -4,10 +4,10 @@ const catchAsync = require('../utils/catchAsync');
 
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
-const { isLoggedIn, getCurrentPlantandInstructions, isAuthorized } = require('../middleware');
+const { isLoggedIn, getCurrentPlantandInstructions, isAdmin } = require('../middleware');
 
 router.route('/:plantID')
-.get(isLoggedIn, isAuthorized, getCurrentPlantandInstructions, catchAsync(async (req, res) => {
+.get(isLoggedIn, isAdmin, getCurrentPlantandInstructions, catchAsync(async (req, res) => {
     res.render('archives/index');
 }));
 

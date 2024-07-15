@@ -47,7 +47,7 @@
                             <label for="" class="form-label mb-2 fw-bold">Associated Plants</label>
                             <% for (plant of plants) { %>
                                 <div class="mb-3">
-                                    <input id="<%= plant.name %>" type="checkbox" value="<%= plant._id %>" name="plants[]">
+                                    <input id="<%= plant.name %>" type="checkbox" value="<%= plant._id %>" name="requestedPlants[]">
                                     <label for="<%= plant.name %>"> <%= plant.name %></label>
                                 </div>
                             <% } %>

@@ -6,13 +6,15 @@
         <div class="card-body">
           <h5 class="card-title m-0"><%= currentPlant.name %></h5>
         </div>
-        <% if (currentUser.admin) { %>
+
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
-          <li class="list-group-item"><a href="#">Manage People</a></li>
+          <li class="list-group-item"><a href="/user/manage/<%= currentPlant._id %>">View Members</a></li>
+          <% if (currentUser.admin) { %>
+            <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
           <%- include('../partials/modals/deletePlant')%>
+          <% } %>
         </ul>
-        <% } %>
+
       </div>
 
 

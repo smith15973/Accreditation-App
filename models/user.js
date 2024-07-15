@@ -26,6 +26,12 @@ const UserSchema = new Schema({
             ref: 'Plant',
             required: true,
         }
+    ],
+    requestedPlants: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Plant',
+        }
     ]
 });
 

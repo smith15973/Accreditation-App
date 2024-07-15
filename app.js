@@ -22,6 +22,7 @@ const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
+const Plant = require('./models/plant')
 const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
@@ -97,7 +98,7 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(catchAsync(async (req, res, next) => {
     if (req.user) {
-        res.locals.currentUser = await User.findById(req.user._id).populate('plants');
+        res.locals.currentUser = await User.findById(req.user._id).populate(['plants', 'requestedPlants']);
     }
     res.locals.url = req.originalUrl;
     res.locals.success = req.flash('success');
@@ -105,12 +106,13 @@ app.use(catchAsync(async (req, res, next) => {
     next();
 }));
 
-app.get('/', (req, res) => {
+app.get('/', catchAsync(async (req, res) => {
+    const plants = await Plant.find({});
     if (!req.isAuthenticated()) {
         return res.redirect('/user/login')
     }
-    res.render('home');
-});
+    res.render('home', {plants});
+}));
 app.use('/user', userRoutes);
 app.use('/plant', plantRoutes);
 app.use('/seg', segRoutes);

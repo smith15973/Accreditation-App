@@ -53,9 +53,18 @@ module.exports.getCurrentPlantandInstructions = catchAsync(async (req, res, next
 //     }
 // }
 
-module.exports.isAuthorized = catchAsync(async (req,res,next) => {;
+module.exports.isAdmin = catchAsync(async (req,res,next) => {;
     if (!req.user.admin) {
         req.flash('error', 'You do not have permission to do that!');
+        const redirectUrl = req.get('referer') || '/';
+        return res.redirect(redirectUrl);
+    }
+    next();
+});
+
+module.exports.hasPlantAccess = catchAsync(async (req,res,next) => {;
+    if (!req.user.plants.includes(res.locals.currentPlant._id)) {
+        req.flash('error', 'You do not have permission to access this plant!');
         const redirectUrl = req.get('referer') || '/';
         return res.redirect(redirectUrl);
     }
