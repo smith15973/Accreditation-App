@@ -2,24 +2,26 @@
     <h1>New Seg Template</h1>
     <form action="/seg/instruction/new" method="post">
 
-        <div class="mb-3">
-            <label for="team" class="form-label">Team</label>
-            <select name="team" id="team" class="form-control">
-                <option value="Operations">Operations</option>
-                <option value="Maintenance and Technical">Maintenance and Technical</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="department" class="form-label">Department</label>
-            <select name="department" id="department" class="form-control">
-                <option value="Program Administration">Program Administration</option>
-                <option value="Implementation and Oversight">Implementation and Oversight</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="segNum" class="form-label">Number</label>
-            <input min="1" class="form-control" type="number" name="segNum" id="segNum" required>
+        <div class="row">
+            <div class="col mb-3">
+                <label for="team" class="form-label">Team</label>
+                <select name="team" id="team" class="form-control">
+                    <option value="Operations">Operations (OP)</option>
+                    <option value="Maintenance and Technical">Maintenance and Technical (MT)</option>
+                </select>
+            </div>
+    
+            <div class="col mb-3">
+                <label for="department" class="form-label">Department</label>
+                <select name="department" id="department" class="form-control">
+                    <option value="Program Administration">Program Administration (PA)</option>
+                    <option value="Implementation and Oversight">Implementation and Oversight (IO)</option>
+                </select>
+            </div>
+            <div class="col mb-3">
+                <label for="segNum" class="form-label">Number</label>
+                <input min="1" class="form-control" type="number" name="segNum" id="segNum" required>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -59,6 +61,27 @@
 
 
 
+
+
+    <!-- NicEdit -->
+    <script src="/js/nicEdit.js" type="text/javascript"></script>
+    <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script> 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
+                element.setAttribute('style', 'width: 100%'); // Add width property
+                element.setAttribute('style', 'min-height: 300px;'); // Add height property
+            });
+        });
+    </script>
+    <script>
+        let originalText;
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.querySelector('.nicEdit-main')) {
+                originalText = document.querySelector('.nicEdit-main').innerHTML;
+            }
+        })
+    </script>
 
 
     <script>

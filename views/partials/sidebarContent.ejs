@@ -61,8 +61,8 @@
         <li class="clickable-li" data-url="/reports/<%=currentPlant._id%>">Reports</li>
         <li class="">Schedule
             <ul class="">
-                <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/schedule/Operations">Operations</li>
-                <li class="clickable-li" data-url="/plant/<%=currentPlant._id%>/schedule/maintenanceTech">Maintenance and Technical</li>
+                <li class="clickable-li" data-url="#">Operations</li>
+                <li class="clickable-li" data-url="#">Maintenance and Technical</li>
             </ul>
         </li>
         <li class="">Operations
@@ -110,7 +110,7 @@
         <li class="clickable-li" data-url="/aosr">AOSR</li>
         <li class="clickable-li" data-url="/performanceMatrix">Training Issues Matrix</li>
         <li class="clickable-li" data-url="/saMatrix">Self-Assesment Matrix</li>
-        <li class="clickable-li" data-url="/archives">Archives</li>
+        <li class="clickable-li" data-url="/archives/<%= currentPlant._id %>">Archives</li>
         <li class="clickable-li" data-url="/generalResources?type=ACADS">ACADS</li>
         <li class="clickable-li" data-url="/generalResources?type=IERs">IERs</li>
         <li class="clickable-li" data-url="/generalResources?type=SIF/TIF">SIF/TIF</li>

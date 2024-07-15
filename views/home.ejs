@@ -21,33 +21,29 @@
         opacity: 0.8;
     }
 </style>
-
-<h1>HOME</h1>
-<% if (currentUser) { %>
-    <% if (currentUser.admin) { %>
-        <a href="/plant/new">Create New Plant</a>
-    <% } %>
-    
-    <h3>Your Plants:</h3>
-    <div class="container">
-        <div class="row">
-            <% currentUser.plants.forEach((plant) => { %>
-                <div data-url="/plant/<%= plant._id %>" class="clickable-div col-12 col-sm-6 col-lg-4 col-xl-4 mb-4">
-                    <div class="card shadow">
-                        <div class="img-container">
-                            <img src="<%= plant.image.location ? plant.image.location : '/images/DavisBessePic.jpg' %>" alt="" class="card-img-top img-cropped" />
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title"><%= plant.name %></h5>
-                        </div>
-                    </div>
-                </div>
-            <% }) %>
-        </div>
+<%= console.log(currentUser) %>
+<% if (currentUser.admin) { %>
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-secondary mx-1" href="/plant/new">Create New Plant</a>
+        <a class="btn btn-secondary mx-1" href="/seg/instruction/new">Create new Seg Template</a>
     </div>
-<% } else { %>
-    <a href="/user/login">Login</a>
 <% } %>
+
+<h3 class="mt-1 mb-3">Your Plants:</h3>
+<div class="row">
+    <% currentUser.plants.forEach((plant) => { %>
+        <div data-url="/plant/<%= plant._id %>" class="clickable-div col-12 col-sm-6 col-lg-4 col-xl-4 mb-4">
+            <div class="card shadow">
+                <div class="img-container">
+                    <img src="<%= plant.image.location ? plant.image.location : '/images/DavisBessePic.jpg' %>" alt="" class="card-img-top img-cropped" />
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><%= plant.name %></h5>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+</div>
 
 <script>
     document.querySelectorAll('.clickable-div').forEach(item => {

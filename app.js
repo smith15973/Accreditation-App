@@ -13,6 +13,7 @@ const aosrRoutes = require('./routes/aosr');
 const performanceMatrixRoutes = require('./routes/performanceMatrix');
 const saMatrixRoutes = require('./routes/saMatrix');
 const generalResourceRoutes = require('./routes/generalResources');
+const archiveRoutes = require('./routes/archives');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const session = require('express-session');
@@ -26,6 +27,7 @@ const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
 const useragent = require('express-useragent');
+const { isLoggedIn, isAuthorized } = require('./middleware');
 
 
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accreditationApp'
@@ -104,8 +106,8 @@ app.use(catchAsync(async (req, res, next) => {
 }));
 
 app.get('/', (req, res) => {
-    if (!req.user) {
-        return res.redirect('/user/login');
+    if (!req.isAuthenticated()) {
+        return res.redirect('/user/login')
     }
     res.render('home');
 });
@@ -117,6 +119,8 @@ app.use('/aosr', aosrRoutes);
 app.use('/performanceMatrix', performanceMatrixRoutes);
 app.use('/saMatrix', saMatrixRoutes);
 app.use('/generalResources', generalResourceRoutes);
+app.use('/archives', archiveRoutes);
+
 
 
 

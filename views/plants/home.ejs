@@ -1,33 +1,38 @@
 <% layout('/layouts/boilerplate') %>
-<div class="d-flex justify-content-between">
-    <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>/edit">Edit <%= currentPlant.name %></a>
-    <%- include('../partials/modals/deletePlant')%>
-</div>
-
-<h1 class=""><%= currentPlant.name %></h1>
-<% if (currentUser.admin) { %>
-<h2><a href="/seg/instruction/new">Create new Seg Template</a></h2>
-<% } %>
 
 <div class="row">
+    <div class="card col-3 p-0">
+        <img src="<%= currentPlant.image.location %>" class="card-img-top" alt="Plant Picture">
+        <div class="card-body">
+          <h5 class="card-title m-0"><%= currentPlant.name %></h5>
+        </div>
+        <% if (currentUser.admin) { %>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
+          <li class="list-group-item"><a href="#">Manage People</a></li>
+          <%- include('../partials/modals/deletePlant')%>
+        </ul>
+        <% } %>
+      </div>
+
+
     <div class="col text-center">
-        <h3 class="mb-5">Operations</h3>
         <div class="row">
             <div class="col">
-                <h4>Program Administration</h4>
-                <ul>
+                <ul class="list-group">
+                    <li class="list-group-item">OPPAs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Program Administration')) { %>
-                        <li>
+                        <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
                 </ul>
             </div>
             <div class="col">
-                <h4>Implementation and Oversight</h4>
-                <ul>
+                <ul class="list-group">
+                    <li class="list-group-item">OPIOs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Implementation and Oversight')) { %>
-                        <li>
+                        <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
@@ -36,23 +41,22 @@
         </div>
     </div>
     <div class="col text-center">
-        <h3 class="mb-5">Maintenance and Technical</h3>
         <div class="row">
             <div class="col">
-                <h4>Program Administration</h4>
-                <ul>
+                <ul class="list-group">
+                    <li class="list-group-item">MTPAs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Program Administration')) { %>
-                        <li>
+                        <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
                 </ul>
             </div>
             <div class="col">
-                <h4>Implementation and Oversight</h4>
-                <ul>
+                <ul class="list-group">
+                    <li class="list-group-item">MTIOs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Implementation and Oversight')) { %>
-                        <li>
+                        <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
                         </li>
                     <% } %>
