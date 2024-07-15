@@ -25,6 +25,7 @@ const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
+const useragent = require('express-useragent');
 
 
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accreditationApp'
@@ -48,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); // to parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(useragent.express());
 
 
 
