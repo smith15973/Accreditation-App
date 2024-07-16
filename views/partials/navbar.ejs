@@ -1,3 +1,14 @@
+<style>
+    .scrollable-nav {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+.scrollable-nav .nav-link {
+    display: inline-block;
+}
+
+</style>
 <% if (typeof currentUser !== 'undefined') { %>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
     <div class="container-fluid">
@@ -7,16 +18,17 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
+            <div class="navbar-nav scrollable-nav">
                 <a class="nav-link text-center <%= url === '/' ? 'active' : '' %>" href="/">Home</a>
                 <% for (let plant of currentUser.plants.sort((a, b) => a.name.localeCompare(b.name))) { %>
                     <a class="nav-link text-center <%= typeof currentPlant !== 'undefined' && currentPlant.equals(plant)  ? 'active' : '' %>" href="/plant/<%= plant._id %>"><%= plant.name %></a>
-                <%}%>
+                <% } %>
             </div>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link text-center active" href="/user/logout">Logout</a>
             </div>
         </div>
+        
     </div>
 </nav>
 

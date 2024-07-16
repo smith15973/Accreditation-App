@@ -20,7 +20,7 @@
     <form action="/plant/<%= currentPlant._id %>/edit?_method=PUT" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Change Name</label>
-            <input type="text" name="name" id="name" class="form-control" value="<%= currentPlant.name %>" required>
+            <input maxlength="20" type="text" name="name" id="name" class="form-control" value="<%= currentPlant.name %>" required>
         </div>
         <div class="row">
             <div class="col-12 col-md-6 mb-3">
