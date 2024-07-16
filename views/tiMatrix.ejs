@@ -1,2 +1,11 @@
 <% layout('/layouts/boilerplate') %>
-<h1>Training Issues Matrix</h1>
+<h1 class="d-flex align-items-center inline-elements">
+    <div>Training Issues Matrix:</div>
+    <select
+        onchange="window.location=`/aosr/${this.value}`"
+        class="ms-2 border-0 fw-light" name="plantSelect" id="plantSelect">
+        <% for (let plant of currentUser.plants) { %>
+        <option <%= currentPlant._id.toString() === plant._id.toString() ? 'selected' : '' %> value="<%= plant._id %>"><%= plant.name %></option>
+        <% } %>
+    </select>
+</h1>
