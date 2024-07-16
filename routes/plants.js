@@ -32,13 +32,13 @@ router.route('/new')
         res.redirect(`/plant/${plant._id}`);
     })
 
-router.use('/:plantID', getCurrentPlantandInstructions, hasPlantAccess);
+router.use('/:plantID', isLoggedIn, getCurrentPlantandInstructions, hasPlantAccess);
 
 router.route('/:plantID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(catchAsync(async (req, res) => {
         res.render('plants/home');
     }))
-    .delete(isLoggedIn, catchAsync(async (req, res) => {
+    .delete(catchAsync(async (req, res) => {
         const { plantID } = req.params;
         const deletedPlant = await Plant.findByIdAndDelete(plantID)
         req.flash('success', `Successfully deleted plant: ${deletedPlant.name}`)
@@ -46,11 +46,11 @@ router.route('/:plantID')
     }));
 
 router.route('/:plantID/edit')
-    .get(isLoggedIn, isAdmin, catchAsync(async (req, res) => {
+    .get(isAdmin, catchAsync(async (req, res) => {
         res.render('plants/edit')
 
     }))
-    .put(isLoggedIn, isAdmin, upload.single('image'), catchAsync(async (req, res) => {
+    .put(isAdmin, upload.single('image'), catchAsync(async (req, res) => {
         const plant = await Plant.findById(req.params.plantID);
         plant.name = req.body.name
         const file = req.file;
@@ -67,7 +67,7 @@ router.route('/:plantID/edit')
     }))
 
 router.route('/:plantID/seg/:segInstructionID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(catchAsync(async (req, res) => {
         const { segInstructionID, plantID } = req.params;
         const segInstruction = await SegInstruction.findById(segInstructionID);
         if (!segInstruction) {
@@ -90,13 +90,13 @@ router.route('/:plantID/seg/:segInstructionID')
     }));
 
 router.route('/:plant/:seg_ID/supportingData/:groupID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(catchAsync(async (req, res) => {
         const { plant, seg_ID, groupID } = req.params;
         const program = await ProgramReviewed.findById(groupID).populate('seg').populate('files');
 
         res.render('segs/programInputs/supportingData', { program, plant });
     }))
-    .put(isLoggedIn, catchAsync(async (req, res) => {
+    .put(catchAsync(async (req, res) => {
         const { plant, seg_ID, groupID } = req.params;
         const program = await ProgramReviewed.findById(groupID);
         program.supportingData = req.body.supportingData;
@@ -112,7 +112,7 @@ router.route('/:plant/:seg_ID/supportingData/:groupID')
 
 
 router.route('/:plantID/seg/:segID/supportingData/files/:programID')
-    .post(isLoggedIn, upload.array('fileInput'), catchAsync(async (req, res) => {
+    .post(upload.array('fileInput'), catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const program = await SegProgram.findById(programID);
         program.supportingData = req.body.supportingData;
@@ -126,7 +126,7 @@ router.route('/:plantID/seg/:segID/supportingData/files/:programID')
         await program.save();
         res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
     }))
-    .delete(isLoggedIn, catchAsync(async (req, res) => {
+    .delete(catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const deletedFilesIDs = req.body.deletedFiles;
         const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
@@ -142,14 +142,14 @@ router.route('/:plantID/seg/:segID/supportingData/files/:programID')
 
 /* supportingData */
 router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(catchAsync(async (req, res) => {
         const { programID } = req.params;
         const program = await SegProgram.findById(programID).populate(['seg', 'supportingDataFiles']).populate({ path: 'seg', populate: 'segInstruction' });
 
         res.render('segs/programInputs/supportingData', { program });
     }))
 
-    .put(isLoggedIn, upload.array('fileInput'), catchAsync(async (req, res) => {
+    .put(upload.array('fileInput'), catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const program = await SegProgram.findById(programID);
         program.supportingData = req.body.supportingData;
@@ -168,14 +168,14 @@ router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
 
 /* conclusion */
 router.route('/:plantID/seg/:segInstructionID/conclusion/:programID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(catchAsync(async (req, res) => {
         const { programID } = req.params;
         const program = await SegProgram.findById(programID).populate('seg').populate({ path: 'seg', populate: 'segInstruction' });
 
         res.render('segs/programInputs/conclusion', { program });
     }))
 
-    .put(isLoggedIn, catchAsync(async (req, res) => {
+    .put(catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const program = await SegProgram.findById(programID);
         program.conclusion = req.body.conclusion;
@@ -185,14 +185,14 @@ router.route('/:plantID/seg/:segInstructionID/conclusion/:programID')
 
 /* aosr */
 router.route('/:plantID/seg/:segInstructionID/aosr/:programID')
-    .get(isLoggedIn, catchAsync(async (req, res) => {
+    .get(catchAsync(async (req, res) => {
         const { programID } = req.params;
         const program = await SegProgram.findById(programID).populate('seg').populate({ path: 'seg', populate: 'segInstruction' });
 
         res.render('segs/programInputs/aosr', { program });
     }))
 
-    .put(isLoggedIn, catchAsync(async (req, res) => {
+    .put(catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const program = await SegProgram.findById(programID);
         program.aosr = req.body.aosr;
@@ -203,7 +203,7 @@ router.route('/:plantID/seg/:segInstructionID/aosr/:programID')
 
 /* status */
 router.route('/:plantID/seg/:segInstructionID/status/:programID')
-    .put(isLoggedIn, catchAsync(async (req, res) => {
+    .put(catchAsync(async (req, res) => {
         const { plantID, segInstructionID, programID } = req.params;
         const program = await SegProgram.findById(programID);
         program.status = req.body.status;

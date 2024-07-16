@@ -3,17 +3,10 @@ if (process.env.NODE_ENV !== "production") {
 } else {
     require('dotenv').config({ path: '/etc/app.env' });
 }
+
 const express = require('express');
-const mongoose = require('mongoose');
-const plantRoutes = require('./routes/plants');
-const userRoutes = require('./routes/users');
-const segRoutes = require('./routes/segs');
-const reportRoutes = require('./routes/reports');
-const aosrRoutes = require('./routes/aosr');
-const performanceMatrixRoutes = require('./routes/performanceMatrix');
-const saMatrixRoutes = require('./routes/saMatrix');
-const generalResourceRoutes = require('./routes/generalResources');
-const archiveRoutes = require('./routes/archives');
+const app = express();
+const { dbURL } = require('./mongodb');
 const ejsMate = require('ejs-mate');
 const path = require('path');
 const session = require('express-session');
@@ -28,19 +21,19 @@ const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
 const useragent = require('express-useragent');
 
+/**********import routes*************** */
+const plantRoutes = require('./routes/plants');
+const userRoutes = require('./routes/users');
+const segRoutes = require('./routes/segs');
+const reportRoutes = require('./routes/reports');
+const aosrRoutes = require('./routes/aosr');
+const performanceMatrixRoutes = require('./routes/performanceMatrix');
+const saMatrixRoutes = require('./routes/saMatrix');
+const generalResourceRoutes = require('./routes/generalResources');
+const archiveRoutes = require('./routes/archives');
 
-const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accreditationApp'
-mongoose.connect(dbURL);
 
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-    console.log("Database connected");
-});
-
-const app = express();
-
-
+/**********Middleware setup*************** */
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -52,8 +45,9 @@ app.use(methodOverride('_method'));
 app.use(useragent.express());
 
 
+
 // Session and Authentication Setup
-const secret = process.env.SECRET || 'DavisBesse'
+const secret = process.env.SESSION_SECRET || 'DavisBesse'
 const store = MongoDBStore.create({
     mongoUrl: dbURL,
     touchAfter: 24 * 60 * 60,
@@ -104,6 +98,8 @@ app.get('/', catchAsync(async (req, res) => {
     }
     res.render('home', { plants });
 }));
+
+
 app.use('/user', userRoutes);
 app.use('/plant', plantRoutes);
 app.use('/seg', segRoutes);
@@ -115,10 +111,7 @@ app.use('/generalResources', generalResourceRoutes);
 app.use('/archives', archiveRoutes);
 
 
-
-
-
-
+/**********Error Handling Middleware*************** */
 app.all('*', (req, res, next) => {
     next(new ExpressError('Page Not Found', 404));
 })
