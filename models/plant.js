@@ -35,7 +35,7 @@ const PlantSchema = new Schema({
 PlantSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
         await User.updateMany({ _id: { $in: doc.users } }, { $pull: { plants: doc._id } });
-        console.log(await Seg.find({plant: doc._id}))
+        // console.log(await Seg.find({plant: doc._id}))
     }
 });
 
