@@ -1,56 +1,13 @@
 const express = require('express')
 const router = express.Router();
-const GeneralResourcePDF = require('../models/generalResourcePDF')
-const catchAsync = require('../utils/catchAsync');
-
-
-
-const { upload, deleteFiles } = require('../utils/fileOperations');
+const { upload } = require('../utils/fileOperations');
 const { isLoggedIn, isAdmin } = require('../middleware');
+const { renderGeneralResource, editGeneralResource, deleteGeneralResourceFile } = require('../controllers/generalResources');
 
 
 router.route('/')
-.get(isLoggedIn, catchAsync(async (req, res) => {
-    const types = ['ACADS', 'IERs', 'SIF/TIF', 'Power History', 'Other Resources'];
-    const { type } = req.query;
-    if (!types.includes(type)) {
-        req.flash('error', `Page does not Exist`)
-        const redirectUrl = req.get('referer') || '/';
-        return res.redirect(redirectUrl);
-    }
-    const resources = await GeneralResourcePDF.find({resourceType: type});
-    res.render('generalResource', { resources, type });
-}))
-.post(isLoggedIn, isAdmin, upload.array('files'), catchAsync(async (req, res) => {
-    const types = ['ACADS', 'IERs', 'SIF/TIF', 'Power History', 'Other Resources'];
-    const { type } = req.query;
-    if (!types.includes(type)) {
-        req.flash('error', `Page does not Exist`)
-        const redirectUrl = req.get('referer') || '/';
-        return res.redirect(redirectUrl);
-    }
-    const files = req.files.map(f => ({ 'file.location': f.location, 'file.originalName': f.originalname, 'file.key': f.key, 'file.bucket': f.bucket }));
-    for (let upFile of files) {
-        const resource = new GeneralResourcePDF(upFile);
-        resource.resourceType = type;
-        await resource.save();
-    }
-    res.redirect(`/generalResources?type=${type}`);
-}))
-.delete(isLoggedIn, isAdmin, catchAsync(async (req, res) => {
-    const types = ['ACADS', 'IERs', 'SIF/TIF', 'Power History', 'Other Resources'];
-    const { type } = req.query;
-    if (!types.includes(type)) {
-        req.flash('error', `Page does not Exist`)
-        const redirectUrl = req.get('referer') || '/';
-        return res.redirect(redirectUrl);
-    }
-    const deletedFilesIDs = req.body.deletedFiles;
-    const deletedFiles = await GeneralResourcePDF.find({ _id: { $in: deletedFilesIDs } });
-    const keys = deletedFiles.map(df => ({ Key: df.file.key }));
-    await GeneralResourcePDF.deleteMany({ _id: { $in: deletedFilesIDs } });
-    deleteFiles(keys);
-    res.redirect(`/generalResources?type=${type}`);
-}));
+    .get(isLoggedIn, renderGeneralResource)
+    .post(isLoggedIn, isAdmin, upload.array('files'), editGeneralResource)
+    .delete(isLoggedIn, isAdmin, deleteGeneralResourceFile);
 
 module.exports = router;

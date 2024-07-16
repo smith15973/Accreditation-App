@@ -5,9 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin } = require('../middleware');
-const { renderArchives } = require('../controllers/archives');
 
-router.route('/:plantID')
-.get(isLoggedIn, getCurrentPlantandInstructions, renderArchives);
-
-module.exports = router;
+module.exports.renderArchives = catchAsync(async (req, res) => {
+    res.render('archives/index');
+});

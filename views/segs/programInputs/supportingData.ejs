@@ -48,7 +48,7 @@
                 </form>
                     <div class="col-12 col-lg-7 ">
                         <% if (program.supportingDataFiles.length) { %>
-                            <form class="mt-5" id="deleteFileForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/files/<%= program._id %>?_method=DELETE" method="post">
+                            <form class="mt-5" id="deleteFileForm" action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE" method="post">
                                 <ul class="list-group">
                                     <% if (currentUser.admin) { %>
                                     <li class="list-group-item d-flex align-items-center justify-content-between px-3">
