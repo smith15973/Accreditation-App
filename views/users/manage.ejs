@@ -16,11 +16,20 @@
 <h3>Requests for Access</h3>
 <ul class="list-group mb-3">
     <% for (let user of requestingUsers) { %>
-        <li class="list-group-item d-flex justify-content-between">
-            <div class="my-auto">
+        <li class="list-group-item">
+            <div class="row">
+            <div class="col-3 col-sm- my-auto">
                 <%= user.firstName %> <%= user.lastName %>
             </div>
-            <div>
+            <div class="col-3 col-sm- my-auto">
+                <b>Email:</b> <%= user.email %>
+            </div>
+
+            <div class="col-3 col-sm- text-start my-auto">
+                    <b>Rank:</b> <%= user.admin ? 'Admin' : 'Member' %>
+            </div>
+            
+            <div class="col-3 col-sm- text-end my-auto">
                 <form class="d-inline" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=DELETE&status=requested" method="post">
                     <button class="btn btn-danger">Deny</button>
                 </form>
@@ -29,6 +38,7 @@
                 </form>
 
             </div>
+        </div>
         </li>
     <% } %>
 </ul>
@@ -45,7 +55,7 @@
                 <div class="col-3 col-sm- my-auto">
                     <b>Email:</b> <%= user.email %>
                 </div>
-                <div class="col-3 col-sm- text-center my-auto">
+                <div class="col-3 col-sm- text-start my-auto">
                     <% if (currentUser.admin) { %>
                     <form class="d-flex align-items-center" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=PUT&rank=changed" method="post">
                         <label class="me-2" for="adminSelect"><b>Rank:</b></label>
