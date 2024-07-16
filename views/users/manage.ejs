@@ -12,7 +12,7 @@
 </h1>
 
 
-<% if (requestingUsers.length) { %>
+<% if (requestingUsers.length && currentUser.admin) { %>
 <h3>Requests for Access</h3>
 <ul class="list-group mb-3">
     <% for (let user of requestingUsers) { %>
@@ -44,7 +44,7 @@
 </ul>
 <% } %>
 
-<h3>Has Access</h3>
+<h3>Plant Members</h3>
 <ul class="list-group mb-3">
     <% for (let user of approvedUsers) { %>
         <li class="list-group-item">

@@ -1,5 +1,5 @@
 <% layout('layouts/boilerplate')%>
-<div class="container d-flex justify-content-center align-items-center mt-5">
+<div class="container d-flex justify-content-center align-items-center my-5">
     <div class="row">
         <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
             <div class="card shadow">
@@ -43,15 +43,6 @@
                                 Looks good!
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label mb-2 fw-bold">Associated Plants</label>
-                            <% for (plant of plants) { %>
-                                <div class="mb-3">
-                                    <input id="<%= plant.name %>" type="checkbox" value="<%= plant._id %>" name="requestedPlants[]">
-                                    <label for="<%= plant.name %>"> <%= plant.name %></label>
-                                </div>
-                            <% } %>
-                        </div>
                         <div class="d-flex justify-content-between">
                             <button class="btn btn-success btn-block">Register</button>
                             <a class="my-auto" href="/user/login">Login</a>
@@ -60,6 +51,7 @@
 
                 </div>
             </div>
+            <%- include('../partials/otherLogin')  %>
         </div>
     </div>
 </div>
