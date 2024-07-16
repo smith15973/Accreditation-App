@@ -19,9 +19,7 @@ const path = require('path');
 const session = require('express-session');
 const MongoDBStore = require("connect-mongo");
 const flash = require('connect-flash');
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
-const MicrosoftStrategy = require('passport-microsoft').Strategy;
+const passport = require('./passport');
 const User = require('./models/user');
 const Plant = require('./models/plant')
 const methodOverride = require('method-override');
@@ -29,7 +27,6 @@ const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
 const useragent = require('express-useragent');
-const { isLoggedIn, isAuthorized } = require('./middleware');
 
 
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/accreditationApp'
@@ -47,88 +44,16 @@ const app = express();
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
 app.use(favicon(path.join(__dirname, 'public', 'images', 'svg', 'favicon.svg')));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json()); // to parse JSON bodies
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(useragent.express());
 
 
-
-
-
-passport.use(new MicrosoftStrategy({
-    // Standard OAuth2 options
-    clientID: process.env.AZURE_CLIENT_ID,
-    clientSecret: process.env.AZURE_CLIENT_SECRET,
-    callbackURL: process.env.AZURE_REDIRECT_URL || 'http://localhost:3000/auth/microsoft/callback',
-    scope: ['user.read'],
-
-    // Microsoft specific options
-
-    // [Optional] The tenant ID for the application. Defaults to 'common'. 
-    // Used to construct the authorizationURL and tokenURL
-    tenant: 'common',
-
-    // [Optional] The authorization URL. Defaults to `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`
-    authorizationURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-
-    // [Optional] The token URL. Defaults to `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`
-    tokenURL: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
-
-    // [Optional] The Microsoft Graph API version (e.g., 'v1.0', 'beta'). Defaults to 'v1.0'.
-    graphApiVersion: 'v1.0',
-
-    // [Optional] If true, will push the User Principal Name into the `emails` array in the Passport.js profile. Defaults to false.
-    addUPNAsEmail: false,
-
-    // [Optional] The Microsoft Graph API Entry Point, defaults to https://graph.microsoft.com. Configure this if you are using Azure China or other regional version.
-    apiEntryPoint: 'https://graph.microsoft.com',
-},
-    async (accessToken, refreshToken, profile, done) => {
-        try {
-            let user = await User.findOne({ email: profile.emails[0].value });
-            if (!user) {
-                user = new User({
-                    email: profile.emails[0].value,
-                    username: profile.displayName,
-                    firstName: profile.name.givenName,
-                    lastName: profile.name.familyName,
-                    requestedPlants: []
-                });
-                await user.save();
-            }
-            return done(null, user);
-        } catch (err) {
-            return done(err, null);
-        }
-    }));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Session and Authentication Setup
 const secret = process.env.SECRET || 'DavisBesse'
-
 const store = MongoDBStore.create({
     mongoUrl: dbURL,
     touchAfter: 24 * 60 * 60,
@@ -160,26 +85,6 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
-// ********* Microsoft Configuration ********* //
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (err) {
-        done(err, null);
-    }
-});
-// ***************************************** //
 
 
 app.use(catchAsync(async (req, res, next) => {
@@ -209,22 +114,7 @@ app.use('/saMatrix', saMatrixRoutes);
 app.use('/generalResources', generalResourceRoutes);
 app.use('/archives', archiveRoutes);
 
-app.get('/auth/microsoft',
-    passport.authenticate('microsoft', {
-        // Optionally define any authentication parameters here
-        // For example, the ones in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
 
-        prompt: 'select_account',
-    }));
-
-// Callback route for Microsoft to redirect to
-app.get('/auth/microsoft/callback', passport.authenticate('microsoft', {
-    failureRedirect: '/user/login',
-    failureFlash: true
-}), (req, res) => {
-    req.flash('success', 'Welcome Back!');
-    res.redirect('/');
-});
 
 
 

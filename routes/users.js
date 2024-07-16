@@ -7,6 +7,28 @@ const { storeReturnTo } = require('../middleware');
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
 
+
+
+router.route('/auth/microsoft')
+.get(passport.authenticate('microsoft', {
+        // Optionally define any authentication parameters here
+        // For example, the ones in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow
+
+        prompt: 'select_account',
+    }));
+
+// Callback route for Microsoft to redirect to
+router.route('/auth/microsoft/callback')
+.get( passport.authenticate('microsoft', {
+    failureRedirect: '/user/login',
+    failureFlash: true
+}), (req, res) => {
+    req.flash('success', 'Welcome Back!');
+    res.redirect('/');
+});
+
+
+
 router.route('/register')
     .get(catchAsync(async (req, res) => {
         const plants = await Plant.find({});
