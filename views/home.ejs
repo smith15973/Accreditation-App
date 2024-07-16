@@ -20,11 +20,21 @@
     .clickable-div:hover {
         opacity: 0.8;
     }
+    .card-title {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
 </style>
 <% if (currentUser.admin) { %>
-    <div class="d-flex justify-content-end">
-        <a class="btn btn-secondary mx-1" href="/plant/new">Create New Plant</a>
-        <a class="btn btn-secondary mx-1" href="/seg/instruction/new">Create new Seg Template</a>
+    <div class="row">
+        <div class="col mb-2">
+            <input oninput="filterPlants(event)" placeholder="Search" class="form-control" type="text">
+        </div>
+        <div class="d-flex col-12 col-sm-9 col-md-7 col-lg-6 col-xl-5 justify-content-end mb-2">
+            <a class="btn btn-secondary mx-1" href="/plant/new">Create New Plant</a>
+            <a class="btn btn-secondary mx-1" href="/seg/instruction/new">Create new Seg Template</a>
+        </div>
     </div>
 <% } %>
 
@@ -85,7 +95,7 @@
 </script>
 
 
-<script>
+    <script>
         document.addEventListener("DOMContentLoaded", function(event) { 
             const scrollpos = localStorage.getItem('scrollpos');
             if (scrollpos) window.scrollTo(0, scrollpos);
@@ -94,4 +104,17 @@
         window.onbeforeunload = function(e) {
             localStorage.setItem('scrollpos', window.scrollY);
         };
+    </script>
+
+    <script>
+        const titles = document.querySelectorAll('.card-title');
+        filterPlants = (e) => {
+            for (let title of titles) {
+                if (e.target.value !== '' && !title.innerHTML.toLowerCase().includes(e.target.value.toLowerCase())) {
+                    title.parentElement.parentElement.parentElement.hidden = true;
+                } else {
+                    title.parentElement.parentElement.parentElement.hidden = false
+                }
+            }
+        }
     </script>
