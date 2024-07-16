@@ -4,11 +4,11 @@ const catchAsync = require('../utils/catchAsync');
 
 
 const { upload, deleteFiles } = require('../utils/fileOperations');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, getCurrentPlantandInstructions } = require('../middleware');
 const { renderSAMatrix } = require('../controllers/saMatrix');
 
 
-router.route('/')
-.get(isLoggedIn, renderSAMatrix);
+router.route('/:plantID')
+.get(isLoggedIn, getCurrentPlantandInstructions, renderSAMatrix);
 
 module.exports = router;
