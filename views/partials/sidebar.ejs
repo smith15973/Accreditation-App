@@ -27,23 +27,3 @@
       <% } %>
     </div>
   </div>
-
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var offcanvasElement = document.getElementById('offcanvas');
-        var sidebarToggleButton = document.getElementById('sidebarToggleButton');
-        const sidebarArrow = document.getElementById('sidebarArrow');
-
-        offcanvasElement.addEventListener('show.bs.offcanvas', function () {
-            sidebarToggleButton.style.left = '399px'; // Adjust this value to match the sidebar width
-            sidebarArrow.style.transform = 'rotate(180deg)';
-
-        });
-
-        offcanvasElement.addEventListener('hide.bs.offcanvas', function () {
-            sidebarToggleButton.style.left = '0px'; // Reset to original position
-            sidebarArrow.style.transform = 'rotate(0deg)';
-        });
-    });
-</script>

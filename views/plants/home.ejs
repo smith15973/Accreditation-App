@@ -18,30 +18,32 @@
 </style>
 
 <div class="row">
-    <div class="card col-3 p-0">
-        <div class="img-container">
-            <img src="<%= currentPlant.image.location %>" class="img-cropped card-img-top" alt="Plant Picture">
-        </div>
-        <div class="card-body">
-          <h5 class="card-title m-0"><%= currentPlant.name %></h5>
-        </div>
+    <div class="col-3  p-0">
+        <div class="card">
+            <div class="img-container">
+                <img src="<%= currentPlant.image.location %>" class="img-cropped card-img-top" alt="Plant Picture">
+            </div>
+            <div class="card-body" style="flex: none;">
+                <h5 class="card-title m-0"><%= currentPlant.name %></h5>
+            </div>
 
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item"><a href="/user/manage/<%= currentPlant._id %>">View Members</a></li>
-          <% if (currentUser.admin) { %>
-            <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
-          <%- include('../partials/modals/deletePlant')%>
-          <% } %>
-        </ul>
-
-      </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="/reports/<%= currentPlant._id %>">Reports</a></li>
+                <li class="list-group-item"><a href="/user/manage/<%= currentPlant._id %>">View Members</a></li>
+                <% if (currentUser.admin) { %>
+                    <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
+                <%- include('../partials/modals/deletePlant')%>
+                <% } %>
+            </ul>
+        </div>
+    </div>
 
 
     <div class="col text-center">
         <div class="row">
             <div class="col">
                 <ul class="list-group">
-                    <li class="list-group-item">OPPAs</li>
+                    <li class="list-group-item fw-bold">OPPAs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Program Administration')) { %>
                         <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
@@ -51,7 +53,7 @@
             </div>
             <div class="col">
                 <ul class="list-group">
-                    <li class="list-group-item">OPIOs</li>
+                    <li class="list-group-item fw-bold">OPIOs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Operations' && segInstruction.department === 'Implementation and Oversight')) { %>
                         <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
@@ -65,7 +67,7 @@
         <div class="row">
             <div class="col">
                 <ul class="list-group">
-                    <li class="list-group-item">MTPAs</li>
+                    <li class="list-group-item fw-bold">MTPAs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Program Administration')) { %>
                         <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
@@ -75,7 +77,7 @@
             </div>
             <div class="col">
                 <ul class="list-group">
-                    <li class="list-group-item">MTIOs</li>
+                    <li class="list-group-item fw-bold">MTIOs</li>
                     <% for (let segInstruction of segInstructions.filter(segInstruction => segInstruction.team === 'Maintenance and Technical' && segInstruction.department === 'Implementation and Oversight')) { %>
                         <li class="list-group-item">
                             <a href="/plant/<%= currentPlant._id %>/seg/<%= segInstruction._id %>"><%= segInstruction.segInstructionID %></a>
@@ -86,5 +88,6 @@
         </div>
     </div>
 </div>
+
 
 

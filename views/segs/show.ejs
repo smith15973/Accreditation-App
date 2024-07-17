@@ -33,8 +33,51 @@
         white-space: pre-wrap;
     }
 
+    .navigationButtons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 1);
+            position: fixed;
+            top: 48%;
+            bottom: 48%;
+            text-decoration: none;
+            color: black;
+            background-color: white;
+            
+            @media print {
+                display: none;
+            }
+        }
+    .navigationButtons:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+
+        #previousButton {
+            left: 0px;
+
+        }
+
+        #nextButton {
+            right: 0px;
+            rotate: 180deg;
+        }
+
 </style>
 
+<% if (previousSeg) {%>
+<a href="/plant/<%= currentPlant._id %>/seg/<%= previousSeg._id %>" id="previousButton" class="border border-0 border-start-0 border navigationButtons">
+    ←
+</a>
+<% } %>
+
+<% if (nextSeg) {%>
+<a href="/plant/<%= currentPlant._id %>/seg/<%= nextSeg._id %>" id="nextButton" class="border border-0 border-start-0 border navigationButtons">
+    ←
+</a>
+<% } %>
 
 
     <div class="d-flex justify-content-between">
@@ -174,6 +217,16 @@
     <script>
         document.querySelector('#backToPlantButton').addEventListener('click', () => {
             localStorage.removeItem('scrollpos');
+        })
+    </script>
+
+    <script>
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
+                document.querySelector('#previousButton').click();
+            } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
+                document.querySelector('#nextButton').click();
+            }
         })
     </script>
 

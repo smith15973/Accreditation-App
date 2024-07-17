@@ -80,7 +80,21 @@ module.exports.renderSeg = catchAsync(async (req, res) => {
     }
 
     await seg.populate(['plant', 'segInstruction', 'segPrograms']);
-    res.render('segs/show', { seg, plant: seg.plant.name })
+
+    //get the next and previous segs for navigation
+    const number = seg.segInstruction.segNum;
+    const segID = seg.segInstruction.segInstructionID.slice(0, 9);
+
+    let previousSeg = await SegInstruction.findOne({ segInstructionID: segID + (number - 1) });
+    let nextSeg = await SegInstruction.findOne({ segInstructionID: segID + (number + 1) });
+
+    if (!previousSeg) {
+        previousSeg = await SegInstruction.findOne({team: seg.segInstruction.team, department: seg.segInstruction.department}).sort({ segNum: -1 });
+    }
+    if (!nextSeg) {
+        nextSeg = await SegInstruction.findOne({team: seg.segInstruction.team, department: seg.segInstruction.department}).sort({ segNum: 1 });
+    }
+    res.render('segs/show', { seg, plant: seg.plant.name, previousSeg, nextSeg });
 });
 
 
