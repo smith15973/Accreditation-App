@@ -36,7 +36,6 @@ const tiMatrixRoutes = require('./routes/tiMatrix');
 const saMatrixRoutes = require('./routes/saMatrix');
 const generalResourceRoutes = require('./routes/generalResources');
 const archiveRoutes = require('./routes/archives');
-const SegProgram = require('./models/segProgram');
 
 
 /**********Middleware setup*************** */
@@ -51,6 +50,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(methodOverride('_method'));
 app.use(useragent.express());
+
 
 io.on('connection', (socket) => {
     console.log('a user connected');

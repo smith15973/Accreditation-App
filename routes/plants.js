@@ -2,18 +2,10 @@ const express = require('express')
 const router = express.Router();
 const SegProgram = require('../models/segProgram')
 
-
 const { upload } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
 const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, editAOSR, editConclusion, renderConclusion } = require('../controllers/plants');
 
-
-router.route('/testing')
-    .get(async (req, res) => {
-        console.log('Testing route hit');
-        const program = await SegProgram.findById('6697fbeba234ebc4901c7907');
-        res.json({ message: program.supportingData[0] });
-    });
 
 router.route('/new')
     .get(isLoggedIn, isAdmin, renderCreateNewPlant)
