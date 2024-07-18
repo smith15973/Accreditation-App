@@ -161,18 +161,18 @@
 
                 <div class="col-5 fw-normal border border-1 border-dark text-break clickable-div" 
                 onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>', '_blank', 'noopener,noreferrer')">
-                    <p class="fs-6"><%- program.supportingData %></p>
+                    <p id="supportingData-<%=program._id%>" class="fs-6"><%- program.supportingData %></p>
                     <p class="fs-6"><%- program.supportingDataFiles.length %> Attachments</p>
 
                 </div>
 
                 <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
                 onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/conclusion/<%= program._id %>', '_blank', 'noopener,noreferrer')">
-                    <p class="fs-6"><%- program.conclusion %></p>
+                    <p id="conclusion-<%=program._id%>" class="fs-6"><%- program.conclusion %></p>
                 </div>
                 <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
                 onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>', 'noopener,noreferrer')">
-                    <p class="fs-6"><%- program.aosr %></p>
+                    <p id="aosr-<%=program._id%>" class="fs-6"><%- program.aosr %></p>
                 </div>
             </div>
         <% }); %>
@@ -185,6 +185,28 @@
         
 
 
+
+        <script>
+            const socket = io();
+            socket.on('supportingDataUpdate', (data)=> {
+                const id = 'supportingData-' + data.programID;
+                if (document.querySelector('#'+id)) {
+                    document.querySelector('#'+id).innerHTML = data.text
+                }
+            })
+            socket.on('conclusionUpdate', (data)=> {
+                const id = 'conclusion-' + data.programID;
+                if (document.querySelector('#'+id)) {
+                    document.querySelector('#'+id).innerHTML = data.text
+                }
+            })
+            socket.on('aosrUpdate', (data)=> {
+                const id = 'aosr-' + data.programID;
+                if (document.querySelector('#'+id)) {
+                    document.querySelector('#'+id).innerHTML = data.text
+                }
+            })
+        </script>
 
     <script>
         const statusSelects = document.querySelectorAll('.statusSelect');

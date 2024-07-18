@@ -8,50 +8,83 @@
 
         <div class="row px-auto">
             <div class="col mb-3">
-                <a id="backToSegButton" class="btn btn-primary" href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%=seg.segInstruction.segInstructionID %></a>
-                <form action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/conclusion/<%= program._id %>?_method=PUT"
-                    method="post">
+                <a id="backToSegButton" class="btn btn-primary"
+                    href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%=
+                        seg.segInstruction.segInstructionID %>
+                </a>
+                <form id="putForm"
+                    action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/conclusion/<%= program._id %>?_method=PUT"
+                    method="post" enctype="multipart/form-data">
                     <div class="my-3">
                         <h1 class="fs-3 d-inline">
                             <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Conclusion
                         </h1>
-                        <button id="saveTextButton" class="btn btn-success d-inline">Save</button>
+                        <div class="mx-2 d-inline">
+                            <button type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
+                            <div class="d-inline" id="savingIcon">Saved</div>
+                        </div>
                     </div>
-
-                    <textarea class="form-control"
-                        name="conclusion"><%= program.conclusion[0] !== '' ? program.conclusion[0] : '' %></textarea>
+                    <div id="conclusion-<%= program._id %>">
+                        <textarea class="form-control"
+                            name="conclusion"><%= program.conclusion[0] !== '' ? program.conclusion[0] : '' %></textarea>
+                    </div>
                 </form>
             </div>
         </div>
 
 
+        <!-- NicEdit -->
+        <script src="/js/nicEdit.js" type="text/javascript"></script>
+        <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+        <script>
+            const socket = io();
+            let updateData;
+            document.addEventListener('DOMContentLoaded', () => {
+                const savingIcon = document.querySelector('#savingIcon');
+                const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
+                    element.setAttribute('style', 'width: 100%'); // Add width property
+                    element.setAttribute('style', 'min-height: 300px;'); // Add height property
 
-            <!-- NicEdit -->
-            <script src="/js/nicEdit.js" type="text/javascript"></script>
-            <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script> 
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
-                        element.setAttribute('style', 'width: 100%'); // Add width property
-                        element.setAttribute('style', 'min-height: 300px;'); // Add height property
+                    let canSave = true;
+                    element.addEventListener('input', (e) => {
+                        socket.emit('conclusionUpdate', { programID: '<%=program._id%>', text: element.innerHTML });
+                    });
+
+                    socket.on('conclusionUpdate', (data) => {
+                        if (element.parentElement.parentElement.id === `conclusion-${data.programID}`) {
+                            if (savingIcon.innerHTML !== 'Saving...') {
+                                savingIcon.innerHTML = 'Saving...'
+                            }
+                            if (!document.activeElement.classList.contains('nicEdit-main')) {
+                                element.innerHTML = data.text;
+                            }
+                        }
                     });
                 });
-            </script>
-            
-            <script>
-                let originalText;
-                document.addEventListener('DOMContentLoaded', () => {
-                    if (document.querySelector('.nicEdit-main')) {
-                        originalText = document.querySelector('.nicEdit-main').innerHTML;
-                    }
-                })
-            </script>
 
-            <script>
-                window.addEventListener('beforeunload', (e) => {
-                    let newText = document.querySelector('.nicEdit-main').innerHTML;
-                    if (newText !== originalText && e.target.activeElement.id !== 'saveTextButton') {
-                        e.preventDefault();
+                const nicEditElement = document.querySelector('.nicEdit-main');
+                let oldText = nicEditElement.innerHTML;
+
+                updateData = async () => {
+                    if (oldText !== nicEditElement.innerHTML) {
+                        oldText = nicEditElement.innerHTML;
+                        const data = { conclusion: nicEditElement.innerHTML };
+                        try {
+                            const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/supportingData/<%=program._id%>', data);
+
+                        } catch (error) {
+                            console.error('There was an error making the request:', error);
+                        }
                     }
-                })
-            </script>
+                    if (savingIcon.innerHTML !== 'Saved') {
+                        savingIcon.innerHTML = 'Saved'
+                    }
+                };
+
+                setInterval(updateData, 5000);
+            });
+
+            window.addEventListener('beforeunload', (e) => {
+                updateData()
+            })
+        </script>

@@ -6,6 +6,11 @@ if (process.env.NODE_ENV !== "production") {
 
 const express = require('express');
 const app = express();
+const { createServer } = require('node:http');
+const { Server } = require('socket.io');
+const server = createServer(app);
+const io = new Server(server);
+const cors = require('cors');
 const { dbURL } = require('./mongodb');
 const ejsMate = require('ejs-mate');
 const path = require('path');
@@ -31,6 +36,7 @@ const tiMatrixRoutes = require('./routes/tiMatrix');
 const saMatrixRoutes = require('./routes/saMatrix');
 const generalResourceRoutes = require('./routes/generalResources');
 const archiveRoutes = require('./routes/archives');
+const SegProgram = require('./models/segProgram');
 
 
 /**********Middleware setup*************** */
@@ -39,10 +45,30 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(favicon(path.join(__dirname, 'public', 'images', 'svg', 'favicon.svg')));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/nodeModules', express.static(path.join('/Users/noah/Desktop/Davis_Besse/Accreditation App/node_modules')))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 app.use(methodOverride('_method'));
 app.use(useragent.express());
+
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+});
+io.on('connection', (socket) => {
+    socket.on('supportingDataUpdate', (data) => {
+       io.emit('supportingDataUpdate', data);
+    });
+    socket.on('conclusionUpdate', (data) => {
+       io.emit('conclusionUpdate', data);
+    });
+    socket.on('aosrUpdate', (data) => {
+       io.emit('aosrUpdate', data);
+    });
+  });
 
 
 
@@ -123,7 +149,8 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err });
 })
 
+
 const port = process.env.PORT || 3001;
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`LISTENING ON PORT ${port}!`);
 });

@@ -89,10 +89,10 @@ module.exports.renderSeg = catchAsync(async (req, res) => {
     let nextSeg = await SegInstruction.findOne({ segInstructionID: segID + (number + 1) });
 
     if (!previousSeg) {
-        previousSeg = await SegInstruction.findOne({team: seg.segInstruction.team, department: seg.segInstruction.department}).sort({ segNum: -1 });
+        previousSeg = await SegInstruction.findOne({ team: seg.segInstruction.team, department: seg.segInstruction.department }).sort({ segNum: -1 });
     }
     if (!nextSeg) {
-        nextSeg = await SegInstruction.findOne({team: seg.segInstruction.team, department: seg.segInstruction.department}).sort({ segNum: 1 });
+        nextSeg = await SegInstruction.findOne({ team: seg.segInstruction.team, department: seg.segInstruction.department }).sort({ segNum: 1 });
     }
     res.render('segs/show', { seg, plant: seg.plant.name, previousSeg, nextSeg });
 });
@@ -108,19 +108,23 @@ module.exports.renderSupportingData = catchAsync(async (req, res) => {
     res.render('segs/programInputs/supportingData', { program });
 })
 
-module.exports.editSupportingData = catchAsync(async (req, res) => {
-    const { plantID, segInstructionID, programID } = req.params;
-    const program = await SegProgram.findById(programID);
-    program.supportingData = req.body.supportingData;
-    if (req.files.length !== 0) {
-        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
-        for (let upFile of files) {
-            const file = await new File(upFile).save();
-            program.supportingDataFiles.push(file._id);
-        }
-    }
-    await program.save();
-    res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
+module.exports.editProgramData = catchAsync(async (req, res) => {
+    const { programID } = req.params;
+    let program;
+    // console.log(req.file)
+    // if (req.files && req.files.length !== 0) {
+        program = await SegProgram.findByIdAndUpdate(programID, req.body, { new: true });
+    // } else {
+    //     program = await SegProgram.findById(programID);
+    //     program.supportingData = req.body.supportingData;
+    //     const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
+    //     for (let upFile of files) {
+    //         const file = await new File(upFile).save();
+    //         program.supportingDataFiles.push(file._id);
+    //     }
+    //     await program.save();
+    // }
+    return res.json(program);
 })
 
 module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {

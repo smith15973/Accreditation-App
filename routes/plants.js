@@ -1,10 +1,19 @@
 const express = require('express')
 const router = express.Router();
+const SegProgram = require('../models/segProgram')
 
 
 const { upload } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
-const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editSupportingData, changeStatus, renderAOSR, editAOSR, editConclusion, renderConclusion } = require('../controllers/plants');
+const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, editAOSR, editConclusion, renderConclusion } = require('../controllers/plants');
+
+
+router.route('/testing')
+    .get(async (req, res) => {
+        console.log('Testing route hit');
+        const program = await SegProgram.findById('6697fbeba234ebc4901c7907');
+        res.json({ message: program.supportingData[0] });
+    });
 
 router.route('/new')
     .get(isLoggedIn, isAdmin, renderCreateNewPlant)
@@ -28,10 +37,15 @@ router.route('/:plantID/seg/:segInstructionID')
 /* supportingData */
 router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
     .get(renderSupportingData)
-    .put(upload.array('fileInput'), editSupportingData)
+    .put(upload.array('fileInput'), editProgramData)
     .delete(deleteSupportingDataFiles)
 
-
+router.route('/:plantID/seg/:segInstructionID/supportingData/:programID/file')
+    .put(async (req, res) => {
+        const { programID } = req.params;
+        const program = await SegProgram.findByIdAndUpdate(programID, req.body, { new: true });
+        return res.json({ message: 'Update successful', data: program.supportingData[0] });
+    });
 
 /* conclusion */
 router.route('/:plantID/seg/:segInstructionID/conclusion/:programID')
