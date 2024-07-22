@@ -236,17 +236,20 @@
                     document.querySelector('#' + id).innerHTML = data.text
                 }
             })
-            socket.on('programStatusUpdate', data => {
-                const status = document.querySelector('#programStatus-' + data.programID);
-                if (status.value !== data.status) {
-                    status.value = data.status;
-                }
-                if (status.value === 'Submitted') {
-                    status.style.backgroundColor = 'rgb(123,187,123)';
-                } else {
-                    status.style.backgroundColor = 'white';
-                }
+            socket.on('programStatusUpdate', program => {
+                const programID = '#programStatus-' + program._id
+                const status = document.querySelector(programID);
 
+                if (status) {
+                    if (status.value !== program.status) {
+                        status.value = program.status;
+                    }
+                    if (status.value === 'Submitted') {
+                        status.style.backgroundColor = 'rgb(123,187,123)';
+                    } else {
+                        status.style.backgroundColor = 'white';
+                    }
+                }
             })
         </script>
 

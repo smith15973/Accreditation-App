@@ -111,20 +111,25 @@ let totalSubmitted = 0;
         <div class="tableLabel col-2 border border-dark">
             <a href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>"> <%= seg.segInstruction.segInstructionID %> </a>
         </div>
-        <div <%= incomplete.length === 0 ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=incomplete.length%>/<%=numPrograms%></div>
-        <div <%= uploaded.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=uploaded.length%>/<%=numPrograms%></div>
-        <div <%= reviewed.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=reviewed.length%>/<%=numPrograms%></div>
-        <div <%= approved.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=approved.length%>/<%=numPrograms%></div>
-        <div <%= submitted.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=submitted.length%>/<%=numPrograms%></div>
+        <div id="incomplete-<%=seg._id%>" <%= incomplete.length === 0 ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=incomplete.length%>/<%=numPrograms%></div>
+        <div id="uploaded-<%=seg._id%>" <%= uploaded.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=uploaded.length%>/<%=numPrograms%></div>
+        <div id="reviewed-<%=seg._id%>" <%= reviewed.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=reviewed.length%>/<%=numPrograms%></div>
+        <div id="approved-<%=seg._id%>" <%= approved.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=approved.length%>/<%=numPrograms%></div>
+        <div id="submitted-<%=seg._id%>" <%= submitted.length === numPrograms ? 'style=background-color:lightgreen;' : '' %> class="tableData col-2 border border-dark"><%=submitted.length%>/<%=numPrograms%></div>
     </div>
 <% } %>
 
     <div class="row">
         <div class="tableLabel col-2 border border-dark">Total</div>
-        <div <%= totalIncomplete === 0 ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalIncomplete %>/<%= total %></div>
-        <div <%= totalUploaded === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalUploaded %>/<%= total %></div>
-        <div <%= totalReviewed === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalReviewed %>/<%= total %></div>
-        <div <%= totalApproved === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalApproved %>/<%= total %></div>
-        <div <%= totalSubmitted === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalSubmitted %>/<%= total %></div>
+
+        <div id="totalIncomplete-<%=team[0]%><%=department[0]%>" <%= totalIncomplete === 0 ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalIncomplete %>/<%= total %></div>
+
+        <div id="totalUploaded-<%=team[0]%><%=department[0]%>" <%= totalUploaded === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalUploaded %>/<%= total %></div>
+
+        <div id="totalReviewed-<%=team[0]%><%=department[0]%>" <%= totalReviewed === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalReviewed %>/<%= total %></div>
+
+        <div id="totalApproved-<%=team[0]%><%=department[0]%>" <%= totalApproved === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalApproved %>/<%= total %></div>
+
+        <div id="totalSubmitted-<%=team[0]%><%=department[0]%>" <%= totalSubmitted === total ? 'style=background-color:lightgreen;' : '' %> class="tableTotal col-2 border border-dark"><%= totalSubmitted %>/<%= total %></div>
         
     </div>

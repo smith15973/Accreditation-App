@@ -50,6 +50,7 @@ const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
 const useragent = require('express-useragent');
 const SegProgram = require('./models/segProgram')
+const Seg = require('./models/seg')
 
 /**********import routes*************** */
 const plantRoutes = require('./routes/plants');
@@ -61,6 +62,7 @@ const tiMatrixRoutes = require('./routes/tiMatrix');
 const saMatrixRoutes = require('./routes/saMatrix');
 const generalResourceRoutes = require('./routes/generalResources');
 const archiveRoutes = require('./routes/archives');
+const { all } = require('axios');
 
 
 /**********Middleware setup*************** */
@@ -96,8 +98,13 @@ io.on('connection', (socket) => {
     });
 
     socket.on('programStatusUpdate', async (data) => {
-        await SegProgram.findByIdAndUpdate(data.programID, {status: data.status})
-        io.emit('programStatusUpdate', data);
+        const program = await SegProgram.findByIdAndUpdate(data.programID, {status: data.status}, {new: true})
+        io.emit('programStatusUpdate', program);
+        const seg = await Seg.findOne({segPrograms: program._id}).populate(['segPrograms', 'segInstruction'])
+        let allPrograms = await SegProgram.find({plant: seg.plant}).populate({path: 'seg', populate: {path: 'segInstruction'}})
+        allPrograms = allPrograms.filter(program => program.seg.segInstruction.team === seg.segInstruction.team && program.seg.segInstruction.department === seg.segInstruction.department)
+        console.log('ALL', allPrograms)
+        io.emit('reportTableStatusUpdate', {seg, allPrograms});
     })
   });
 
