@@ -108,23 +108,24 @@ module.exports.renderSupportingData = catchAsync(async (req, res) => {
     res.render('segs/programInputs/supportingData', { program });
 })
 
-module.exports.editProgramData = catchAsync(async (req, res) => {
+module.exports.editProgramData = catchAsync(async (req, res, next) => {
+    console.log(req);
     const { programID } = req.params;
     let program;
-    // console.log(req.file)
-    // if (req.files && req.files.length !== 0) {
-        program = await SegProgram.findByIdAndUpdate(programID, req.body, { new: true });
-    // } else {
-    //     program = await SegProgram.findById(programID);
-    //     program.supportingData = req.body.supportingData;
-    //     const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
-    //     for (let upFile of files) {
-    //         const file = await new File(upFile).save();
-    //         program.supportingDataFiles.push(file._id);
-    //     }
-    //     await program.save();
-    // }
-    return res.json(program);
+    if (typeof req.files === 'undefined' || req.files.length === 0) {
+        program = await SegProgram.findByIdAndUpdate(programID, req.body, { new: true }).populate('supportingDataFiles');
+    } else {
+        program = await SegProgram.findById(programID);
+        program.supportingData = req.body.supportingData;
+        const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
+        for (let upFile of files) {
+            const file = await new File(upFile).save();
+            program.supportingDataFiles.push(file._id);
+        }
+        await program.save()
+        await program.populate('supportingDataFiles');
+    }
+    return res.json({admin: req.user.admin, program});
 })
 
 module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {

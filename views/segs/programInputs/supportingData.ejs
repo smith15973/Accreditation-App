@@ -45,7 +45,7 @@
                             <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Supporting Data
                         </h1>
                         <div class="mx-2 d-inline">
-                            <button type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
+                            <button id="saveSupportingDataButton" type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
                             <div class="d-inline" id="savingIcon">Saved</div>
                         </div>
                     </div>
@@ -66,7 +66,7 @@
                         <form class="mt-5" id="deleteFileForm"
                             action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE"
                             method="post">
-                            <ul class="list-group">
+                            <ul id="fileListContainer" class="list-group">
                                 <% if (currentUser.admin) { %>
                                     <li class="list-group-item d-flex align-items-center justify-content-between px-3">
                                         <div class="py-2">
@@ -146,6 +146,7 @@
             const socket = io();
             let updateData;
             document.addEventListener('DOMContentLoaded', () => {
+                setDeleteChecks();
                 const savingIcon = document.querySelector('#savingIcon');
                 const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
                     element.setAttribute('style', 'width: 100%'); // Add width property
@@ -177,6 +178,7 @@
                         const data = { supportingData: nicEditElement.innerHTML };
                         try {
                             const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/supportingData/<%=program._id%>', data);
+                            console.log('Response', response);
                             
                         } catch (error) {
                             console.error('There was an error making the request:', error);
@@ -185,48 +187,77 @@
                     if (savingIcon.innerHTML !== 'Saved') {
                             savingIcon.innerHTML = 'Saved'
                     }
+
+                    const fileInput = document.querySelector('input[type="file"]');
+                    if (fileInput.files.length > 0) {
+                        const formData = new FormData();                     
+                        // Append each file individually
+                        for (let i = 0; i < fileInput.files.length; i++) {
+                            formData.append('fileInput', fileInput.files[i]);
+                        }
+
+                        formData.append('supportingData', nicEditElement.innerHTML);
+  
+                        
+                        try {
+                            const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/supportingData/<%=program._id%>', formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            });
+                            appendFile(response.data.program.supportingDataFiles[2], response.data.admin);
+                            
+                        } catch (error) {
+                            console.error('There was an error making the request:', error);
+                        }
+                        fileInput.value = '';
+                        
+                    }
                 };
 
-                setInterval(updateData, 5000);
+                // setInterval(updateData, 10000);
             });
 
             window.addEventListener('beforeunload', (e) => {
                     updateData()
                 })
 
-            const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
-            const selectAllCheck = document.getElementById('selectAllCheck');
-            const deleteFilesButton = document.getElementById('deleteFilesButton');
 
-            deleteCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    if (deleteCheckboxes.length === document.querySelectorAll('.deleteCheck:checked').length) {
-                        selectAllCheck.checked = true;
-                    } else {
-                        selectAllCheck.checked = false;
-                    }
-                    if (document.querySelectorAll('.deleteCheck:checked').length > 0) {
-                        deleteFilesButton.disabled = false;
-                    } else {
-                        deleteFilesButton.disabled = true;
-                    }
-                });
-            });
+            function setDeleteChecks() {
+                const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
+                let selectAllCheck = document.getElementById('selectAllCheck');
+                const deleteFilesButton = document.getElementById('deleteFilesButton');
 
-            if (selectAllCheck) {
-                selectAllCheck.addEventListener('change', () => {
-                    if (selectAllCheck.checked) {
-                        deleteCheckboxes.forEach(checkbox => {
-                            checkbox.checked = true;
-                        });
-                        deleteFilesButton.disabled = false;
-                    } else {
-                        deleteCheckboxes.forEach(checkbox => {
-                            checkbox.checked = false;
-                        });
-                        deleteFilesButton.disabled = true;
-                    }
+                deleteCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        if (deleteCheckboxes.length === document.querySelectorAll('.deleteCheck:checked').length) {
+                            selectAllCheck.checked = true;
+                        } else {
+                            selectAllCheck.checked = false;
+                        }
+                        if (document.querySelectorAll('.deleteCheck:checked').length > 0) {
+                            deleteFilesButton.disabled = false;
+                        } else {
+                            deleteFilesButton.disabled = true;
+                        }
+                    });
                 });
+
+                if (selectAllCheck) {
+                    selectAllCheck.addEventListener('change', () => {
+                        if (selectAllCheck.checked) {
+                            deleteCheckboxes.forEach(checkbox => {
+                                checkbox.checked = true;
+                            });
+                            deleteFilesButton.disabled = false;
+                        } else {
+                            deleteCheckboxes.forEach(checkbox => {
+                                checkbox.checked = false;
+                            });
+                            deleteFilesButton.disabled = true;
+                        }
+                    });
+                }
             }
 
             function closePDF() {
@@ -240,15 +271,60 @@
             }
 
             function fileInputSubmit() {
-                document.querySelector('#loadingCircle').style.display = 'block';
-                document.querySelector('#saveTextButton').disabled = false;
-                isFormSubmitted = true;
-                document.querySelector('#saveTextButton').click();
+                document.querySelector('#saveSupportingDataButton').click();
             }
 
             document.querySelector('#fileInput').onchange = fileInputSubmit;
 
             function hideLoading() {
                 document.getElementById('loading').style.display = 'none';
+            }
+
+            function appendFile(file, admin) {
+                const fileListContainer = document.querySelector('#fileListContainer');
+                if (fileListContainer) {
+                    const addedFile = document.createElement('li');
+                    addedFile.classList.add('list-group-item', 'd-flex', 'justify-content-between');
+                    
+                    if (admin) {
+                        addedFile.innerHTML = `
+                        <div class="d-flex pt-2">
+                            <div class="">
+                                <input id="file${file._id}" name="deletedFiles[]"
+                                    value="${file._id}" type="checkbox"
+                                    class="form-check mb-2 deleteCheck">
+                            </div>
+                            <label class="form-label px-3 text-wrap" for="file${file._id}">
+                            ${file.originalName}
+                        </label>
+                        </div>    
+                        `;
+                    } else {
+                        addedFile.innerHTML = `
+                        <div class="d-flex pt-2">
+                            <div class="">
+                                    ${file.originalName}
+                            </div>
+                        </div>
+                        `;
+                    }
+                    addedFile.innerHTML += `
+                        <div class="d-flex">
+                            <div class="row my-auto">
+                                <div class="col">
+                                    <button type="button" class="btn btn-primary"
+                                        onclick="showPDF('${file.location}')">View</button>
+                                </div>
+                                <div class="col">
+                                    <a href="${file.location}"
+                                        download="${file.originalName}"
+                                        class="btn btn-secondary">Open</a>
+                                </div>
+                            </div>
+                        </div>`;
+                        fileListContainer.appendChild(addedFile);
+                }
+                setDeleteChecks();
+                
             }
         </script>
