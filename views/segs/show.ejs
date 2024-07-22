@@ -1,39 +1,43 @@
 <% layout('/layouts/boilerplate') %>
-<style>
-    .crop {
-        height: 500px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        line-clamp: 4; /* Adjust the number of lines as needed */
-        -webkit-box-orient: vertical;
-        line-height: 2; /* Adjust line height to fit the content better */
-        font-size: 5px;
-    }
-    .container{
-        max-width: 95%;
-    }
-    .bg-secondary {
-        background-color: #7c838944 !important;
-    }
+    <style>
+        .crop {
+            height: 500px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            line-clamp: 4;
+            /* Adjust the number of lines as needed */
+            -webkit-box-orient: vertical;
+            line-height: 2;
+            /* Adjust line height to fit the content better */
+            font-size: 5px;
+        }
 
-    .trashcans {
-        cursor: pointer;
-    }
+        .container {
+            max-width: 95%;
+        }
 
-    select {
-        cursor: pointer;
-    }
-    
-    .clickable-div {
-        cursor: pointer;
-    }
+        .bg-secondary {
+            background-color: #7c838944 !important;
+        }
 
-    .formattedText {
-        white-space: pre-wrap;
-    }
+        .trashcans {
+            cursor: pointer;
+        }
 
-    .navigationButtons {
+        select {
+            cursor: pointer;
+        }
+
+        .clickable-div {
+            cursor: pointer;
+        }
+
+        .formattedText {
+            white-space: pre-wrap;
+        }
+
+        .navigationButtons {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -45,15 +49,16 @@
             text-decoration: none;
             color: black;
             background-color: white;
-            
+
             @media print {
                 display: none;
             }
         }
-    .navigationButtons:hover {
-        opacity: 0.8;
-        cursor: pointer;
-    }
+
+        .navigationButtons:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
 
         #previousButton {
             left: 0px;
@@ -64,191 +69,221 @@
             right: 0px;
             rotate: 180deg;
         }
+    </style>
 
-</style>
-
-<% if (previousSeg) {%>
-<a href="/plant/<%= currentPlant._id %>/seg/<%= previousSeg._id %>" id="previousButton" class="border border-0 border-start-0 border navigationButtons">
-    ←
-</a>
-<% } %>
-
-<% if (nextSeg) {%>
-<a href="/plant/<%= currentPlant._id %>/seg/<%= nextSeg._id %>" id="nextButton" class="border border-0 border-start-0 border navigationButtons">
-    ←
-</a>
-<% } %>
-
-
-    <div class="d-flex justify-content-between">
-        <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>" id="backToPlantButton">Back to <%= currentPlant.name %> Plant</a>
-        <h4 class="d-flex align-items-center inline-elements">
-            <select
-                onchange="window.location=`/plant/${this.value}/seg/<%=seg.segInstruction._id%>`"
-                class="ms-2 border-0 fw-light" name="plantSelect" id="plantSelect">
-                <% for (let plant of currentUser.plants) { %>
-                <option <%= currentPlant._id.toString() === plant._id.toString() ? 'selected' : '' %> value="<%= plant._id %>"><%= plant.name %></option>
-                <% } %>
-            </select>
-        </h4>
-    </div>
-
-    <h3 class="text-center fw-bold">
-        <%= seg.segInstruction.team %> Training (Implementation and Oversight) SAT Evaluation Guide (SEG)
-    </h3>
-
-    <div class="mb-5">
-        <div class="row bg-secondary fw-bold text-center">
-            <div class="col border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Applicable AO&C</p>
-            </div>
-            <div class="col border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Review Activity</p>
-            </div>
-            <div class="col border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Data Submittal</p>
-            </div>
-            <div class="col border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Review Guidance</p>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col fw-normal border border-1 border-dark text-break">
-                <p class="fw-bold fs-6"><%= seg.segInstruction.segInstructionID %></p>
-                <p class="fs-6 formattedText"><%- seg.segInstruction.applicableAOC %></p>
-            </div>
-            <div class="col  fw-normal border border-1 border-dark text-break">
-                <p class="fs-6 formattedText"><%- seg.segInstruction.reviewActivity %></p>
-            </div>
-            <div class="col  fw-normal border border-1 border-dark text-break">
-                <p class="fs-6 formattedText"><%- seg.segInstruction.dataSubmittal %></p>
-            </div>
-            <div class="col  fw-normal border border-1 border-dark text-break">
-                <p class="fs-6 formattedText"><%- seg.segInstruction.reviewGuidance %></p>
-            </div>
-        </div>
-
-        <div class="row bg-secondary">
-            <div class="col-1 text-center fw-bold border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Program</p>
-            </div>
-            <div class="col-5 text-center fw-bold border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Supporting Data</p>
-            </div>
-            <div class="col text-center fw-bold border border-1 border-dark text-break">
-                <p class="my-auto fs-6">Conclusion</p>
-            </div>
-            <div class="col text-center fw-bold border border-1 border-dark text-break">
-                <p class="my-auto fs-6">AOSR</p>
-            </div>
-        </div>
-        
-        <%seg.segPrograms.forEach((program,count) => { %>  
-            <div class="row">
-                <div class="col-1 fw-bold border border-1 border-dark fs-6 text-break">
-                    <div class="text-center pt-1"><%= program.name %></div>
-                    <form action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/status/<%= program._id %>?_method=PUT" id="statusForm<%=count%>" method="post">
-                        <select <%= program.status === 'Submitted' ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect form-control text-center my-3" name="status">
-                            <option <%= program.status === 'Incomplete' ? 'selected' : '' %> value="Incomplete">Incomplete</option>
-                            <option <%= program.status === 'Uploaded' ? 'selected' : '' %> value="Uploaded">Uploaded</option>
-                            <option <%= program.status === 'Reviewed' ? 'selected' : '' %> value="Reviewed">Reviewed</option>
-                            <option <%= program.status === 'Approved' ? 'selected' : '' %> value="Approved">Approved</option>
-                            <option <%= program.status === 'Submitted' ? 'selected' : '' %> value="Submitted">Submitted</option>
-                        </select>
-                    </form>
-                </div>
-
-                <div class="col-5 fw-normal border border-1 border-dark text-break clickable-div" 
-                onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>', '_blank', 'noopener,noreferrer')">
-                    <p id="supportingData-<%=program._id%>" class="fs-6"><%- program.supportingData %></p>
-                    <p class="fs-6"><%- program.supportingDataFiles.length %> Attachments</p>
-
-                </div>
-
-                <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
-                onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/conclusion/<%= program._id %>', '_blank', 'noopener,noreferrer')">
-                    <p id="conclusion-<%=program._id%>" class="fs-6"><%- program.conclusion %></p>
-                </div>
-                <div class="col fw-normal border border-1 border-dark text-break clickable-div" 
-                onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>', 'noopener,noreferrer')">
-                    <p id="aosr-<%=program._id%>" class="fs-6"><%- program.aosr %></p>
-                </div>
-            </div>
-        <% }); %>
-        <% if (currentUser.admin) { %>
-            <div class="d-flex justify-content-end">
-                <a class="btn btn-warning mt-2" href="/seg/instruction/<%= seg.segInstruction._id %>?fromPlant=<%= currentPlant._id %>">Edit Seg Template</a>
-            </div>
+    <% if (previousSeg) {%>
+        <a href="/plant/<%= currentPlant._id %>/seg/<%= previousSeg._id %>" id="previousButton"
+            class="border border-0 border-start-0 border navigationButtons">
+            ←
+        </a>
         <% } %>
 
-        
+            <% if (nextSeg) {%>
+                <a href="/plant/<%= currentPlant._id %>/seg/<%= nextSeg._id %>" id="nextButton"
+                    class="border border-0 border-start-0 border navigationButtons">
+                    ←
+                </a>
+                <% } %>
+
+
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-primary" href="/plant/<%= currentPlant._id %>" id="backToPlantButton">Back to
+                            <%= currentPlant.name %> Plant</a>
+                        <h4 class="d-flex align-items-center inline-elements">
+                            <select onchange="window.location=`/plant/${this.value}/seg/<%=seg.segInstruction._id%>`"
+                                class="ms-2 border-0 fw-light" name="plantSelect" id="plantSelect">
+                                <% for (let plant of currentUser.plants) { %>
+                                    <option <%=currentPlant._id.toString()===plant._id.toString() ? 'selected' : '' %>
+                                        value="<%= plant._id %>"><%= plant.name %>
+                                    </option>
+                                    <% } %>
+                            </select>
+                        </h4>
+                    </div>
+
+                    <h3 class="text-center fw-bold">
+                        <%= seg.segInstruction.team %> Training (Implementation and Oversight) SAT Evaluation Guide
+                            (SEG)
+                    </h3>
+
+                    <div class="mb-5">
+                        <div class="row bg-secondary fw-bold text-center">
+                            <div class="col border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Applicable AO&C</p>
+                            </div>
+                            <div class="col border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Review Activity</p>
+                            </div>
+                            <div class="col border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Data Submittal</p>
+                            </div>
+                            <div class="col border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Review Guidance</p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col fw-normal border border-1 border-dark text-break">
+                                <p class="fw-bold fs-6">
+                                    <%= seg.segInstruction.segInstructionID %>
+                                </p>
+                                <p class="fs-6 formattedText"><%- seg.segInstruction.applicableAOC %></p>
+                            </div>
+                            <div class="col  fw-normal border border-1 border-dark text-break">
+                                <p class="fs-6 formattedText"><%- seg.segInstruction.reviewActivity %></p>
+                            </div>
+                            <div class="col  fw-normal border border-1 border-dark text-break">
+                                <p class="fs-6 formattedText"><%- seg.segInstruction.dataSubmittal %></p>
+                            </div>
+                            <div class="col  fw-normal border border-1 border-dark text-break">
+                                <p class="fs-6 formattedText"><%- seg.segInstruction.reviewGuidance %></p>
+                            </div>
+                        </div>
+
+                        <div class="row bg-secondary">
+                            <div class="col-1 text-center fw-bold border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Program</p>
+                            </div>
+                            <div class="col-5 text-center fw-bold border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Supporting Data</p>
+                            </div>
+                            <div class="col text-center fw-bold border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">Conclusion</p>
+                            </div>
+                            <div class="col text-center fw-bold border border-1 border-dark text-break">
+                                <p class="my-auto fs-6">AOSR</p>
+                            </div>
+                        </div>
+
+                        <%seg.segPrograms.forEach((program,count)=> { %>
+                            <div class="row">
+                                <div class="col-1 fw-bold border border-1 border-dark fs-6 text-break">
+                                    <div class="text-center pt-1">
+                                        <%= program.name %>
+                                    </div>
+                                    <form
+                                        action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/status/<%= program._id %>?_method=PUT"
+                                        id="statusForm<%=count%>" method="post">
+                                        <select id="programStatus-<%=program._id%>" <%=program.status==='Submitted'
+                                            ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect
+                                            form-control text-center my-3" name="status">
+                                            <option <%=program.status==='Incomplete' ? 'selected' : '' %>
+                                                value="Incomplete">Incomplete</option>
+                                            <option <%=program.status==='Uploaded' ? 'selected' : '' %>
+                                                value="Uploaded">Uploaded</option>
+                                            <option <%=program.status==='Reviewed' ? 'selected' : '' %>
+                                                value="Reviewed">Reviewed</option>
+                                            <option <%=program.status==='Approved' ? 'selected' : '' %>
+                                                value="Approved">Approved</option>
+                                            <option <%=program.status==='Submitted' ? 'selected' : '' %>
+                                                value="Submitted">Submitted</option>
+                                        </select>
+                                    </form>
+                                </div>
+
+                                <div class="col-5 fw-normal border border-1 border-dark text-break clickable-div"
+                                    onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>', '_blank', 'noopener,noreferrer')">
+                                    <p id="supportingData-<%=program._id%>" class="fs-6"><%- program.supportingData %>
+                                    </p>
+                                    <p id="supportingDataFiles-<%=program._id%>" class="fs-6"><%-
+                                            program.supportingDataFiles.length %> Attachments</p>
+
+                                </div>
+
+                                <div class="col fw-normal border border-1 border-dark text-break clickable-div"
+                                    onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/conclusion/<%= program._id %>', '_blank', 'noopener,noreferrer')">
+                                    <p id="conclusion-<%=program._id%>" class="fs-6"><%- program.conclusion %></p>
+                                </div>
+                                <div class="col fw-normal border border-1 border-dark text-break clickable-div"
+                                    onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>', 'noopener,noreferrer')">
+                                    <p id="aosr-<%=program._id%>" class="fs-6"><%- program.aosr %></p>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% if (currentUser.admin) { %>
+                                    <div class="d-flex justify-content-end">
+                                        <a class="btn btn-warning mt-2"
+                                            href="/seg/instruction/<%= seg.segInstruction._id %>?fromPlant=<%= currentPlant._id %>">Edit
+                                            Seg Template</a>
+                                    </div>
+                                    <% } %>
+
+
 
 
 
         <script>
             const socket = io();
-            socket.on('supportingDataUpdate', (data)=> {
+
+            
+
+
+            socket.on('supportingDataUpdate', (data) => {
                 const id = 'supportingData-' + data.programID;
-                if (document.querySelector('#'+id)) {
-                    document.querySelector('#'+id).innerHTML = data.text
+                if (document.querySelector('#' + id)) {
+                    document.querySelector('#' + id).innerHTML = data.text
                 }
             })
-            socket.on('conclusionUpdate', (data)=> {
+            socket.on('conclusionUpdate', (data) => {
                 const id = 'conclusion-' + data.programID;
-                if (document.querySelector('#'+id)) {
-                    document.querySelector('#'+id).innerHTML = data.text
+                if (document.querySelector('#' + id)) {
+                    document.querySelector('#' + id).innerHTML = data.text
                 }
             })
-            socket.on('aosrUpdate', (data)=> {
+            socket.on('aosrUpdate', (data) => {
                 const id = 'aosr-' + data.programID;
-                if (document.querySelector('#'+id)) {
-                    document.querySelector('#'+id).innerHTML = data.text
+                if (document.querySelector('#' + id)) {
+                    document.querySelector('#' + id).innerHTML = data.text
                 }
+            })
+            socket.on('programStatusUpdate', data => {
+                const status = document.querySelector('#programStatus-' + data.programID);
+                if (status.value !== data.status) {
+                    status.value = data.status;
+                }
+                if (status.value === 'Submitted') {
+                    status.style.backgroundColor = 'rgb(123,187,123)';
+                } else {
+                    status.style.backgroundColor = 'white';
+                }
+
             })
         </script>
 
-    <script>
-        const statusSelects = document.querySelectorAll('.statusSelect');
-        statusSelects.forEach(select => {
-            select.addEventListener('change', () => {
-                if (select.value === 'Submitted') {
-                    select.style.backgroundColor = 'rgb(123,187,123)';
-                } else {
-                    select.style.backgroundColor = 'white';
-                }
-                
-                select.parentElement.submit();
+        <script>
+            const statusSelects = document.querySelectorAll('.statusSelect');
+            statusSelects.forEach(select => {
+                select.addEventListener('change', () => {
+                    socket.emit('programStatusUpdate', { programID: select.id.split('-')[1], status: select.value });
+                })
             })
-        })
 
 
-    </script>
+        </script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function(event) { 
-            const scrollpos = localStorage.getItem('scrollpos');
-            if (scrollpos) window.scrollTo(0, scrollpos);
-        });
+        <script>
+            document.addEventListener("DOMContentLoaded", function (event) {
+                const scrollpos = localStorage.getItem('scrollpos');
+                if (scrollpos) window.scrollTo(0, scrollpos);
+            });
 
-        window.onbeforeunload = function(e) {
-            localStorage.setItem('scrollpos', window.scrollY);
-        };
-    </script>
+            window.onbeforeunload = function (e) {
+                localStorage.setItem('scrollpos', window.scrollY);
+            };
+        </script>
 
-    <script>
-        document.querySelector('#backToPlantButton').addEventListener('click', () => {
-            localStorage.removeItem('scrollpos');
-        })
-    </script>
+        <script>
+            document.querySelector('#backToPlantButton').addEventListener('click', () => {
+                localStorage.removeItem('scrollpos');
+            })
+        </script>
 
-    <script>
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
-                document.querySelector('#previousButton').click();
-            } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
-                document.querySelector('#nextButton').click();
-            }
-        })
-    </script>
-
+        <script>
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
+                    document.querySelector('#previousButton').click();
+                } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
+                    document.querySelector('#nextButton').click();
+                }
+            })
+        </script>

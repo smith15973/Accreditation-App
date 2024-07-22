@@ -5,11 +5,35 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const express = require('express');
-const app = express();
 const { createServer } = require('node:http');
 const { Server } = require('socket.io');
+const { availableParallelism } = require('node:os');
+const cluster = require('node:cluster');
+const { createAdapter, setupPrimary } = require('@socket.io/cluster-adapter');
+
+
+
+if (cluster.isPrimary) {
+    const numCPUs = availableParallelism();
+    // create one worker per available core
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork({
+        PORT: 3000 + i
+      });
+    }
+    
+    // set up the adapter on the primary thread
+    return setupPrimary();
+  }
+
+const app = express();
 const server = createServer(app);
-const io = new Server(server, {connectionStateRecovery:{}});
+const io = new Server(server, {
+    connectionStateRecovery: {},
+    // set up the adapter on each worker thread
+    adapter: createAdapter()
+  });
+
 const cors = require('cors');
 const { dbURL } = require('./mongodb');
 const ejsMate = require('ejs-mate');
@@ -25,6 +49,7 @@ const ExpressError = require('./utils/ExpressError');
 const favicon = require('serve-favicon');
 const catchAsync = require('./utils/catchAsync');
 const useragent = require('express-useragent');
+const SegProgram = require('./models/segProgram')
 
 /**********import routes*************** */
 const plantRoutes = require('./routes/plants');
@@ -52,6 +77,7 @@ app.use(methodOverride('_method'));
 app.use(useragent.express());
 
 
+
 io.on('connection', (socket) => {
     console.log('a user connected');
     socket.on('disconnect', () => {
@@ -68,6 +94,11 @@ io.on('connection', (socket) => {
     socket.on('aosrUpdate', (data) => {
        io.emit('aosrUpdate', data);
     });
+
+    socket.on('programStatusUpdate', async (data) => {
+        await SegProgram.findByIdAndUpdate(data.programID, {status: data.status})
+        io.emit('programStatusUpdate', data);
+    })
   });
 
 
