@@ -30,113 +30,117 @@
 </style>
 <div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
 <% layout('/layouts/boilerplate') %>
-    <% const seg=program.seg %>
+<% const seg=program.seg %>
 
-        <div class="row px-auto">
-            <div class="col mb-3">
-                <a id="backToSegButton" class="btn btn-primary"
-                    href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%=
-                        seg.segInstruction.segInstructionID %></a>
-                <form id="putForm"
-                    action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=PUT"
-                    method="post" enctype="multipart/form-data">
-                    <div class="my-3">
-                        <h1 class="fs-3 d-inline">
-                            <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Supporting Data
-                        </h1>
-                        <div class="mx-2 d-inline">
-                            <button id="saveSupportingDataButton" type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
-                            <div class="d-inline" id="savingIcon">Saved</div>
-                        </div>
-                    </div>
-                    <div id="supportingData-<%= program._id %>">
-                    <textarea class="form-control"
-                        name="supportingData"><%= program.supportingData[0] !== '' ? program.supportingData[0] : '' %></textarea>
-                    </div>
+<a id="backToSegButton" class="btn btn-primary"
+            href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">
+            Back to <%=seg.segInstruction.segInstructionID %>
+</a>
 
-
-                    <div class="row">
-                        <div class="mt-5 col-12 col-lg-5">
-                            <input id="fileInput" name="fileInput" type="file" accept=".pdf" class="form-control mb-2"
-                                multiple>
-                        </div>
-                </form>
-                <div class="col-12 col-lg-7 ">
-                    <% if (program.supportingDataFiles.length) { %>
-                        <form class="mt-5" id="deleteFileForm"
-                            action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE"
-                            method="post">
-                            <ul id="fileListContainer" class="list-group">
-                                <% if (currentUser.admin) { %>
-                                    <li class="list-group-item d-flex align-items-center justify-content-between px-3">
-                                        <div class="py-2">
-                                            <input class="border" type="checkbox" id="selectAllCheck">
-                                        </div>
-                                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
-                                            id="deleteFilesButton">
-                                            Delete
-                                        </button>
-                                    </li>
-                                    <% } %>
-                                        <% program.supportingDataFiles.forEach((file, i)=> { %>
-                                            <li class="list-group-item d-flex justify-content-between">
-                                                <div class="d-flex pt-2">
-                                                    <% if (currentUser.admin) { %>
-                                                        <div class="">
-
-                                                            <input id="file<%=i%>" name="deletedFiles[]"
-                                                                value="<%=file._id%>" type="checkbox"
-                                                                class="form-check mb-2 deleteCheck">
-
-                                                        </div>
-                                                        <label class="form-label px-3 text-wrap" for="file<%=i%>">
-                                                            <%= file.originalName %>
-                                                        </label>
-                                                        <% } else { %>
-                                                            <div class="">
-                                                                <%= file.originalName %>
-                                                            </div>
-                                                            <% } %>
-                                                </div>
-                                                <div class="d-flex">
-                                                    <div class="row my-auto">
-                                                        <div class="col">
-                                                            <button type="button" class="btn btn-primary"
-                                                                onclick="showPDF('<%=file.location%>')">View</button>
-                                                        </div>
-                                                        <div class="col">
-                                                            <a href="<%=file.location%>"
-                                                                download="<%=file.originalName%>"
-                                                                class="btn btn-secondary">Open</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <% }) %>
-                            </ul>
-                        </form>
-
-                        <% } %>
+<div class="row px-auto">
+    <div class="col mb-3">
+        <form id="putForm"
+            action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=PUT"
+            method="post" enctype="multipart/form-data">
+            <div class="my-3">
+                <h1 class="fs-3 d-inline">
+                    <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Supporting Data
+                </h1>
+                <div class="mx-2 d-inline">
+                    <button id="saveSupportingDataButton" type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
+                    <div class="d-inline" id="savingIcon">Saved</div>
                 </div>
             </div>
-
-
-        </div>
-
-        <div id="pdfSection" class="col-xxl-6" style="position: relative; display: none;">
-            <div class="text-end mb-2">
-                <button class="btn btn-secondary" onclick="closePDF()">Close</button>
+            <div id="supportingData-<%= program._id %>">
+                <textarea class="form-control"
+                name="supportingData"><%= program.supportingData[0] !== '' ? program.supportingData[0] : '' %></textarea>
             </div>
-            <div class="text-center">
-                <embed id="pdfWindow" class="rounded d-inline" type="application/pdf"
-                    style="width: 100%; height: 1000px;" onload="hideLoading()" />
-            </div>
-            <div class="loading" id="loading"
-                style="display: block; position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); z-index: 1000;">
+        </form>
 
+        <div class="row">
+            <div class="mt-5 col-12 col-lg-5">
+                <input id="fileInput" name="fileInput" type="file" accept=".pdf" class="form-control mb-2"
+                    multiple>
+            </div>
+        
+            <div id="filesSection" class="col-12 col-lg-7 ">
+                <% if (program.supportingDataFiles.length) { %>
+                <form class="mt-5" id="deleteFileForm"
+                    action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE"
+                    method="post">
+                    <ul id="fileListContainer" class="list-group">
+                        <% if (currentUser.admin) { %>
+                        <li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
+                            <div class="py-2">
+                                <input class="border" type="checkbox" id="selectAllCheck">
+                            </div>
+                            <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
+                            id="deleteFilesButton">
+                                Delete
+                            </button>
+                        </li>
+                        <% } %>
+                        <% program.supportingDataFiles.forEach((file, i)=> { %>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <div class="d-flex pt-2">
+                                <% if (currentUser.admin) { %>
+                                <div class="">
+                                    <input id="file<%=i%>" name="deletedFiles[]"
+                                    value="<%=file._id%>" type="checkbox"
+                                    class="form-check mb-2 deleteCheck">
+                                </div>
+                                <label class="form-label px-3 text-wrap" for="file<%=i%>">
+                                    <%= file.originalName %>
+                                </label>
+                                <% } else { %>
+                                <div class="">
+                                    <%= file.originalName %>
+                                </div>
+                                <% } %>
+                            </div>
+                            <div class="row ps-5">
+                                <div class="col">
+                                    <b>Upload Date:</b> <%= file.uploadDate.toLocaleString() %>
+                                </div>
+                                <div class="col-3 d-flex my-auto justify-content-end">
+                                    <div class="">
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="showPDF('<%=file.location%>')">View
+                                        </button>
+                                    </div>
+                                    <!-- <div class="col">
+                                        <a href="<%#=file.location%>"
+                                        download="<%#=file.originalName%>"
+                                        class="btn btn-secondary mb-1">
+                                            Open
+                                        </a>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </li>
+                        <% }) %>
+                    </ul>
+                </form>
+                <% } %>
             </div>
         </div>
+    </div>
+    <div id="pdfSection" class="col-xl-6" style="position: relative; display: none;">
+        <div class="text-end mb-2">
+            <button class="btn btn-secondary" onclick="closePDF()">Close</button>
         </div>
+        <div class="text-center">
+            <embed id="pdfWindow" class="rounded d-inline" type="application/pdf"
+                style="width: 100%; height: 1000px;" onload="hideLoading()" />
+        </div>
+        <div class="loading" id="loading"
+            style="display: block; position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); z-index: 1000;">
+        </div>
+    </div>
+
+</div>
+
+
 
 
         <!-- NicEdit -->
@@ -205,7 +209,7 @@
                                     'Content-Type': 'multipart/form-data'
                                 }
                             });
-                            appendFile(response.data.program.supportingDataFiles[2], response.data.admin);
+                            appendFile(response.data.program.supportingDataFiles, response.data.admin);
                             
                         } catch (error) {
                             console.error('There was an error making the request:', error);
@@ -280,9 +284,48 @@
                 document.getElementById('loading').style.display = 'none';
             }
 
-            function appendFile(file, admin) {
-                const fileListContainer = document.querySelector('#fileListContainer');
-                if (fileListContainer) {
+            function appendFile(files, admin) {
+                let fileListContainer = document.querySelector('#fileListContainer');
+                if (!fileListContainer) {
+                    fileListContainer = document.createElement('ul');
+                    fileListContainer.classList.add('list-group')
+                    fileListContainer.id = "fileListContainer";
+
+                    const deleteForm = document.createElement('form');
+                    deleteForm.classList.add('mt-5');
+                    deleteForm.id = "deleteFileForm";
+                    deleteForm.action = '/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE';
+                    deleteForm.method="POST";
+                    deleteForm.appendChild(fileListContainer)
+                    document.querySelector('#filesSection').appendChild(deleteForm);
+                }
+                if (admin) {
+                    let deleteHeader = document.querySelector('#deleteHeader');
+                    if (!deleteHeader) {
+                        deleteHeader = document.createElement('li');
+                        deleteHeader.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between', 'px-3')
+                        deleteHeader.id = "deleteHeader"
+                        deleteHeader.innerHTML = `
+                        <div class="py-2">
+                            <input class="border" type="checkbox" id="selectAllCheck">
+                        </div>
+                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
+                        id="deleteFilesButton">
+                            Delete
+                        </button>`
+                    }
+                    fileListContainer.innerHTML = `<li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
+                                        <div class="py-2">
+                                            <input class="border" type="checkbox" id="selectAllCheck">
+                                        </div>
+                                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
+                                            id="deleteFilesButton">
+                                            Delete
+                                        </button>
+                                    </li>
+                    `
+                }
+                for (const file of files) {
                     const addedFile = document.createElement('li');
                     addedFile.classList.add('list-group-item', 'd-flex', 'justify-content-between');
                     
@@ -309,22 +352,22 @@
                         `;
                     }
                     addedFile.innerHTML += `
-                        <div class="d-flex">
-                            <div class="row my-auto">
+                        <div class="row ps-5">
                                 <div class="col">
-                                    <button type="button" class="btn btn-primary"
-                                        onclick="showPDF('${file.location}')">View</button>
+                                    <b>Upload Date:</b> ${file.uploadDate.toLocaleString()}
                                 </div>
-                                <div class="col">
-                                    <a href="${file.location}"
-                                        download="${file.originalName}"
-                                        class="btn btn-secondary">Open</a>
+                                <div class="col-3 d-flex my-auto justify-content-end">
+                                    <div class="">
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="showPDF('${file.location}')">View
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>`;
-                        fileListContainer.appendChild(addedFile);
+                            </div>`;
+                    fileListContainer.appendChild(addedFile);
                 }
                 setDeleteChecks();
-                
             }
+
+                
         </script>
