@@ -3,34 +3,107 @@
         max-width: 90%;
     }
 </style>
-<% layout('/layouts/boilerplate') %>
-    <% const seg=program.seg %>
+<style>
+    .loading {
+        display: none;
+        position: fixed;
+        top: 40%;
+        left: 45%;
+        transform: translate(-50%, -50%);
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
 
-        <div class="row px-auto">
-            <div class="col mb-3">
-                <a id="backToSegButton" class="btn btn-primary"
-                    href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">Back to <%=
-                        seg.segInstruction.segInstructionID %>
-                </a>
-                <form id="putForm"
-                    action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>?_method=PUT"
-                    method="post" enctype="multipart/form-data">
-                    <div class="my-3">
-                        <h1 class="fs-3 d-inline">
-                            <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, AOSR
-                        </h1>
-                        <div class="mx-2 d-inline">
-                            <button type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
-                            <div class="d-inline" id="savingIcon">Saved</div>
-                        </div>
-                    </div>
-                    <div id="aosr-<%= program._id %>">
-                        <textarea class="form-control"
-                            name="aosr"><%= program.aosr[0] !== '' ? program.aosr[0] : '' %></textarea>
-                    </div>
-                </form>
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .navigationButtons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 1);
+            position: fixed;
+            top: 48%;
+            bottom: 48%;
+            text-decoration: none;
+            color: black;
+            background-color: white;
+
+            @media print {
+                display: none;
+            }
+        }
+
+        .navigationButtons:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        #previousButton {
+            left: 0px;
+
+        }
+
+        #nextButton {
+            right: 0px;
+            rotate: 180deg;
+        }
+</style>
+<div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
+<% layout('/layouts/boilerplate') %>
+<% const seg=program.seg %>
+
+    <a href="/plant/<%= currentPlant._id %>/seg/<%= seg._id %>/conclusion/<%= program._id %>" id="previousButton"
+    class="border border-0 border-start-0 border navigationButtons">
+        ←
+    </a>
+    <a href="/plant/<%= currentPlant._id %>/seg/<%= seg._id %>/supportingData/<%= program._id %>" id="nextButton"
+    class="border border-0 border-start-0 border navigationButtons">
+        ←
+    </a>
+
+<a id="backToSegButton" class="btn btn-primary"
+            href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">
+            Back to <%=seg.segInstruction.segInstructionID %>
+</a>
+
+<div class="row px-auto">
+    <div class="col mb-3">
+        <form id="putForm"
+            action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>?_method=PUT"
+            method="post" enctype="multipart/form-data">
+            <div class="my-3">
+                <h1 class="fs-3 d-inline">
+                    <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, AOSR
+                </h1>
+                <div class="mx-2 d-inline">
+                    <button id="saveaosrButton" type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
+                    <div class="d-inline" id="savingIcon">Saved</div>
+                </div>
             </div>
-        </div>
+            <div id="aosr-<%= program._id %>">
+                <textarea class="form-control"
+                name="aosr"><%= program.aosr[0] !== '' ? program.aosr[0] : '' %></textarea>
+            </div>
+            
+        </form>
+
+              
+    </div>
+</div>
+
 
 
         <!-- NicEdit -->
@@ -45,18 +118,19 @@
                     element.setAttribute('style', 'width: 100%'); // Add width property
                     element.setAttribute('style', 'min-height: 300px;'); // Add height property
 
-                    let canSave = true;
                     element.addEventListener('input', (e) => {
                         socket.emit('aosrUpdate', { programID: '<%=program._id%>', text: element.innerHTML });
                     });
 
                     socket.on('aosrUpdate', (data) => {
                         if (element.parentElement.parentElement.id === `aosr-${data.programID}`) {
-                            if (savingIcon.innerHTML !== 'Saving...') {
-                                savingIcon.innerHTML = 'Saving...'
+                            if (savingIcon.innerHTML !== 'EDITING...') {
+                            savingIcon.innerHTML = 'EDITING...'
                             }
                             if (!document.activeElement.classList.contains('nicEdit-main')) {
                                 element.innerHTML = data.text;
+                                element.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                                element.classList.add('disabled')
                             }
                         }
                     });
@@ -70,21 +144,31 @@
                         oldText = nicEditElement.innerHTML;
                         const data = { aosr: nicEditElement.innerHTML };
                         try {
-                            const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/supportingData/<%=program._id%>', data);
-
+                            const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/aosr/<%=program._id%>', data);
+                            
                         } catch (error) {
                             console.error('There was an error making the request:', error);
                         }
                     }
                     if (savingIcon.innerHTML !== 'Saved') {
-                        savingIcon.innerHTML = 'Saved'
+                            savingIcon.innerHTML = 'Saved'
+                            nicEditElement.style.backgroundColor = ''
                     }
                 };
 
-                setInterval(updateData, 5000);
+                setInterval(updateData, 10000);
             });
 
             window.addEventListener('beforeunload', (e) => {
-                updateData()
-            })
+                    updateData()
+                })
+
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
+                    document.querySelector('#previousButton').click();
+                } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
+                    document.querySelector('#nextButton').click();
+                }
+            })  
         </script>

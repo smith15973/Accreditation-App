@@ -27,10 +27,52 @@
             transform: rotate(360deg);
         }
     }
+
+    .navigationButtons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 25px;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 1);
+            position: fixed;
+            top: 48%;
+            bottom: 48%;
+            text-decoration: none;
+            color: black;
+            background-color: white;
+
+            @media print {
+                display: none;
+            }
+        }
+
+        .navigationButtons:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        #previousButton {
+            left: 0px;
+
+        }
+
+        #nextButton {
+            right: 0px;
+            rotate: 180deg;
+        }
 </style>
 <div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
 <% layout('/layouts/boilerplate') %>
 <% const seg=program.seg %>
+
+    <a href="/plant/<%= currentPlant._id %>/seg/<%= seg._id %>/aosr/<%= program._id %>" id="previousButton"
+    class="border border-0 border-start-0 border navigationButtons">
+        ←
+    </a>
+    <a href="/plant/<%= currentPlant._id %>/seg/<%= seg._id %>/conclusion/<%= program._id %>" id="nextButton"
+    class="border border-0 border-start-0 border navigationButtons">
+        ←
+    </a>
 
 <a id="backToSegButton" class="btn btn-primary"
             href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>">
@@ -55,6 +97,7 @@
                 <textarea class="form-control"
                 name="supportingData"><%= program.supportingData[0] !== '' ? program.supportingData[0] : '' %></textarea>
             </div>
+            
         </form>
 
         <div class="row">
@@ -98,9 +141,10 @@
                                 </div>
                                 <% } %>
                             </div>
-                            <div class="row ps-5">
-                                <div class="col">
-                                    <b>Upload Date:</b> <%= file.uploadDate.toLocaleString() %>
+                            <div class="row ps-3">
+                                <div class="col pe-5 py-2">
+                                    <% const date = file.uploadDate.toISOString().split('T')[0]%>
+                                    <b>Upload Date:</b> <%= date.substring(5,7) %>/<%= date.substring(8,10) %>/<%= date.substring(0,4) %>
                                 </div>
                                 <div class="col-3 d-flex my-auto justify-content-end">
                                     <div class="">
@@ -156,18 +200,19 @@
                     element.setAttribute('style', 'width: 100%'); // Add width property
                     element.setAttribute('style', 'min-height: 300px;'); // Add height property
 
-                    let canSave = true;
                     element.addEventListener('input', (e) => {
                         socket.emit('supportingDataUpdate', { programID: '<%=program._id%>', text: element.innerHTML });
                     });
 
                     socket.on('supportingDataUpdate', (data) => {
                         if (element.parentElement.parentElement.id === `supportingData-${data.programID}`) {
-                            if (savingIcon.innerHTML !== 'Saving...') {
-                            savingIcon.innerHTML = 'Saving...'
+                            if (savingIcon.innerHTML !== 'EDITING...') {
+                            savingIcon.innerHTML = 'EDITING...'
                             }
                             if (!document.activeElement.classList.contains('nicEdit-main')) {
                                 element.innerHTML = data.text;
+                                element.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+                                element.classList.add('disabled')
                             }
                         }
                     });
@@ -182,7 +227,6 @@
                         const data = { supportingData: nicEditElement.innerHTML };
                         try {
                             const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/supportingData/<%=program._id%>', data);
-                            console.log('Response', response);
                             
                         } catch (error) {
                             console.error('There was an error making the request:', error);
@@ -190,6 +234,7 @@
                     }
                     if (savingIcon.innerHTML !== 'Saved') {
                             savingIcon.innerHTML = 'Saved'
+                            nicEditElement.style.backgroundColor = ''
                     }
 
                     const fileInput = document.querySelector('input[type="file"]');
@@ -199,6 +244,7 @@
                         for (let i = 0; i < fileInput.files.length; i++) {
                             formData.append('fileInput', fileInput.files[i]);
                         }
+                        fileInput.value = '';
 
                         formData.append('supportingData', nicEditElement.innerHTML);
   
@@ -214,7 +260,6 @@
                         } catch (error) {
                             console.error('There was an error making the request:', error);
                         }
-                        fileInput.value = '';
                         
                     }
                 };
@@ -351,10 +396,11 @@
                         </div>
                         `;
                     }
+                    const date = file.uploadDate.split('T')[0];
                     addedFile.innerHTML += `
-                        <div class="row ps-5">
-                                <div class="col">
-                                    <b>Upload Date:</b> ${file.uploadDate.toLocaleString()}
+                        <div class="row ps-3">
+                                <div class="col pe-5 py-2">
+                                    <b>Upload Date:</b> ${date.substring(5,7)}/${date.substring(8,10)}/${date.substring(0,4)}
                                 </div>
                                 <div class="col-3 d-flex my-auto justify-content-end">
                                     <div class="">
@@ -368,6 +414,15 @@
                 }
                 setDeleteChecks();
             }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
+                    document.querySelector('#previousButton').click();
+                } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
+                    document.querySelector('#nextButton').click();
+                }
+            })
+
 
                 
         </script>

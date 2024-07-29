@@ -103,7 +103,7 @@ io.on('connection', (socket) => {
         const seg = await Seg.findOne({segPrograms: program._id}).populate(['segPrograms', 'segInstruction'])
         let allPrograms = await SegProgram.find({plant: seg.plant}).populate({path: 'seg', populate: {path: 'segInstruction'}})
         allPrograms = allPrograms.filter(program => program.seg.segInstruction.team === seg.segInstruction.team && program.seg.segInstruction.department === seg.segInstruction.department)
-        console.log('ALL', allPrograms)
+    
         io.emit('reportTableStatusUpdate', {seg, allPrograms});
     })
   });

@@ -42,12 +42,12 @@ router.route('/:plantID/seg/:segInstructionID/supportingData/:programID/file')
 /* conclusion */
 router.route('/:plantID/seg/:segInstructionID/conclusion/:programID')
     .get(renderConclusion)
-    .put(editConclusion)
+    .put(editProgramData)
 
 /* aosr */
 router.route('/:plantID/seg/:segInstructionID/aosr/:programID')
     .get(renderAOSR)
-    .put(editAOSR)
+    .put(editProgramData)
 
 /* status */
 router.route('/:plantID/seg/:segInstructionID/status/:programID')
