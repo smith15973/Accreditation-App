@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const User = require('./user');
 const Seg = require('./seg')
+const DueDate = require('./dueDate')
+const segProgram = require('./segProgram')
 
 
 const PlantSchema = new Schema({
@@ -32,11 +34,19 @@ const PlantSchema = new Schema({
     }
 });
 
+//works
 PlantSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
-        await User.updateMany({ _id: { $in: doc.users } }, { $pull: { plants: doc._id } });
-        await User.updateMany({ requestedPlants: doc._id }, { $pull: { requestedPlants: doc._id } });
-        // console.log(await Seg.find({plant: doc._id}))
+        //works
+        await User.updateMany({ _id: { $in: doc.users } }, { $pull: { plants: doc._id } }); //remove as plant from user
+        //works
+        await User.updateMany({ requestedPlants: doc._id }, { $pull: { requestedPlants: doc._id } }); //remove as requested plant from users
+        //works
+        await Seg.deleteMany({ plant: doc._id })
+        //works
+        await DueDate.deleteMany({ plant: doc._id })
+        //works
+        await segProgram.deleteMany({ plant: doc._id })
     }
 });
 

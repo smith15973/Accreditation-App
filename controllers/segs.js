@@ -100,3 +100,10 @@ module.exports.editSegTemplate = catchAsync(async (req, res) => {
     }
     res.redirect('/')
 })
+
+
+module.exports.deleteSegTemplate = catchAsync(async (req, res) => {
+    const { segInstructionID } = req.params
+    const segInstruction = await SegInstruction.findByIdAndDelete(segInstructionID);
+    res.redirect('/')
+})

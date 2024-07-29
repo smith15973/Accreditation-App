@@ -73,30 +73,22 @@
     const sidebarButton = document.querySelector('#sidebarToggleButton');
     const sidebar = document.querySelector('#offcanvas');
 
-    sidebarButton.addEventListener('mouseover', ()=> {
+    function openSidebar() {
       if (!sidebarButton.classList.contains('sidebarOpen')) {
         sidebarButton.classList.toggle('sidebarOpen')
-        // sidebar.classList.toggle('show')
         sidebarButton.click()
       }
-    })
+    }
 
-    sidebarButton.addEventListener('mouseout', () => {
+    function closeSidebar() {
       const isMouseOutside = !sidebar.contains(event.relatedTarget) && !sidebarButton.contains(event.relatedTarget);
       if (isMouseOutside) {
         sidebarButton.classList.remove('sidebarOpen');
-        // sidebar.classList.remove('show');
         sidebarButton.click()
       }
-    })
+    }
 
-    sidebar.addEventListener('mouseout', (event) => {
-      // Check if the mouse moved outside the sidebar and sidebarButton
-      const isMouseOutside = !sidebar.contains(event.relatedTarget) && !sidebarButton.contains(event.relatedTarget);
-      if (isMouseOutside) {
-        sidebarButton.classList.remove('sidebarOpen');
-        // sidebar.classList.remove('show');
-        sidebarButton.click()
-      }
-    });
+    sidebarButton.addEventListener('mouseover', openSidebar)
+    sidebarButton.addEventListener('mouseout', closeSidebar)
+    sidebar.addEventListener('mouseout', closeSidebar);
 </script>

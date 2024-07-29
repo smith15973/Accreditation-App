@@ -23,14 +23,5 @@ const SegSchema = new Schema({
 });
 
 
-SegSchema.post('findOneAndDelete', async function (doc) {
-    if (doc) {
-        for (let program of doc.programs) {
-            await SegProgram.findByIdAndDelete(program);
-        }
-    }
-})
-
-
 
 module.exports = mongoose.model('Seg', SegSchema);

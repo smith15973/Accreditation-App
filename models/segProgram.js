@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Seg = require('./seg');
 const File = require('./file');
+const { deleteFiles } = require('../utils/fileOperations');
 
 const SegProgramSchema = new Schema({
 
@@ -49,18 +49,33 @@ const SegProgramSchema = new Schema({
 });
 
 
-// ProgramReviewedSchema.post('findOneAndDelete', async function (doc) {
-//     if (doc) {
-//         const seg = await Seg.findOneAndUpdate({ _id: doc.seg._id }, { $pull: { programReviewed: doc._id } }); 
-//     }
-// });
 
 SegProgramSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
-        // Delete all files associated with this programReviewed document
-        await File.deleteMany({ _id: { $in: doc.files } });
+        await File.deleteMany({ program: doc._id });
     }
 });
+
+SegProgramSchema.pre('deleteMany', async function () {
+    const docsToDelete = await mongoose.model('SegProgram').find(this.getQuery()).populate('supportingDataFiles');
+    
+    const filesToDelete = docsToDelete.map(doc => doc.supportingDataFiles).flat();
+
+    //get the files
+    const deletedFiles = await File.find({ _id: { $in: filesToDelete } });
+
+    //delete the files
+    await File.deleteMany({ _id: { $in: filesToDelete } });
+    
+    //get the keys for the files
+    const keys = deletedFiles.map(df => ({ Key: df.key }));
+    
+    //delete the files from s3
+    deleteFiles(keys);
+
+});
+
+
 
 
 
