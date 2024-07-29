@@ -1,11 +1,12 @@
 // Description: This file contains all the middleware functions that are used in the application.
 
-// const ExpressError = require('./utils/ExpressError');
+const ExpressError = require('./utils/ExpressError');
 
 const catchAsync = require('./utils/catchAsync.js');
 const Plant = require('./models/plant');
 const SegInstruction = require('./models/segInstruction');
 const mongoose = require('mongoose');
+const { plantSchema, dueDateSchema, fileSchema, segInstructionSchema } = require('./schemas.js')
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -42,18 +43,8 @@ module.exports.getCurrentPlantandInstructions = catchAsync(async (req, res, next
     next()
 });
 
-
-// module.exports.validateTicket = (req, res, next) => {
-//     const { error } = ticketSchema.validate(req.body);
-//     if (error) {
-//         const msg = error.details.map(el => el.message).join(',')
-//         throw new ExpressError(msg, 400);
-//     } else {
-//         next();
-//     }
-// }
-
-module.exports.isAdmin = catchAsync(async (req,res,next) => {;
+module.exports.isAdmin = catchAsync(async (req, res, next) => {
+    ;
     if (!req.user.admin) {
         req.flash('error', 'You do not have permission to do that!');
         const redirectUrl = req.get('referer') || '/';
@@ -62,7 +53,8 @@ module.exports.isAdmin = catchAsync(async (req,res,next) => {;
     next();
 });
 
-module.exports.hasPlantAccess = catchAsync(async (req,res,next) => {;
+module.exports.hasPlantAccess = catchAsync(async (req, res, next) => {
+    ;
     if (!req.user.plants.includes(res.locals.currentPlant._id)) {
         req.flash('error', 'You do not have permission to access this plant!');
         const redirectUrl = req.get('referer') || '/';
@@ -70,4 +62,35 @@ module.exports.hasPlantAccess = catchAsync(async (req,res,next) => {;
     }
     next();
 });
+
+module.exports.validatePlant = (req, res, next) => {
+    const { error } = plantSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
+module.exports.validateDueDate = (req, res, next) => {
+    const { error } = dueDateSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
+module.exports.validateSegInstruction = (req, res, next) => {
+    const { error } = segInstructionSchema.validate(req.body);
+    if (error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg, 400);
+    } else {
+        next();
+    }
+}
+
 

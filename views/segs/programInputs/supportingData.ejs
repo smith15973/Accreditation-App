@@ -60,8 +60,20 @@
             right: 0px;
             rotate: 180deg;
         }
+
+        #overlay {
+            position: fixed;
+            display: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+            z-index: 9998; /* Just below the loading circle */
+        }
 </style>
 <div id="loadingCircle" class="loading" style="z-index: 10000;"></div>
+<div id="overlay"></div>
 <% layout('/layouts/boilerplate') %>
 <% const seg=program.seg %>
 
@@ -227,7 +239,6 @@
                         const data = { supportingData: nicEditElement.innerHTML };
                         try {
                             const response = await axios.put('/plant/<%=currentPlant._id%>/seg/<%=seg.segInstruction._id%>/supportingData/<%=program._id%>', data);
-                            
                         } catch (error) {
                             console.error('There was an error making the request:', error);
                         }
@@ -256,6 +267,9 @@
                                 }
                             });
                             appendFile(response.data.program.supportingDataFiles, response.data.admin);
+                            document.getElementById('loadingCircle').style.display = 'none';
+                            document.getElementById('overlay').style.display = 'none';
+                            document.body.style.pointerEvents = 'auto';
                             
                         } catch (error) {
                             console.error('There was an error making the request:', error);
@@ -321,6 +335,10 @@
 
             function fileInputSubmit() {
                 document.querySelector('#saveSupportingDataButton').click();
+                document.getElementById('loadingCircle').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+                document.body.style.pointerEvents = 'none';
+                
             }
 
             document.querySelector('#fileInput').onchange = fileInputSubmit;

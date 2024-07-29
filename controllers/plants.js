@@ -108,8 +108,7 @@ module.exports.renderSupportingData = catchAsync(async (req, res) => {
     res.render('segs/programInputs/supportingData', { program });
 })
 
-module.exports.editProgramData = catchAsync(async (req, res, next) => {
-    console.log(req);
+module.exports.editProgramData = catchAsync(async (req, res) => {
     const { programID } = req.params;
     let program;
     if (typeof req.files === 'undefined' || req.files.length === 0) {
@@ -125,7 +124,7 @@ module.exports.editProgramData = catchAsync(async (req, res, next) => {
         await program.save()
         await program.populate('supportingDataFiles');
     }
-    return res.json({admin: req.user.admin, program});
+    return res.json({ admin: req.user.admin, program });
 })
 
 module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {

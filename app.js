@@ -23,7 +23,7 @@ if (cluster.isPrimary) {
     }
     
     // set up the adapter on the primary thread
-    return setupPrimary();
+    return setupPrimary;
   }
 
 const app = express();
