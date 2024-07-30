@@ -1,3 +1,7 @@
 <% layout('/layouts/boilerplate') %>
 <p><%= err.statusCode %> <%= err %></p>
 <p><%= err.stack  %></p>
+
+<script>
+    document.querySelector('title').innerHTML = `ARC <%= err.statusCode %>`;
+</script>

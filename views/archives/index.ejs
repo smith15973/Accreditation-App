@@ -1,2 +1,6 @@
 <% layout('/layouts/boilerplate') %>
 <h1><%= currentPlant.name %> Archives Index</h1>
+
+<script>
+    document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Archives`;
+</script>
