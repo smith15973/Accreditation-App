@@ -128,7 +128,7 @@ module.exports.editProgramData = catchAsync(async (req, res) => {
 
 module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {
     const { plantID, segInstructionID, programID } = req.params;
-    const deletedFilesIDs = req.body.deletedFiles;
+    const deletedFilesIDs = req.body.files;
     const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
     await File.deleteMany({ _id: { $in: deletedFilesIDs } });
     const keys = deletedFiles.map(df => ({ Key: df.key }));

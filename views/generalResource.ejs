@@ -41,7 +41,7 @@
     <div class="col-12 col-lg-5 mb-3">
         <form id="fileUploadForm" action="/generalResources?type=<%= type %>" method="post" enctype="multipart/form-data">
             <div class="mb-3">
-                <label for="files" class="form-label">Upload Document</label>
+                <label for="files" class="form-label">Upload PDF File</label>
                 <input type="file" name="files" id="fileInput" class="form-control" accept=".pdf" multiple required>
             </div>
             <!-- <button class="btn btn-primary">Submit</button> -->
@@ -50,21 +50,27 @@
 
     <div class="col-12 col-lg-7 mb-3">
         <% if (resources.length) { %>
-            <form class="" id="deleteFileForm" action="/generalResources?_method=DELETE&type=<%= type %>" method="post">
-                <ul class="list-group">
-                    <li class="list-group-item d-flex align-items-center justify-content-between px-3">
+            <form class="" id="fileForm" method="post">
+                <ul id="fileListContainer" class="list-group">
+                    
+                    <li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
                         <div class="py-2">
                             <input class="border" type="checkbox" id="selectAllCheck">
+                            <label id="checkedCount" class="d-inline ps-3">0 Files Selected</label>
+                            <button disabled type="button" id="downloadFilesButton" form="fileForm" class="btn btn-secondary ms-2">Download</button>
                         </div>
-                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger" id="deleteFilesButton">
+                        <% if (currentUser.admin) { %>
+                        <button disabled type="button" form="fileForm" class="btn btn-danger"
+                        id="deleteFilesButton">
                             Delete
                         </button>
+                        <% } %>
                     </li>
                 <% resources.forEach((resource, i) =>  { %>
                     <li class="list-group-item d-flex justify-content-between">
                         <div class="d-flex pt-2">
                             <div class="">
-                                <input id="file<%=i%>" name="deletedFiles[]" value="<%=resource._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
+                                <input id="file<%=i%>" name="files[]" value="<%=resource._id%>" type="checkbox" class="form-check mb-2 deleteCheck">
                             </div>
                             <label class="form-label px-3 text-wrap" for="file<%=i%>">
                                 <%= resource.file.originalName %>
@@ -101,18 +107,30 @@
     const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
     const selectAllCheck = document.getElementById('selectAllCheck');
     const deleteFilesButton = document.getElementById('deleteFilesButton');
+    const downloadFilesButton = document.getElementById('downloadFilesButton');
+    const fileForm = document.getElementById('fileForm');
 
     deleteCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', () => {
+            document.getElementById('checkedCount').innerHTML = `${document.querySelectorAll('.deleteCheck:checked').length} Files Selected`
+            if (document.querySelectorAll('.deleteCheck:checked').length === 1) {
+                document.getElementById('checkedCount').innerHTML = `1 File Selected`
+            }
             if (deleteCheckboxes.length === document.querySelectorAll('.deleteCheck:checked').length) {
                 selectAllCheck.checked = true;
             } else {
                 selectAllCheck.checked = false;
             }
             if (document.querySelectorAll('.deleteCheck:checked').length > 0) {
-                deleteFilesButton.disabled = false;
+                if (deleteFilesButton) {
+                    deleteFilesButton.disabled = false;
+                }
+                downloadFilesButton.disabled = false;
             } else {
-                deleteFilesButton.disabled = true;
+                if (deleteFilesButton) {
+                    deleteFilesButton.disabled = true;
+                }
+                downloadFilesButton.disabled = true;
             }
         });
     });
@@ -123,15 +141,40 @@
                 deleteCheckboxes.forEach(checkbox => {
                     checkbox.checked = true;
                 });
-                deleteFilesButton.disabled = false;
+                if (deleteFilesButton) {
+                    deleteFilesButton.disabled = false;
+                }
+                downloadFilesButton.disabled = false;
             } else {
                 deleteCheckboxes.forEach(checkbox => {
                     checkbox.checked = false;
                 });
-                deleteFilesButton.disabled = true;
+                if (deleteFilesButton) {
+                    deleteFilesButton.disabled = true;
+                }
+                downloadFilesButton.disabled = true;
+            }
+            document.getElementById('checkedCount').innerHTML = `${document.querySelectorAll('.deleteCheck:checked').length} Files Selected`
+            if (document.querySelectorAll('.deleteCheck:checked').length === 1) {
+                document.getElementById('checkedCount').innerHTML = `1 File Selected`
             }
         });
         }
+
+        if (deleteFilesButton) {
+            deleteFilesButton.addEventListener('click', () => {
+                const fileForm = document.getElementById('fileForm');
+                fileForm.action = "/generalResources?_method=DELETE&type=<%= type %>";
+                fileForm.submit();
+            })
+        }
+                
+
+        downloadFilesButton.addEventListener('click', () => {
+            const fileForm = document.getElementById('fileForm');
+            fileForm.action = '/generalResources?_method=PUT&type=<%= type %>';
+            fileForm.submit();
+        })
 </script>
 
 <script>

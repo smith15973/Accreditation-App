@@ -2,14 +2,14 @@ const express = require('express')
 const router = express.Router();
 const Plant = require('../models/plant')
 
-const { upload, deleteFiles } = require('../utils/fileOperations');
+const { pdfUpload, imageUpload,  downloadZipSupportingData } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess, validatePlant } = require('../middleware');
 const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion } = require('../controllers/plants');
 
 
 router.route('/new')
     .get(isLoggedIn, isAdmin, renderCreateNewPlant)
-    .post(isLoggedIn, isAdmin, upload.single('image'), validatePlant, createNewPlant)
+    .post(isLoggedIn, isAdmin, imageUpload.single('image'), validatePlant, createNewPlant)
 
 router.use('/:plantID', isLoggedIn, getCurrentPlantandInstructions, hasPlantAccess);
 
@@ -19,7 +19,7 @@ router.route('/:plantID')
 
 router.route('/:plantID/edit')
     .get(isAdmin, renderEditPlant)
-    .put(isAdmin, upload.single('image'), editPlant)
+    .put(isAdmin, imageUpload.single('image'), editPlant)
 
 router.route('/:plantID/seg/:segInstructionID')
     .get(renderSeg);
@@ -29,7 +29,8 @@ router.route('/:plantID/seg/:segInstructionID')
 /* supportingData */
 router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
     .get(renderSupportingData)
-    .put(upload.array('fileInput'), editProgramData)
+    .post(downloadZipSupportingData)
+    .put(pdfUpload.array('fileInput'), editProgramData)
     .delete(deleteSupportingDataFiles)
 
 /* conclusion */

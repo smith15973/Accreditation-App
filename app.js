@@ -52,6 +52,7 @@ const useragent = require('express-useragent');
 const SegProgram = require('./models/segProgram')
 const Seg = require('./models/seg')
 
+
 /**********import routes*************** */
 const plantRoutes = require('./routes/plants');
 const userRoutes = require('./routes/users');
@@ -62,7 +63,6 @@ const tiMatrixRoutes = require('./routes/tiMatrix');
 const saMatrixRoutes = require('./routes/saMatrix');
 const generalResourceRoutes = require('./routes/generalResources');
 const archiveRoutes = require('./routes/archives');
-const { all } = require('axios');
 
 
 /**********Middleware setup*************** */
@@ -162,7 +162,6 @@ app.get('/', catchAsync(async (req, res) => {
     }
     res.render('home', { plants });
 }));
-
 
 app.use('/user', userRoutes);
 app.use('/plant', plantRoutes);

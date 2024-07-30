@@ -114,44 +114,40 @@
 
         <div class="row">
             <div class="mt-5 col-12 col-lg-5">
+                <label class="form-label" for="fileInput">Upload PDF File</label>
                 <input id="fileInput" name="fileInput" type="file" accept=".pdf" class="form-control mb-2"
                     multiple>
             </div>
         
             <div id="filesSection" class="col-12 col-lg-7 ">
                 <% if (program.supportingDataFiles.length) { %>
-                <form class="mt-5" id="deleteFileForm"
-                    action="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE"
-                    method="post">
+                <form class="mt-5" id="fileForm" method="post">
                     <ul id="fileListContainer" class="list-group">
-                        <% if (currentUser.admin) { %>
+                        
                         <li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
                             <div class="py-2">
                                 <input class="border" type="checkbox" id="selectAllCheck">
+                                <label id="checkedCount" class="d-inline ps-3">0 Files Selected</label>
+                                <button disabled type="button" id="downloadFilesButton" form="fileForm" class="btn btn-secondary ms-2">Download</button>
                             </div>
-                            <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
+                            <% if (currentUser.admin) { %>
+                            <button disabled type="button" form="fileForm" class="btn btn-danger"
                             id="deleteFilesButton">
                                 Delete
                             </button>
+                            <% } %>
                         </li>
-                        <% } %>
                         <% program.supportingDataFiles.forEach((file, i)=> { %>
                         <li class="list-group-item d-flex justify-content-between">
                             <div class="d-flex pt-2">
-                                <% if (currentUser.admin) { %>
                                 <div class="">
-                                    <input id="file<%=i%>" name="deletedFiles[]"
+                                    <input id="file<%=i%>" name="files[]"
                                     value="<%=file._id%>" type="checkbox"
                                     class="form-check mb-2 deleteCheck">
                                 </div>
                                 <label class="form-label px-3 text-wrap" for="file<%=i%>">
                                     <%= file.originalName %>
                                 </label>
-                                <% } else { %>
-                                <div class="">
-                                    <%= file.originalName %>
-                                </div>
-                                <% } %>
                             </div>
                             <div class="row ps-3">
                                 <div class="col pe-5 py-2">
@@ -164,13 +160,6 @@
                                             onclick="showPDF('<%=file.location%>')">View
                                         </button>
                                     </div>
-                                    <!-- <div class="col">
-                                        <a href="<%#=file.location%>"
-                                        download="<%#=file.originalName%>"
-                                        class="btn btn-secondary mb-1">
-                                            Open
-                                        </a>
-                                    </div> -->
                                 </div>
                             </div>
                         </li>
@@ -290,18 +279,45 @@
                 const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
                 let selectAllCheck = document.getElementById('selectAllCheck');
                 const deleteFilesButton = document.getElementById('deleteFilesButton');
+                const downloadFilesButton = document.getElementById('downloadFilesButton');
+
+                if (deleteFilesButton) {
+                    deleteFilesButton.addEventListener('click', () => {
+                        const fileForm = document.getElementById('fileForm');
+                        fileForm.action = "/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE";
+                        fileForm.submit();
+                    })
+                }
+                
+
+                downloadFilesButton.addEventListener('click', () => {
+                    const fileForm = document.getElementById('fileForm');
+                    fileForm.action = '/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?seg=<%=seg.segInstruction.segInstructionID%>';
+                    fileForm.submit();
+                })
+
 
                 deleteCheckboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', () => {
+                        document.getElementById('checkedCount').innerHTML = `${document.querySelectorAll('.deleteCheck:checked').length} Files Selected`
+                        if (document.querySelectorAll('.deleteCheck:checked').length === 1) {
+                            document.getElementById('checkedCount').innerHTML = `1 File Selected`
+                        }
                         if (deleteCheckboxes.length === document.querySelectorAll('.deleteCheck:checked').length) {
                             selectAllCheck.checked = true;
                         } else {
                             selectAllCheck.checked = false;
                         }
                         if (document.querySelectorAll('.deleteCheck:checked').length > 0) {
-                            deleteFilesButton.disabled = false;
+                            if (deleteFilesButton) {
+                                deleteFilesButton.disabled = false;
+                            }
+                            downloadFilesButton.disabled = false;
                         } else {
-                            deleteFilesButton.disabled = true;
+                            if (deleteFilesButton) {
+                                deleteFilesButton.disabled = true;
+                            }
+                            downloadFilesButton.disabled = true;
                         }
                     });
                 });
@@ -312,12 +328,22 @@
                             deleteCheckboxes.forEach(checkbox => {
                                 checkbox.checked = true;
                             });
-                            deleteFilesButton.disabled = false;
+                            if (deleteFilesButton) {
+                                deleteFilesButton.disabled = false;
+                            }
+                            downloadFilesButton.disabled = false;
                         } else {
                             deleteCheckboxes.forEach(checkbox => {
                                 checkbox.checked = false;
                             });
-                            deleteFilesButton.disabled = true;
+                            if (deleteFilesButton) {
+                                deleteFilesButton.disabled = true;
+                            }
+                            downloadFilesButton.disabled = true;
+                        }
+                        document.getElementById('checkedCount').innerHTML = `${document.querySelectorAll('.deleteCheck:checked').length} Files Selected`
+                        if (document.querySelectorAll('.deleteCheck:checked').length === 1) {
+                            document.getElementById('checkedCount').innerHTML = `1 File Selected`
                         }
                     });
                 }
@@ -356,47 +382,46 @@
 
                     const deleteForm = document.createElement('form');
                     deleteForm.classList.add('mt-5');
-                    deleteForm.id = "deleteFileForm";
+                    deleteForm.id = "fileForm";
                     deleteForm.action = '/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?_method=DELETE';
                     deleteForm.method="POST";
                     deleteForm.appendChild(fileListContainer)
                     document.querySelector('#filesSection').appendChild(deleteForm);
                 }
+
+
                 if (admin) {
-                    let deleteHeader = document.querySelector('#deleteHeader');
-                    if (!deleteHeader) {
-                        deleteHeader = document.createElement('li');
-                        deleteHeader.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between', 'px-3')
-                        deleteHeader.id = "deleteHeader"
-                        deleteHeader.innerHTML = `
+                fileListContainer.innerHTML =`
+                <li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
+                    <div class="py-2">
+                        <input class="border" type="checkbox" id="selectAllCheck">
+                        <label id="checkedCount" class="d-inline ps-3">0 Files Selected</label>
+                        <button disabled type="button" id="downloadFilesButton" form="fileForm" class="btn btn-secondary ms-2">Download</button>
+                    </div>
+                    <button disabled type="button" form="fileForm" class="btn btn-danger" id="deleteFilesButton">
+                        Delete
+                    </button>       
+                </li>
+                `} else {
+                    fileListContainer.innerHTML = `
+                    <li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
                         <div class="py-2">
                             <input class="border" type="checkbox" id="selectAllCheck">
+                            <label id="checkedCount" class="d-inline ps-3">0 Files Selected</label>
+                            <button disabled type="button" id="downloadFilesButton" form="fileForm" class="btn btn-secondary ms-2">Download</button>
                         </div>
-                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
-                        id="deleteFilesButton">
-                            Delete
-                        </button>`
-                    }
-                    fileListContainer.innerHTML = `<li id="deleteHeader" class="list-group-item d-flex align-items-center justify-content-between px-3">
-                                        <div class="py-2">
-                                            <input class="border" type="checkbox" id="selectAllCheck">
-                                        </div>
-                                        <button disabled type="submit" form="deleteFileForm" class="btn btn-danger"
-                                            id="deleteFilesButton">
-                                            Delete
-                                        </button>
-                                    </li>
+                    </li>
                     `
                 }
+                    
                 for (const file of files) {
                     const addedFile = document.createElement('li');
                     addedFile.classList.add('list-group-item', 'd-flex', 'justify-content-between');
                     
-                    if (admin) {
                         addedFile.innerHTML = `
                         <div class="d-flex pt-2">
                             <div class="">
-                                <input id="file${file._id}" name="deletedFiles[]"
+                                <input id="file${file._id}" name="files[]"
                                     value="${file._id}" type="checkbox"
                                     class="form-check mb-2 deleteCheck">
                             </div>
@@ -405,15 +430,7 @@
                         </label>
                         </div>    
                         `;
-                    } else {
-                        addedFile.innerHTML = `
-                        <div class="d-flex pt-2">
-                            <div class="">
-                                    ${file.originalName}
-                            </div>
-                        </div>
-                        `;
-                    }
+
                     const date = file.uploadDate.split('T')[0];
                     addedFile.innerHTML += `
                         <div class="row ps-3">

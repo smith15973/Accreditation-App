@@ -38,10 +38,12 @@ module.exports.deleteGeneralResourceFile = catchAsync(async (req, res) => {
         const redirectUrl = req.get('referer') || '/';
         return res.redirect(redirectUrl);
     }
-    const deletedFilesIDs = req.body.deletedFiles;
+    const deletedFilesIDs = req.body.files;
     const deletedFiles = await GeneralResourcePDF.find({ _id: { $in: deletedFilesIDs } });
     const keys = deletedFiles.map(df => ({ Key: df.file.key }));
     await GeneralResourcePDF.deleteMany({ _id: { $in: deletedFilesIDs } });
-    deleteFiles(keys);
+    if (keys.length > 0) {
+        deleteFiles(keys);
+    }
     res.redirect(`/generalResources?type=${type}`);
 })
