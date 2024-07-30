@@ -1,0 +1,23 @@
+<button type="button" class="btn btn-danger" data-bs-toggle=modal data-bs-target=#confirmSegDeleteModal>Delete Seg Template</button>
+<!-- Modal -->
+<div class="modal fade" id="confirmSegDeleteModal" aria-labelledby="confirmSegDeleteModalLabel" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-4" id="confirmSegDeleteLabel">Confirm Changes</h1>
+                <button type="button" class="btn-close reload" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body my-auto ">
+                Are you sure you want to DELETE <%= segInstruction.segInstructionID %>? This will Delete all data associated with <%= segInstruction.segInstructionID %> across all plants!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</a>
+                <form action="/seg/instruction/<%= segInstruction._id %>?_method=DELETE" method="post">
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

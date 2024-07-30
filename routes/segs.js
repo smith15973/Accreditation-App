@@ -1,13 +1,13 @@
 const express = require('express')
 const router = express.Router();
 const { isLoggedIn, isAdmin, validateSegInstruction } = require('../middleware');
-const { renderCreateNewSegTemplate, createNewSegTeamplate, renderEditSegTemplate, editSegTemplate, deleteSegTemplate } = require('../controllers/segs');
+const { renderCreateNewSegTemplate, createNewSegTeamplate, renderEditSegTemplate, editSegTemplate, deleteSegTemplate, checkForSeg } = require('../controllers/segs');
+
 
 
 router.route('/instruction/new')
     .get(isLoggedIn, isAdmin, renderCreateNewSegTemplate)
     .post(isLoggedIn, isAdmin, validateSegInstruction, createNewSegTeamplate)
-
 
 router.route('/instruction/:segInstructionID')
     .get(isLoggedIn, isAdmin, renderEditSegTemplate)

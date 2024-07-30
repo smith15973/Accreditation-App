@@ -12,6 +12,13 @@ module.exports.renderCreateNewSegTemplate = (req, res) => {
 };
 
 module.exports.createNewSegTeamplate = catchAsync(async (req, res) => {
+
+    const hasSeg = await SegInstruction.findOne({ department: req.body.department, team: req.body.team, segNum: req.body.segNum });
+    if (hasSeg) {
+        req.flash('error', `${hasSeg.segInstructionID} already exists!`)
+        return res.redirect('/seg/instruction/new')
+    }
+
     const segInstruction = new SegInstruction(req.body)
     let teamLetters;
     let departmentLetters;
@@ -30,7 +37,7 @@ module.exports.createNewSegTeamplate = catchAsync(async (req, res) => {
     await segInstruction.save()
 
 
-    return res.redirect(`/`);
+    return res.redirect('/')
 })
 
 
@@ -44,6 +51,12 @@ module.exports.renderEditSegTemplate = catchAsync(async (req, res) => {
 module.exports.editSegTemplate = catchAsync(async (req, res) => {
     const { segInstructionID } = req.params
     const segInstruction = await SegInstruction.findById(segInstructionID)
+    const hasSeg = await SegInstruction.findOne({ department: req.body.department, team: req.body.team, segNum: req.body.segNum });
+    if (hasSeg && !hasSeg.equals(segInstruction)) {
+        req.flash('error', `${hasSeg.segInstructionID} already exists!`)
+        return res.redirect(`/seg/instruction/${segInstructionID}`)
+    }
+    
     segInstruction.set(req.body)
     let teamLetters;
     let departmentLetters;
