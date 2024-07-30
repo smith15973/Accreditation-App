@@ -125,12 +125,16 @@
                 if (deleteFilesButton) {
                     deleteFilesButton.disabled = false;
                 }
+                if (downloadFilesButton) {
                 downloadFilesButton.disabled = false;
+                }
             } else {
                 if (deleteFilesButton) {
                     deleteFilesButton.disabled = true;
                 }
+                if (downloadFilesButton) {
                 downloadFilesButton.disabled = true;
+                }
             }
         });
     });
@@ -144,7 +148,9 @@
                 if (deleteFilesButton) {
                     deleteFilesButton.disabled = false;
                 }
+                if (downloadFilesButton) {
                 downloadFilesButton.disabled = false;
+                }
             } else {
                 deleteCheckboxes.forEach(checkbox => {
                     checkbox.checked = false;
@@ -152,7 +158,9 @@
                 if (deleteFilesButton) {
                     deleteFilesButton.disabled = true;
                 }
+                if (downloadFilesButton) {
                 downloadFilesButton.disabled = true;
+                }
             }
             document.getElementById('checkedCount').innerHTML = `${document.querySelectorAll('.deleteCheck:checked').length} Files Selected`
             if (document.querySelectorAll('.deleteCheck:checked').length === 1) {
@@ -170,11 +178,13 @@
         }
                 
 
+        if (downloadFilesButton) {
         downloadFilesButton.addEventListener('click', () => {
             const fileForm = document.getElementById('fileForm');
             fileForm.action = '/generalResources?_method=PUT&type=<%= type %>';
             fileForm.submit();
         })
+    }
 </script>
 
 <script>

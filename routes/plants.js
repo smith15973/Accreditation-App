@@ -1,8 +1,7 @@
 const express = require('express')
 const router = express.Router();
-const Plant = require('../models/plant')
 
-const { pdfUpload, imageUpload,  downloadZipSupportingData } = require('../utils/fileOperations');
+const { pdfUpload, imageUpload, downloadZipSupportingData } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess, validatePlant } = require('../middleware');
 const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion } = require('../controllers/plants');
 

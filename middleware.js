@@ -6,7 +6,7 @@ const catchAsync = require('./utils/catchAsync.js');
 const Plant = require('./models/plant');
 const SegInstruction = require('./models/segInstruction');
 const mongoose = require('mongoose');
-const { plantSchema, dueDateSchema, fileSchema, segInstructionSchema } = require('./schemas.js')
+const { plantSchema, dueDateSchema, segInstructionSchema } = require('./schemas.js')
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {

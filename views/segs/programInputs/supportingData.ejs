@@ -289,12 +289,13 @@
                     })
                 }
                 
-
+                if (downloadFilesButton) {
                 downloadFilesButton.addEventListener('click', () => {
                     const fileForm = document.getElementById('fileForm');
                     fileForm.action = '/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/supportingData/<%= program._id %>?seg=<%=seg.segInstruction.segInstructionID%>';
                     fileForm.submit();
                 })
+            }
 
 
                 deleteCheckboxes.forEach(checkbox => {
@@ -312,12 +313,16 @@
                             if (deleteFilesButton) {
                                 deleteFilesButton.disabled = false;
                             }
+                            if (downloadFilesButton) {
                             downloadFilesButton.disabled = false;
+                            }
                         } else {
                             if (deleteFilesButton) {
                                 deleteFilesButton.disabled = true;
                             }
+                            if (downloadFilesButton) {
                             downloadFilesButton.disabled = true;
+                            }
                         }
                     });
                 });
@@ -331,7 +336,9 @@
                             if (deleteFilesButton) {
                                 deleteFilesButton.disabled = false;
                             }
+                            if (downloadFilesButton) {
                             downloadFilesButton.disabled = false;
+                            }
                         } else {
                             deleteCheckboxes.forEach(checkbox => {
                                 checkbox.checked = false;
@@ -339,7 +346,9 @@
                             if (deleteFilesButton) {
                                 deleteFilesButton.disabled = true;
                             }
+                            if (downloadFilesButton) {
                             downloadFilesButton.disabled = true;
+                            }
                         }
                         document.getElementById('checkedCount').innerHTML = `${document.querySelectorAll('.deleteCheck:checked').length} Files Selected`
                         if (document.querySelectorAll('.deleteCheck:checked').length === 1) {
