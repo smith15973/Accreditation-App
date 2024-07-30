@@ -33,14 +33,6 @@ module.exports.renderPlant = (req, res) => {
     res.render('plants/home');
 }
 
-module.exports.deletePlant = catchAsync(async (req, res) => {
-    const { plantID } = req.params;
-    const deletedPlant = await Plant.findByIdAndDelete(plantID)
-    req.flash('success', `Successfully deleted plant: ${deletedPlant.name}`)
-    res.redirect('/');
-});
-
-
 module.exports.renderEditPlant = (req, res) => {
     res.render('plants/edit')
 }
@@ -59,6 +51,13 @@ module.exports.editPlant = catchAsync(async (req, res) => {
         deleteFiles(replacedFileKey)
     }
     res.redirect(`/plant/${plant._id}`);
+})
+
+module.exports.deletePlant = catchAsync(async (req, res) => {
+    const { plantID } = req.params;
+    const plant = await Plant.findByIdAndDelete(plantID);
+    req.flash('success', `Successfully deleted plant: ${plant.name}`)
+    res.redirect(`/`);
 })
 
 module.exports.renderSeg = catchAsync(async (req, res) => {

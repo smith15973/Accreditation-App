@@ -38,7 +38,6 @@ const deleteFiles = catchAsync(async (keys) => {
         }
     };
     await s3.send(new DeleteObjectsCommand(deleteParams));
-    console.log(`Successfully deleted ${keys.length} files`);
 });
 
 module.exports = {upload, deleteFiles};

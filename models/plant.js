@@ -37,19 +37,27 @@ const PlantSchema = new Schema({
 
 //works
 PlantSchema.post('findOneAndDelete', async function (doc) {
-    if (doc) {
-        //works
-        await User.updateMany({ _id: { $in: doc.users } }, { $pull: { plants: doc._id } }); //remove as plant from user
-        //works
-        await User.updateMany({ requestedPlants: doc._id }, { $pull: { requestedPlants: doc._id } }); //remove as requested plant from users
-        //works
-        await Seg.deleteMany({ plant: doc._id })
-        //works
-        await DueDate.deleteMany({ plant: doc._id })
-        //works
-        await segProgram.deleteMany({ plant: doc._id })
+    try {
+        if (doc) {
+            //works
+            await User.updateMany({ _id: { $in: doc.users } }, { $pull: { plants: doc._id } }); //remove as plant from user
+            //works
+            await User.updateMany({ requestedPlants: doc._id }, { $pull: { requestedPlants: doc._id } }); //remove as requested plant from users
+            //works
+            await Seg.deleteMany({ plant: doc._id })
+            //works
+            await DueDate.deleteMany({ plant: doc._id })
+            //works
+            await segProgram.deleteMany({ plant: doc._id })
 
-        deleteFiles([{ Key: doc.image.key }])
+            //works
+            keys = [{ Key: doc.image.key }]
+            if (keys.length > 0) {
+                deleteFiles(keys)
+            }
+        }
+    } catch (e) {
+        console.log('ERROR:', e)
     }
 });
 

@@ -58,7 +58,7 @@ SegProgramSchema.post('findOneAndDelete', async function (doc) {
 
 SegProgramSchema.pre('deleteMany', async function () {
     const docsToDelete = await mongoose.model('SegProgram').find(this.getQuery()).populate('supportingDataFiles');
-    
+
     const filesToDelete = docsToDelete.map(doc => doc.supportingDataFiles).flat();
 
     //get the files
@@ -66,12 +66,14 @@ SegProgramSchema.pre('deleteMany', async function () {
 
     //delete the files
     await File.deleteMany({ _id: { $in: filesToDelete } });
-    
+
     //get the keys for the files
     const keys = deletedFiles.map(df => ({ Key: df.key }));
-    
+
     //delete the files from s3
-    deleteFiles(keys);
+    if (keys.length > 0) {
+        deleteFiles(keys);
+    }
 
 });
 

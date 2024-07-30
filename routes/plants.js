@@ -1,15 +1,15 @@
 const express = require('express')
 const router = express.Router();
-const SegProgram = require('../models/segProgram')
+const Plant = require('../models/plant')
 
-const { upload } = require('../utils/fileOperations');
+const { upload, deleteFiles } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess, validatePlant } = require('../middleware');
 const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion } = require('../controllers/plants');
 
 
 router.route('/new')
     .get(isLoggedIn, isAdmin, renderCreateNewPlant)
-    .post(isLoggedIn, isAdmin, upload.single('image'), validatePlant,createNewPlant)
+    .post(isLoggedIn, isAdmin, upload.single('image'), validatePlant, createNewPlant)
 
 router.use('/:plantID', isLoggedIn, getCurrentPlantandInstructions, hasPlantAccess);
 
