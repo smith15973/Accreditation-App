@@ -1,46 +1,43 @@
-<% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate') %>
 <div class="container d-flex justify-content-center align-items-center my-5">
     <div class="row">
-        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+        <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3">
             <div class="card shadow">
-                <img src="/images/DavisBessePic.jpg"
-                    alt="" class="card-img-top" />
+                <img src="/images/DavisBessePic.jpg" alt="" class="card-img-top" />
                 <div class="card-body">
                     <h5 class="card-title">Register</h5>
                     <form action="/user/register" method="POST" class="validated-form" novalidate>
-                        <div class="mb-3">
-                            <label class="form-label" for="firstName">First Name</label>
-                            <input class="form-control" type="text" id="firstName" name="firstName" required autofocus>
-                            <div class="valid-feedback">
-                                Looks good!
+                        <div class="row">
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label" for="firstName">First Name</label>
+                                <input class="form-control" type="text" id="firstName" name="firstName" required autofocus>
+                                <div class="valid-feedback">Looks good!</div>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="lastName">Last Name</label>
-                            <input class="form-control" type="text" id="lastName" name="lastName" required>
-                            <div class="valid-feedback">
-                                Looks good!
+                            <div class="mb-3 col-md-6">
+                                <label class="form-label" for="lastName">Last Name</label>
+                                <input class="form-control" type="text" id="lastName" name="lastName" required>
+                                <div class="valid-feedback">Looks good!</div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
                             <input class="form-control" type="text" id="username" name="username" required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+                            <div class="valid-feedback">Looks good!</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="email">Email</label>
                             <input class="form-control" type="email" id="email" name="email" required>
-                            <div class="valid-feedback">
-                                Looks good!
-                            </div>
+                            <div class="valid-feedback">Looks good!</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="password">Password</label>
-                            <input class="form-control" type="password" id="password" name="password" required>
-                            <div class="valid-feedback">
-                                Looks good!
+                            <input class="form-control" type="password" id="password" name="password" required
+                                pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,25}">
+                            <div class="mt-2 text-muted">
+                                <div id="charCount" class="password-requirement">8-25 Characters</div>
+                                <div id="uppercase" class="password-requirement">Uppercase: A-Z</div>
+                                <div id="lowercase" class="password-requirement">Lowercase: a-z</div>
+                                <div id="special" class="password-requirement">Special: !@#$%^&*</div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between">
@@ -48,14 +45,47 @@
                             <a class="my-auto" href="/user/login">Login</a>
                         </div>
                     </form>
-
                 </div>
             </div>
-            <%- include('../partials/otherLogin')  %>
+            <%- include('../partials/otherLogin') %>
         </div>
     </div>
 </div>
 
 <script>
-    document.querySelector('title').innerHTML = `ARC Register`;
+    document.querySelector('title').innerHTML = 'ARC Register';
+
+    const password = document.getElementById('password');
+    const charCount = document.getElementById('charCount');
+    const uppercase = document.getElementById('uppercase');
+    const lowercase = document.getElementById('lowercase');
+    const special = document.getElementById('special');
+
+    password.addEventListener('input', () => {
+        const value = password.value;
+        // Validate length
+        if (value.length >= 8 && value.length <= 25) {
+            charCount.style.color = '#198754'; // Green
+        } else {
+            charCount.style.color = '#DC3545'; // Red
+        }
+        // Validate uppercase
+        if (/[A-Z]/.test(value)) {
+            uppercase.style.color = '#198754'; // Green
+        } else {
+            uppercase.style.color = '#DC3545'; // Red
+        }
+        // Validate lowercase
+        if (/[a-z]/.test(value)) {
+            lowercase.style.color = '#198754'; // Green
+        } else {
+            lowercase.style.color = '#DC3545'; // Red
+        }
+        // Validate special character
+        if (/[!@#$%^&*]/.test(value)) {
+            special.style.color = '#198754'; // Green
+        } else {
+            special.style.color = '#DC3545'; // Red
+        }
+    });
 </script>

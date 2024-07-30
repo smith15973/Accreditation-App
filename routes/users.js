@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { storeReturnTo } = require('../middleware');
+const { storeReturnTo, validatePassword } = require('../middleware');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
 const { renderRegister, renderLogin, logout, login, requestPlantAccess, viewMembers, approveOrChangeMemberStatus, removeMember, register, microsoftAuthenticate, renderMicrosoftLogin } = require('../controllers/users');
 
 
 
 router.route('/auth/microsoft')
-.get(renderMicrosoftLogin);
+    .get(renderMicrosoftLogin);
 
 // Callback route for Microsoft to redirect to
 router.route('/auth/microsoft/callback')
-.get(storeReturnTo, microsoftAuthenticate, login);
+    .get(storeReturnTo, microsoftAuthenticate, login);
 
 
 
 router.route('/register')
     .get(renderRegister)
-    .post(register);
+    .post(validatePassword, register);
 
 router.route('/login')
     .get(renderLogin)

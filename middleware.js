@@ -94,3 +94,20 @@ module.exports.validateSegInstruction = (req, res, next) => {
 }
 
 
+function passwordValidation(password) {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,25}$/;
+    return passwordRegex.test(password);
+}
+
+module.exports.validatePassword = (req, res, next) => {
+    const { password } = req.body;
+
+    if (password && !passwordValidation(password)) {
+        req.flash('error', 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character')
+        return res.redirect('/user/register')
+    }
+
+    next();
+};
+
+

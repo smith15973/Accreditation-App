@@ -1,13 +1,36 @@
+<style>
+  .alert.fade.show {
+    transition: opacity 0.5s ease-out;
+  }
+</style>
+
 <% if (success && success.length) { %>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <strong><%= success %></strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+    </div>
 <% } %>
 
 <% if (error && error.length) { %>
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong><%= error %></strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
+    </div>
 <% } %>
+
+<script>
+  function removeFlash() {
+    setTimeout(() => {
+      const alert = document.querySelector('.alert.fade.show');
+      if (alert) {
+        alert.style.opacity = '0'; // Start fade out
+        setTimeout(() => {
+          alert.remove(); // Remove from DOM after fade out
+        }, 500); // Match the duration of the CSS transition
+      }
+    }, 5000); // 3 seconds delay before starting the fade-out
+  }
+
+  // Call the function to set the timeout
+  removeFlash();
+</script>

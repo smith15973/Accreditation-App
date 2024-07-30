@@ -41,7 +41,9 @@ passport.use(new MicrosoftStrategy({
     async (accessToken, refreshToken, profile, done) => {
         try {
             let user = await User.findOne({ email: profile.emails[0].value });
+            let isNewUser = false
             if (!user) {
+                isNewUser = true
                 user = new User({
                     email: profile.emails[0].value,
                     username: profile.displayName,
@@ -52,8 +54,7 @@ passport.use(new MicrosoftStrategy({
                 });
                 await user.save();
             }
-            console.log(profile)
-            return done(null, user);
+            return done(null, user, {message: isNewUser ? `Welcome to ARC ${user.firstName}` : `Welcome back to ARC ${user.firstName}`});
         } catch (err) {
             return done(err, null);
         }

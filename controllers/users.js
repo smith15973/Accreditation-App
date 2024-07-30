@@ -28,7 +28,7 @@ module.exports.register = catchAsync(async (req, res) => {
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, err => {
             if (err) return next(err);
-            req.flash('success', 'Welcome to the Accredidation App');
+            req.flash('success', 'Welcome to ARC');
             return res.redirect('/');
         });
     } catch (e) {
@@ -46,7 +46,9 @@ module.exports.renderLogin = (req, res) => {
 }
 
 module.exports.login = (req, res) => {
-    req.flash('success', 'Welcome Back!');
+
+    const flashMessage = req.authInfo && req.authInfo.message ? req.authInfo.message : 'Welcome Back to ARC!';
+    req.flash('success', flashMessage);
 
     const redirectUrl = res.locals.returnTo || '/';
     delete req.session.returnTo;
