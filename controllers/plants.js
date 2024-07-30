@@ -29,9 +29,10 @@ module.exports.createNewPlant = catchAsync(async (req, res) => {
 })
 
 
-module.exports.renderPlant = (req, res) => {
-    res.render('plants/home');
-}
+module.exports.renderPlant = catchAsync(async(req, res) => {
+    const users = await User.find({requestedPlants: req.params.plantID})
+    res.render('plants/home', {requests: users.length});
+})
 
 module.exports.renderEditPlant = (req, res) => {
     res.render('plants/edit')

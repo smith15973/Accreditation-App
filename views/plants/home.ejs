@@ -15,6 +15,24 @@
         height: 100%;
         object-fit: cover;
     }
+
+    #requestNotification {
+        background-color: red; /* Change this to any color you prefer */
+        color: white;
+        border-radius: 50%; /* Makes the notification bubble circular */
+        padding: 0.25em 0.5em; /* Adjust the size of the bubble */
+        font-size: 0.75em; /*Adjust the font size if needed */
+        text-decoration: dashed;
+        /* text-align: center; */
+        /* display: inline-block; */
+        /* min-width: 1.5em; Ensures the bubble is at least this wide */
+        /* line-height: 1.5em; Centers the text vertically */
+
+    }
+
+    a {
+        text-decoration: none;
+    }
 </style>
 
 <div class="row mb-3">
@@ -29,7 +47,7 @@
 
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><a href="/reports/<%= currentPlant._id %>">Reports</a></li>
-                <li class="list-group-item"><a href="/user/manage/<%= currentPlant._id %>">View Members</a></li>
+                <li class="list-group-item"><a href="/user/manage/<%= currentPlant._id %>">View Members<% if (requests) {%> <span id="requestNotification"><%=requests%></span> <% } %></a></li>
                 <% if (currentUser.admin) { %>
                     <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
                 <%- include('../partials/modals/deletePlant')%>

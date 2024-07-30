@@ -1,7 +1,16 @@
 <% layout('/layouts/boilerplate') %>
-<p><%= err.statusCode %> <%= err %></p>
-<p><%= err.stack  %></p>
+
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><%= err.statusCode %>: <%=err.message%></h4>
+            <% if (process.env.NODE_ENV !== "production") { %>
+            <p><%= err.stack %></p>
+            <% } %>
+        </div>
+    </div>
+</div>
 
 <script>
-    document.querySelector('title').innerHTML = `ARC <%= err.statusCode %>`;
+    document.querySelector('title').innerHTML = `ARC <%= err.statusCode %>: <%=err.message%>`;
 </script>
