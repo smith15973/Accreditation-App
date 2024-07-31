@@ -19,18 +19,18 @@ In addition to that, I chose to use AWS S3 to store the files and images for the
 
 3. Setup file storage <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-bucket.html">(AWS S3)</a> and <a href="https://www.passportjs.org/packages/passport-microsoft/">Microsft authentication</a> if used.
 
-4. Setup Enviroment variables:
-PORT=
-SESSION_SECRET=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-S3_REGION=
-S3_BUCKET=
-DB_URL=
-AZURE_CLIENT_ID=
-AZURE_CLIENT_SECRET=
-AZURE_SECRET_ID=
-AZURE_REDIRECT_URL=
+4. Setup Enviroment variables:<br>
+PORT=<br>
+SESSION_SECRET=<br>
+AWS_ACCESS_KEY_ID=<br>
+AWS_SECRET_ACCESS_KEY=<br>
+S3_REGION=<br>
+S3_BUCKET=<br>
+DB_URL=<br>
+AZURE_CLIENT_ID=<br>
+AZURE_CLIENT_SECRET=<br>
+AZURE_SECRET_ID=<br>
+AZURE_REDIRECT_URL=<br>
 
 5. In the terminal run <b>npm start</b> to startup the application
 
