@@ -13,27 +13,28 @@ In addition to that, I chose to use AWS S3 to store the files and images for the
 <a href="https://www.passportjs.org/packages/">Passport</a> local and passport Microsoft were implemented to allow for secure, conveinent login for the user.
 
 <h3>How to Run Application</h3>
-    <li>Make sure <a href="https://nodejs.org/en/download/package-manager">node</a> is installed on the machine (Developed with v22.1.0).</li>
+<ol>
+<li>Make sure <a href="https://nodejs.org/en/download/package-manager">node</a> is installed on the machine (Developed with v22.1.0).</li>
 
-    <li>In the terminal, go to the top level of the apps directory and run <b>npm install</b>. This will install all the packages and dependencies in the package.json file.</li>
+<li>In the terminal, go to the top level of the apps directory and run <b>npm install</b>. This will install all the packages and dependencies in the package.json file.</li>
 
-    <li>Setup file storage <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-bucket.html">(AWS S3)</a> and <a href="https://www.passportjs.org/packages/passport-microsoft/">Microsft authentication</a> if used.</li>
+<li>Setup file storage <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-bucket.html">(AWS S3)</a> and <a href="https://www.passportjs.org/packages/passport-microsoft/">Microsft authentication</a> if used.</li>
 
-    <li>Setup Enviroment variables:
-    PORT=
-    SESSION_SECRET=
-    AWS_ACCESS_KEY_ID=
-    AWS_SECRET_ACCESS_KEY=
-    S3_REGION=
-    S3_BUCKET=
-    DB_URL=
-    AZURE_CLIENT_ID=
-    AZURE_CLIENT_SECRET=
-    AZURE_SECRET_ID=
-    AZURE_REDIRECT_URL=
-    </li>
+<li>Setup Enviroment variables:
+PORT=
+SESSION_SECRET=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+S3_REGION=
+S3_BUCKET=
+DB_URL=
+AZURE_CLIENT_ID=
+AZURE_CLIENT_SECRET=
+AZURE_SECRET_ID=
+AZURE_REDIRECT_URL=
+</li>
 
-    <li>In the terminal run <b>npm start</b> to startup the application</li>
+<li>In the terminal run <b>npm start</b> to startup the application</li>
 </ol>
 
 If you want to deploy this project, <a href="https://www.sammeechward.com/deploying-full-stack-js-to-aws-ec2">here</a> is the example I followed to setup an EC2 instance on AWS.
