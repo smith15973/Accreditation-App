@@ -34,7 +34,6 @@ AZURE_SECRET_ID=
 AZURE_REDIRECT_URL=
 
 5. In the terminal run <b>npm start</b> to startup the application
-</ol>
 
 If you want to deploy this project, <a href="https://www.sammeechward.com/deploying-full-stack-js-to-aws-ec2">here</a> is the example I followed to setup an EC2 instance on AWS.
 
