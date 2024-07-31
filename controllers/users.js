@@ -17,13 +17,26 @@ module.exports.microsoftAuthenticate = passport.authenticate('microsoft', {
 })
 
 module.exports.renderRegister = catchAsync(async (req, res) => {
+    if (res.locals.currentUser) {
+        return res.redirect('/')
+    }
     const plants = await Plant.find({});
     res.render('users/register', { plants });
 })
 
 module.exports.register = catchAsync(async (req, res) => {
     try {
-        const { username, password, email, firstName, lastName } = req.body;
+        let { username, password, email, firstName, lastName } = req.body;
+        username = username.toLowerCase().trim();
+        email = email.toLowerCase().trim();
+        password = password.trim();
+        firstName = firstName.trim();
+        lastName = lastName.trim();
+        const foundUser = await User.findOne({email});
+        if (foundUser) {
+            req.flash('error', 'Email is already registered');
+            return res.redirect('/user/register');
+        }
         const user = new User({ email, username, firstName, lastName });
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, err => {

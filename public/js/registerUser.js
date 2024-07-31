@@ -1,5 +1,6 @@
 document.querySelector('title').innerHTML = 'ARC Register';
 
+
 const password = document.getElementById('password');
 const charCount = document.getElementById('charCount');
 const uppercase = document.getElementById('uppercase');

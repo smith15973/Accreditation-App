@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') %>
 <div class="container d-flex justify-content-center align-items-center my-5">
     <div class="row">
-        <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3">
+        <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4">
             <div class="card shadow">
                 <img src="/images/DavisBessePic.jpg" alt="" class="card-img-top" />
                 <div class="card-body">
@@ -10,19 +10,22 @@
                         <div class="row">
                             <div class="mb-3 col-md-6">
                                 <label class="form-label" for="firstName">First Name</label>
-                                <input class="form-control" type="text" id="firstName" name="firstName" required autofocus>
+                                <input class="form-control" type="text" id="firstName" name="firstName" maxlength="24" required autofocus>
                                 <div class="valid-feedback">Looks good!</div>
+                                <div class="invalid-feedback">First name must be less than 25 characters and not empty</div>
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label class="form-label" for="lastName">Last Name</label>
-                                <input class="form-control" type="text" id="lastName" name="lastName" required>
+                                <input class="form-control" type="text" id="lastName" name="lastName" maxlength="24" required>
                                 <div class="valid-feedback">Looks good!</div>
+                                <div class="invalid-feedback">Last name must be less than 25 characters and not empty</div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="username">Username</label>
-                            <input class="form-control" type="text" id="username" name="username" required>
+                            <input class="form-control" type="text" id="username" name="username" minlength="4" maxlength="24" required>
                             <div class="valid-feedback">Looks good!</div>
+                            <div class="invalid-feedback">Username must be between 4-24 characters</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="email">Email</label>

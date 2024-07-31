@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { storeReturnTo, validatePassword } = require('../middleware');
+const { storeReturnTo, validateUser } = require('../middleware');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
 const { renderRegister, renderLogin, logout, login, requestPlantAccess, viewMembers, approveOrChangeMemberStatus, removeMember, register, microsoftAuthenticate, renderMicrosoftLogin } = require('../controllers/users');
 
@@ -18,7 +18,7 @@ router.route('/auth/microsoft/callback')
 
 router.route('/register')
     .get(renderRegister)
-    .post(validatePassword, register);
+    .post(validateUser, register);
 
 router.route('/login')
     .get(renderLogin)

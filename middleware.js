@@ -6,7 +6,8 @@ const catchAsync = require('./utils/catchAsync.js');
 const Plant = require('./models/plant');
 const SegInstruction = require('./models/segInstruction');
 const mongoose = require('mongoose');
-const { plantSchema, dueDateSchema, segInstructionSchema } = require('./schemas.js')
+const { plantSchema, dueDateSchema, segInstructionSchema } = require('./schemas.js');
+const user = require('./models/user.js');
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -99,8 +100,20 @@ function passwordValidation(password) {
     return passwordRegex.test(password);
 }
 
-module.exports.validatePassword = (req, res, next) => {
-    const { password } = req.body;
+module.exports.validateUser = (req, res, next) => {
+    let { username, password } = req.body;
+
+    username = username.toLowerCase().trim();
+    password = password.trim();
+
+    if (username && username.length < 4) {
+        req.flash('error', 'Username must be at least 4 characters long')
+        return res.redirect('/user/register')
+    }
+    if (username && username.length > 24) {
+        req.flash('error', 'Username must be less than 25 characters long')
+        return res.redirect('/user/register')
+    }
 
     if (password && !passwordValidation(password)) {
         req.flash('error', 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character')
