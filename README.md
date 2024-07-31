@@ -9,31 +9,35 @@ This projct was created using <a href="https://www.mongodb.com/">MongoDB</a> to 
 In addition to that, I chose to use AWS S3 to store the files and images for the project. AWS was chosen mostly because of how popular it is, but any file storage system could be implemented easily that <a href="https://www.npmjs.com/package/multer">Multer</a> has support for. The Mongo database can either be stored locally on the machine, or can be run in Atlas on the cloud.
 
 <h3>Access and Authentication</h3>
+<ol>
 <a href="https://www.passportjs.org/packages/">Passport</a> local and passport Microsoft were implemented to allow for secure, conveinent login for the user.
 
 <h3>How to Run Application</h3>
-1. Make sure <a href="https://nodejs.org/en/download/package-manager">node</a> is installed on the machine (Developed with v22.1.0).
+    <li>Make sure <a href="https://nodejs.org/en/download/package-manager">node</a> is installed on the machine (Developed with v22.1.0).</li>
 
-2. In the terminal, go to the top level of the apps directory and run <b>npm install</b>. This will install all the packages and dependencies in the package.json file.
+    <li>In the terminal, go to the top level of the apps directory and run <b>npm install</b>. This will install all the packages and dependencies in the package.json file.</li>
 
-3. Setup file storage <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-bucket.html">(AWS S3)</a> and <a href="https://www.passportjs.org/packages/passport-microsoft/">Microsft authentication</a> if used.
+    <li>Setup file storage <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/creating-bucket.html">(AWS S3)</a> and <a href="https://www.passportjs.org/packages/passport-microsoft/">Microsft authentication</a> if used.</li>
 
-4. Setup Enviroment variables:
-PORT=
-SESSION_SECRET=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-S3_REGION=
-S3_BUCKET=
-DB_URL=
-AZURE_CLIENT_ID=
-AZURE_CLIENT_SECRET=
-AZURE_SECRET_ID=
-AZURE_REDIRECT_URL=
+    <li>Setup Enviroment variables:
+    PORT=
+    SESSION_SECRET=
+    AWS_ACCESS_KEY_ID=
+    AWS_SECRET_ACCESS_KEY=
+    S3_REGION=
+    S3_BUCKET=
+    DB_URL=
+    AZURE_CLIENT_ID=
+    AZURE_CLIENT_SECRET=
+    AZURE_SECRET_ID=
+    AZURE_REDIRECT_URL=
+    </li>
 
-5. In the terminal run <b>npm start</b> to startup the application
+    <li>In the terminal run <b>npm start</b> to startup the application</li>
+</ol>
 
 If you want to deploy this project, <a href="https://www.sammeechward.com/deploying-full-stack-js-to-aws-ec2">here</a> is the example I followed to setup an EC2 instance on AWS.
+
 
 © 2024 Noah Smith (nosmith2004@gmail.com), All Rights Reserved.
 
