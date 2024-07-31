@@ -9,7 +9,6 @@ This projct was created using <a href="https://www.mongodb.com/">MongoDB</a> to 
 In addition to that, I chose to use AWS S3 to store the files and images for the project. AWS was chosen mostly because of how popular it is, but any file storage system could be implemented easily that <a href="https://www.npmjs.com/package/multer">Multer</a> has support for. The Mongo database can either be stored locally on the machine, or can be run in Atlas on the cloud.
 
 <h3>Access and Authentication</h3>
-<ol>
 <a href="https://www.passportjs.org/packages/">Passport</a> local and passport Microsoft were implemented to allow for secure, conveinent login for the user.
 
 <h3>How to Run Application</h3>
