@@ -1,0 +1,36 @@
+@media (max-width: 991px) {
+    col-2 {
+        font-size: calc(0.5vw + 0.5vh);
+    }
+    .container {
+        width: 98% !important;
+        max-width: 100% !important;
+    }
+}
+@media (max-width: 767px) {
+    col-2 {
+        font-size: calc(0.5vw + 0.5vh);
+    }
+    .container {
+        width: 98% !important;
+        max-width: 100% !important;
+    }
+}
+
+.tableData {
+    text-align: right;
+    word-break: break-all;
+    vertical-align: baseline;
+}
+.tableLabel {
+    font-weight: bold;
+    text-align: center;
+    word-break: break-all;
+    vertical-align: middle;
+}
+.tableTotal {
+    font-weight: bold;
+    text-align: right;
+    word-break: break-all;
+    vertical-align: middle;
+}

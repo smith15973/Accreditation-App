@@ -1,0 +1,8 @@
+.scrollable-nav {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+.scrollable-nav .nav-link {
+    display: inline-block;
+}

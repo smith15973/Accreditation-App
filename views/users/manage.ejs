@@ -82,14 +82,6 @@
 
 
 <script>
-    const rankSelects = document.querySelectorAll('.rankSelect');
-    rankSelects.forEach(select => {
-        select.addEventListener('change', () => {            
-            select.parentElement.submit();
-        })
-    })
-
-    
     document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Manage Members`;
-        
 </script>
+<script src="/js/manageUsers.js"></script>

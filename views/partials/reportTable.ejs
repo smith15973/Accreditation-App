@@ -1,42 +1,4 @@
-<style>
-    @media (max-width: 991px) {
-        col-2 {
-            font-size: calc(0.5vw + 0.5vh);
-        }
-        .container {
-            width: 98% !important;
-            max-width: 100% !important;
-        }
-    }
-    @media (max-width: 767px) {
-        col-2 {
-            font-size: calc(0.5vw + 0.5vh);
-        }
-        .container {
-            width: 98% !important;
-            max-width: 100% !important;
-        }
-    }
-
-    .tableData {
-        text-align: right;
-        word-break: break-all;
-        vertical-align: baseline;
-    }
-    .tableLabel {
-        font-weight: bold;
-        text-align: center;
-        word-break: break-all;
-        vertical-align: middle;
-    }
-    .tableTotal {
-        font-weight: bold;
-        text-align: right;
-        word-break: break-all;
-        vertical-align: middle;
-    }
-
-</style>
+<link rel="stylesheet" href="/css/reportTable.css">
 <h3><%= team %> : <%= department %></h3>
 <% const dateTeam = `${team}${department}`.replace(/\s+/g, '') %>
 <div style="background-color: #7c838944;" class="tableLabel row">

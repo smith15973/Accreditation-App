@@ -1,22 +1,5 @@
 <% layout('/layouts/boilerplate') %>
-    <style>
-        .img-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 75%;
-            /* Aspect ratio (4:3) */
-            overflow: hidden;
-        }
-
-        .img-cropped {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    </style>
+<link rel="stylesheet" href="/css/newPlant.css">
     <h1>Create New Plant</h1>
     <form action="/plant/new" method="post" enctype="multipart/form-data">
         <div class="mb-3">
@@ -37,19 +20,4 @@
         </div>
     </form>
 
-    <script>
-        function changeImage(event) {
-
-            const [file] = event.target.files;
-            if (file) {
-                document.querySelector('#imageArea').innerHTML = 
-                `<div id="imageContainer" class="img-container">
-                    <img id="showImage" class="img-cropped">
-                </div>`
-                const showImage = document.getElementById('showImage');
-                showImage.src = URL.createObjectURL(file);
-            } else {
-                document.querySelector('#imageArea').innerHTML =''
-            }
-        }
-    </script>
+<script src="/js/newPlant.js"></script>

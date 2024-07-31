@@ -1,0 +1,16 @@
+.img-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 75%;
+    /* Aspect ratio (4:3) */
+    overflow: hidden;
+}
+
+.img-cropped {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

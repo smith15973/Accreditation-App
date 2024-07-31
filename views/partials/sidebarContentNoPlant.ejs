@@ -1,60 +1,5 @@
-<style>
-    div.offcanvas-body {
+<link rel="stylesheet" href="/css/sidebarContentNoPlant.css">
 
-        /* Basic styles */
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-            margin: 0;
-        }
-
-        li {
-            margin: 5px 0;
-            position: relative;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        li:hover {
-            background-color: #f8f9fa;
-        }
-
-        li ul li:hover {
-            background-color: #e0e1e2;
-        }
-
-        li ul li ul li:hover {
-            background-color: #c8c9ca;
-        }
-
-        .clickable-li {
-            text-decoration: none;
-            color: #007BFF;
-        }
-
-        ul ul {
-            padding-left: 50px;
-            /* Indentation for nested lists */
-            display: none;
-            /* Hide nested lists by default */
-        }
-
-        /* Arrow indicators for nested lists */
-        li>ul::before {
-            content: '\25B6';
-            /*Right arrow*/
-            position: absolute;
-            left: -20px;
-            transition: transform 2s ease;
-        }
-
-        li.expanded>ul::before {
-            content: '\25BC';
-            /* Down arrow */
-        }
-    }
-</style>
 <div class="container">
     <ul class="">
         <li class="clickable-li" data-url="/generalResources?type=ACADS">ACADS</li>
@@ -65,31 +10,4 @@
     </ul>
 </div>
 
-<script>
-    // JavaScript to handle toggling of nested lists
-    document.addEventListener('DOMContentLoaded', function () {
-        const nestedLists = document.querySelectorAll('li > ul');
-
-        nestedLists.forEach(nestedList => {
-            const parentLi = nestedList.parentElement;
-
-            parentLi.addEventListener('click', function (e) {
-                if (e.target === parentLi || e.target.tagName === 'A') {
-                    e.stopPropagation();
-                    const isExpanded = parentLi.classList.contains('expanded');
-
-                    nestedList.style.display = isExpanded ? 'none' : 'block';
-                    parentLi.classList.toggle('expanded', !isExpanded);
-                }
-            });
-        });
-    });
-</script>
-
-<script>
-    document.querySelectorAll('.clickable-li').forEach(item => {
-        item.addEventListener('click', function() {
-            window.location.href = this.dataset.url;
-        });
-    });
-</script>
+<script src="/js/sidebarContentNoPlant.js"></script>

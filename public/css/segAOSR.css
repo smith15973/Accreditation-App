@@ -1,0 +1,60 @@
+.container {
+    max-width: 90%;
+}
+
+.loading {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.navigationButtons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 1);
+        position: fixed;
+        top: 48%;
+        bottom: 48%;
+        text-decoration: none;
+        color: black;
+        background-color: white;
+
+        @media print {
+            display: none;
+        }
+    }
+
+    .navigationButtons:hover {
+        opacity: 0.8;
+        cursor: pointer;
+    }
+
+    #previousButton {
+        left: 0px;
+
+    }
+
+    #nextButton {
+        right: 0px;
+        rotate: 180deg;
+    }

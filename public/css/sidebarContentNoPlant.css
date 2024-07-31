@@ -1,0 +1,55 @@
+div.offcanvas-body {
+
+    /* Basic styles */
+    ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    li {
+        margin: 5px 0;
+        position: relative;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    li:hover {
+        background-color: #f8f9fa;
+    }
+
+    li ul li:hover {
+        background-color: #e0e1e2;
+    }
+
+    li ul li ul li:hover {
+        background-color: #c8c9ca;
+    }
+
+    .clickable-li {
+        text-decoration: none;
+        color: #007BFF;
+    }
+
+    ul ul {
+        padding-left: 50px;
+        /* Indentation for nested lists */
+        display: none;
+        /* Hide nested lists by default */
+    }
+
+    /* Arrow indicators for nested lists */
+    li>ul::before {
+        content: '\25B6';
+        /*Right arrow*/
+        position: absolute;
+        left: -20px;
+        transition: transform 2s ease;
+    }
+
+    li.expanded>ul::before {
+        content: '\25BC';
+        /* Down arrow */
+    }
+}
