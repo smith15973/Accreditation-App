@@ -45,7 +45,27 @@ const SegProgramSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'File'
         }
-    ]
+    ],
+    history: [
+        {
+            event: {
+                type: String,
+                required: true,
+            },
+            date: {
+                type: Date,
+                required: true,
+            },
+            details: {
+                type: String,
+            },
+            user: {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+        }
+    ],
 });
 
 

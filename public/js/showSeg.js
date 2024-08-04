@@ -38,7 +38,7 @@ socket.on('programStatusUpdate', program => {
 const statusSelects = document.querySelectorAll('.statusSelect');
 statusSelects.forEach(select => {
     select.addEventListener('change', () => {
-        socket.emit('programStatusUpdate', { programID: select.id.split('-')[1], status: select.value });
+        socket.emit('programStatusUpdate', { programID: select.id.split('-')[1], status: select.value, userID });
     })
 })
 

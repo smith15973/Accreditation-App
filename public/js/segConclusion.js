@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    setInterval(updateData, 10000);
+    setInterval(updateData, 100000);
 });
 
 window.addEventListener('beforeunload', (e) => {

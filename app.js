@@ -98,7 +98,19 @@ io.on('connection', (socket) => {
     });
 
     socket.on('programStatusUpdate', async (data) => {
+        const history = {
+            event: `Status changed to ${data.status}`,
+            date: Date.now(),
+            user: data.userID,
+        }
+        
         const program = await SegProgram.findByIdAndUpdate(data.programID, {status: data.status}, {new: true})
+        program.history.push(history);
+        await program.save();
+
+
+
+
         io.emit('programStatusUpdate', program);
         const seg = await Seg.findOne({segPrograms: program._id}).populate(['segPrograms', 'segInstruction'])
         let allPrograms = await SegProgram.find({plant: seg.plant}).populate({path: 'seg', populate: {path: 'segInstruction'}})

@@ -88,7 +88,7 @@
                         <%seg.segPrograms.forEach((program,count)=> { %>
                             <div class="row">
                                 <div class="col-1 fw-bold border border-1 border-dark fs-6 text-break">
-                                    <div class="text-center pt-1">
+                                    <div class="text-center pt-1 mb-2">
                                         <%= program.name %>
                                     </div>
                                     <form
@@ -96,7 +96,7 @@
                                         id="statusForm<%=count%>" method="post">
                                         <select id="programStatus-<%=program._id%>" <%=program.status==='Submitted'
                                             ? 'style=background-color:rgb(123,187,123);' : '' %> class="statusSelect
-                                            form-control text-center my-3" name="status">
+                                            form-control text-center mb-2" name="status">
                                             <option <%=program.status==='Incomplete' ? 'selected' : '' %>
                                                 value="Incomplete">Incomplete</option>
                                             <option <%=program.status==='Uploaded' ? 'selected' : '' %>
@@ -109,6 +109,10 @@
                                                 value="Submitted">Submitted</option>
                                         </select>
                                     </form>
+                                    <div class="text-center mb-2">
+                                        <a style="text-decoration: none;" href="/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/<%= program._id %>/history">History</a>
+                                    </div>
+                                    
                                 </div>
 
                                 <div class="col-5 fw-normal border border-1 border-dark text-break clickable-div"
@@ -146,4 +150,5 @@
 
         <script>
             document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> <%= seg.segInstruction.segInstructionID %>`;
+            const userID = '<%=currentUser._id%>';
         </script>

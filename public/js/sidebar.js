@@ -1,6 +1,7 @@
 const sidebarButton = document.querySelector('#sidebarToggleButton');
 const sidebar = document.querySelector('#offcanvas');
 
+
 function openSidebar() {
     if (!sidebarButton.classList.contains('sidebarOpen')) {
         sidebarButton.classList.toggle('sidebarOpen')

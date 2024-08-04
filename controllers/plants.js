@@ -29,9 +29,9 @@ module.exports.createNewPlant = catchAsync(async (req, res) => {
 })
 
 
-module.exports.renderPlant = catchAsync(async(req, res) => {
-    const users = await User.find({requestedPlants: req.params.plantID})
-    res.render('plants/home', {requests: users.length});
+module.exports.renderPlant = catchAsync(async (req, res) => {
+    const users = await User.find({ requestedPlants: req.params.plantID })
+    res.render('plants/home', { requests: users.length });
 })
 
 module.exports.renderEditPlant = (req, res) => {
@@ -110,20 +110,62 @@ module.exports.renderSupportingData = catchAsync(async (req, res) => {
 
 module.exports.editProgramData = catchAsync(async (req, res) => {
     const { programID } = req.params;
-    let program;
-    if (typeof req.files === 'undefined' || req.files.length === 0) {
-        program = await SegProgram.findByIdAndUpdate(programID, req.body, { new: true }).populate('supportingDataFiles');
-    } else {
-        program = await SegProgram.findById(programID);
-        program.supportingData = req.body.supportingData;
+    const { supportingData, conclusion, aosr } = req.body;
+    const program = await SegProgram.findById(programID);
+    if (typeof supportingData !== 'undefined' && supportingData !== program.supportingData[0]) {
+        program.supportingData = supportingData;
+        const history = {
+            event: 'Supporting Data Updated',
+            date: Date.now(),
+            details: supportingData,
+            user: req.user._id
+        }
+        program.history.push(history);
+    }
+    if (typeof conclusion !== 'undefined' && conclusion !== program.conclusion[0]) {
+        program.conclusion = conclusion;
+        const history = {
+            event: 'Conclusion Updated',
+            date: Date.now(),
+            details: conclusion,
+            user: req.user._id
+        }
+        program.history.push(history);
+    }
+    if (typeof aosr !== 'undefined' && aosr !== program.aosr[0]) {
+        program.aosr = aosr;
+        const history = {
+            event: 'AOSR Updated',
+            date: Date.now(),
+            details: aosr,
+            user: req.user._id
+        }
+        program.history.push(history);
+    }
+    if (typeof req.files !== 'undefined' && req.files.length > 0) {
         const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
+
+        let event = `${files.length} files uploaded to Supporting Data`
+        if (files.length === 1) {
+            event = `1 file uploaded to Supporting Data`
+        }
+
+        const history = {
+            event,
+            date: Date.now(),
+            details: files.map(f => f.originalName).join(', '),
+            user: req.user._id
+        }
+        program.history.push(history);
+
         for (let upFile of files) {
             const file = await new File(upFile).save();
             program.supportingDataFiles.push(file._id);
         }
-        await program.save()
-        await program.populate('supportingDataFiles');
+
     }
+    await program.save()
+    await program.populate('supportingDataFiles');
     return res.json({ admin: req.user.admin, program });
 })
 
@@ -137,6 +179,14 @@ module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {
     const program = await SegProgram.findById(programID);
     program.supportingDataFiles.pull(...deletedFilesIDs);
     deleteFiles(keys);
+
+    const history = {
+        event: `${deletedFiles.length} files deleted from Supporting Data`,
+        date: Date.now(),
+        details: deletedFiles.map(f => f.originalName).join(','),
+        user: req.user._id
+    }
+    program.history.push(history);
     await program.save();
     res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
 });
@@ -178,6 +228,7 @@ module.exports.editAOSR = catchAsync(async (req, res) => {
 
 /* status */
 module.exports.changeStatus = catchAsync(async (req, res) => {
+    console.log(programID)
     const { plantID, segInstructionID, programID } = req.params;
     const program = await SegProgram.findById(programID);
     program.status = req.body.status;
