@@ -14,6 +14,7 @@
 
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><a href="/reports/<%= currentPlant._id %>">Reports</a></li>
+                <li class="list-group-item"><a href="/archives/<%= currentPlant._id %>">Archives</a></li>
                 <li class="list-group-item"><a href="/user/manage/<%= currentPlant._id %>">View Members<% if (requests) {%> <span id="requestNotification"><%=requests%></span> <% } %></a></li>
                 <% if (currentUser.admin) { %>
                     <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>

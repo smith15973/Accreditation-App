@@ -19,7 +19,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-bs-target="#archiveModalConfirm" data-bs-toggle="modal" id="requestButton" disabled>Archive</button>
+                <button class="btn btn-primary" data-bs-target="#archiveModalConfirm" data-bs-toggle="modal"
+                    id="requestButton" disabled>Archive</button>
             </div>
         </div>
     </div>
@@ -29,21 +30,24 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="archiveModalConfirmLabel">Confirm Archive of <%= currentPlant.name %> SEGs</h1>
+                <h1 class="modal-title fs-5" id="archiveModalConfirmLabel">Confirm Archive of <%= currentPlant.name %>
+                        SEGs</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to archive the SEGs for <%= currentPlant.name %>? The data will be saved in the Archives section and no longer editable.</p>
-                <label class="form-label" for="typeConfirm">Please enter <b>archive</b> to confirm.</label>
+                <p>Are you sure you want to archive the SEGs for <%= currentPlant.name %>? The data will be saved in the
+                        Archives section and no longer editable. This action <b>CANNOT</b> be undone.</p>
+                <label class="form-label" for="typeConfirm">Please enter <i><b>archive</b></i> to confirm.</label>
                 <input class="form-control" type="text" id="typeConfirm" placeholder="archive" required>
                 <form id="archiveForm" action="/archives/<%= currentPlant._id %>" method="post">
                     <input type="hidden" name="archive[title]" id="hiddenTitle">
                     <input type="hidden" name="archive[notes]" id="hiddenNotes">
                 </form>
             </div>
-            
+
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-target="#archiveModalRequest" data-bs-toggle="modal" id="requestButton">Back</button>
+                <button class="btn btn-secondary" data-bs-target="#archiveModalRequest" data-bs-toggle="modal"
+                    id="requestButton">Back</button>
                 <button id="confirmButton" type="submit" form="archiveForm" class="btn btn-primary" disabled>
                     Confirm
                 </button>
@@ -56,34 +60,34 @@
     data-bs-toggle="modal">Create Archive</li>
 
 
-    <script>
-        const archiveTitle = document.getElementById('archiveTitle');
-        const archiveNotes = document.getElementById('archiveNotes');
-        const requestButton = document.getElementById('requestButton');
-        const typeConfirm = document.getElementById('typeConfirm');
-        const confirmButton = document.getElementById('confirmButton');
+<script>
+    const archiveTitle = document.getElementById('archiveTitle');
+    const archiveNotes = document.getElementById('archiveNotes');
+    const requestButton = document.getElementById('requestButton');
+    const typeConfirm = document.getElementById('typeConfirm');
+    const confirmButton = document.getElementById('confirmButton');
 
-        function titleValidation() {
-            if (archiveTitle.value.length > 0) {
-                requestButton.disabled = false;
-            } else {
-                requestButton.disabled = true;
-            }
-            document.getElementById('hiddenTitle').value = archiveTitle.value;
+    function titleValidation() {
+        if (archiveTitle.value.length > 0) {
+            requestButton.disabled = false;
+        } else {
+            requestButton.disabled = true;
         }
+        document.getElementById('hiddenTitle').value = archiveTitle.value;
+    }
 
-        archiveNotes.addEventListener('input', () => {
-            document.getElementById('hiddenNotes').value = archiveNotes.value;
-        });
+    archiveNotes.addEventListener('input', () => {
+        document.getElementById('hiddenNotes').value = archiveNotes.value;
+    });
 
-        function confirmValidation() {
-            if (typeConfirm.value === 'archive') {
-                confirmButton.disabled = false;
-            } else {
-                confirmButton.disabled = true;
-            }
+    function confirmValidation() {
+        if (typeConfirm.value === 'archive') {
+            confirmButton.disabled = false;
+        } else {
+            confirmButton.disabled = true;
         }
+    }
 
-        archiveTitle.addEventListener('input', titleValidation);
-        typeConfirm.addEventListener('input', confirmValidation);
-    </script>
+    archiveTitle.addEventListener('input', titleValidation);
+    typeConfirm.addEventListener('input', confirmValidation);
+</script>
