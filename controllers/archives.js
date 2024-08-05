@@ -2,7 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const Archive = require('../models/archive');
 const Seg = require('../models/seg');
 const SegProgram = require('../models/segProgram');
-const File = require('../models/file');
+const { date } = require('joi');
 
 
 
@@ -10,7 +10,7 @@ const File = require('../models/file');
 
 module.exports.renderArchiveIndex = catchAsync(async (req, res) => {
     const { plantID } = req.params;
-    const archives = await Archive.find({ plant: plantID }).sort({ date: 1 });
+    const archives = await Archive.find({ plant: plantID }).sort({ date: -1 });
     res.render('archives/index', { archives });
 });
 
@@ -20,7 +20,17 @@ module.exports.createArchive = catchAsync(async (req, res) => {
     const archive = new Archive(req.body.archive);
     archive.plant = plantID;
     archive.user = req.user.firstName + ' ' + req.user.lastName;
-    const segs = await Seg.find({ plant: plantID }).populate(['segPrograms', 'segInstruction', { path: 'segPrograms', populate: { path: 'supportingDataFiles' } }]);
+    const segs = await Seg.find({ plant: plantID }).populate([
+        {
+            path: 'segPrograms',
+            populate: [
+                { path: 'supportingDataFiles' },
+                { path: 'history.user' }
+            ]
+        },
+        'segInstruction'
+    ]);
+
 
     archive.segs = [];
     for (let seg of segs) {
@@ -43,6 +53,7 @@ module.exports.createArchive = catchAsync(async (req, res) => {
                 aosr: program.aosr[0],
                 status: program.status,
                 supportingDataFiles: [],
+                history: [],
             }
 
             for (let file of program.supportingDataFiles) {
@@ -53,13 +64,24 @@ module.exports.createArchive = catchAsync(async (req, res) => {
                     bucket: file.bucket,
                 }
                 archiveProgram.supportingDataFiles.push(archiveFile);
-                await File.findByIdAndDelete(file._id);
+                // await File.findByIdAndDelete(file._id);
             }
+
+            for (let history of program.history) {
+                const archiveHistory = {
+                    event: history.event,
+                    date: history.date,
+                    details: history.details,
+                    user: history.user.firstName + ' ' + history.user.lastName,
+                }
+                archiveProgram.history.push(archiveHistory);
+            }
+
             archiveSeg.programs.push(archiveProgram);
-            await SegProgram.findByIdAndDelete(program._id);
+            // await SegProgram.findByIdAndDelete(program._id);
         }
         archive.segs.push(archiveSeg);
-        await Seg.findByIdAndDelete(seg._id);
+        // await Seg.findByIdAndDelete(seg._id);
     }
     await archive.save();
 
@@ -78,3 +100,24 @@ module.exports.renderArchiveSeg = catchAsync(async (req, res) => {
     const seg = archive.segs.filter(seg => seg._id.equals(segID))[0]
     res.render('archives/showSeg', { seg, archiveID });
 });
+
+module.exports.renderArchiveProgramHistory = catchAsync(async (req, res) => {
+    const { archiveID, segID, programID } = req.params;
+    const archive = await Archive.findById(archiveID)
+    const seg = archive.segs.filter(seg => seg._id.equals(segID))[0]
+    const program = seg.programs.filter(program => program._id.equals(programID))[0]
+    res.render('archives/programHistory', { program, archive, seg });
+});
+
+module.exports.getHistoryDetails = catchAsync(async (req, res) => {
+    const { archiveID, programID, segID, historyID } = req.params
+    const archive = await Archive.findById(archiveID)
+    const seg = archive.segs.filter(seg => seg._id.equals(segID))[0]
+    const program = seg.programs.filter(program => program._id.equals(programID))[0]; 
+
+    const history = program.history.id(historyID);
+    console.log(history)
+
+
+    res.json(history)
+})

@@ -1,3 +1,4 @@
+const { required } = require('joi');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -103,6 +104,25 @@ const ArchiveSchema = new Schema({
                             bucket: {
                                 type: String,
                                 required: true
+                            },
+                        }
+                    ],
+                    history: [
+                        {
+                            event: {
+                                type: String,
+                                required: true,
+                            },
+                            date: {
+                                type: Date,
+                                required: true,
+                            },
+                            details: {
+                                type: String,
+                            },
+                            user: {
+                                type: String,
+                                required: true,
                             },
                         }
                     ],

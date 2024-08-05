@@ -3,8 +3,9 @@ const Schema = mongoose.Schema;
 const User = require('./user');
 const Seg = require('./seg')
 const DueDate = require('./dueDate')
-const segProgram = require('./segProgram');
+const SegProgram = require('./segProgram');
 const { deleteFiles } = require('../utils/fileOperations');
+const Archive = require('./archive');
 
 
 const PlantSchema = new Schema({
@@ -48,7 +49,10 @@ PlantSchema.post('findOneAndDelete', async function (doc) {
             //works
             await DueDate.deleteMany({ plant: doc._id })
             //works
-            await segProgram.deleteMany({ plant: doc._id })
+            await SegProgram.deleteMany({ plant: doc._id })
+
+            //works
+            await Archive.deleteMany({ plant: doc._id })
 
             //works
             keys = [{ Key: doc.image.key }]

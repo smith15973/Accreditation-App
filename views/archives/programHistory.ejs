@@ -1,0 +1,81 @@
+<style>
+    .modalbtn {
+        cursor: pointer; 
+    }
+    .modalbtn:hover {
+        opacity: 0.8;
+    }
+</style>
+
+<% layout('/layouts/boilerplate') %>
+    <a href="/archives/<%= currentPlant.id %>/<%= archive._id %>/seg/<%= seg._id %>" class="btn btn-primary mb-2">Back to <%= seg.segID %></a>
+    <h3><%= currentPlant.name %>, <%= seg.segID %>, <%= program.name %> History Archive</h3>
+    <ul class="list-group mb-3">
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-3 col-sm- my-auto fw-bold">
+                    User
+                </div>
+                <div class="col-3 col-sm- my-auto fw-bold">
+                    Date
+                </div>
+
+                <div class="col-3 col-sm- text-start my-auto fw-bold">
+                    Update
+                </div>
+
+                <div class="col-3 col-sm- text-end my-auto fw-bold">
+                    Details
+                </div>
+            </div>
+        </li>
+        <% for (let hist of program.history) { %>
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-3 my-auto">
+                    <%=hist.user%>
+                </div>
+                <div class="col-3 my-auto">
+                    <%=hist.date.toLocaleString()%>
+                </div>
+
+                <div class="col-5 text-start my-auto">
+                    <%=hist.event%>
+                </div>
+
+                <% if (hist.details) { %>
+                    <div id="details-<%= hist._id  %>" data-bs-toggle="modal" data-bs-target="#detailsModal" class="col-1 text-end my-auto modalbtn text-primary">
+                        Details
+                    </div>
+                <% } else {%>
+                    <div class="col-1 text-end my-auto">
+                        None
+                    </div>
+                <% } %>
+                </div>
+            </div>
+        </li>
+        <% } %>
+
+    </ul>
+
+    <!-- Modal -->
+     <%- include('../partials/modals/historyDetails') %>
+
+<script>
+    const modalButtons = document.querySelectorAll('.modalbtn');
+    const modalTitle = document.querySelector('#detailsModalLabel')
+    const modalBody = document.querySelector('#detailsModalBody')
+    const modalSubtitle = document.querySelector('#modalSubtitle')
+    modalButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+            const id = button.id.split('-')[1];
+            const url = `/archives/<%= currentPlant._id %>/<%= archive._id %>/seg/<%= seg._id %>/history/<%=program._id%>/${id}`
+            const response = await axios.get(url);
+            modalTitle.innerHTML = `Details for ${response.data.event}`;
+            modalBody.innerHTML = response.data.details;
+            date = new Date(response.data.date).toLocaleString();
+            modalSubtitle.innerHTML = `<span>By ${response.data.user}</span> <span>${date}</span>`
+        })
+    })
+</script>
