@@ -3,8 +3,7 @@ const router = express.Router();
 
 const { pdfUpload, imageUpload, downloadZipSupportingData } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess, validatePlant } = require('../middleware');
-const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion } = require('../controllers/plants');
-const SegProgram = require('../models/segProgram');
+const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion, getHistoryDetails, renderProgramHistory } = require('../controllers/plants');
 
 
 
@@ -38,21 +37,10 @@ router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
     .delete(deleteSupportingDataFiles)
 
 router.route('/:plantID/seg/:segInstructionID/:programID/history')
-    .get(async (req, res) => {
-        const { programID } = req.params
-        const program = await SegProgram.findById(programID).populate(['history.user', { path: 'seg', populate: { path: 'segInstruction' } }]);
-        res.render('segs/history', { history: program.history.reverse(), program })
-    })
+    .get(isLoggedIn, renderProgramHistory)
 
 router.route('/:plantID/seg/:segInstructionID/history/:historyID')
-    .get(async (req, res) => {
-        const { historyID } = req.params
-        const program = await SegProgram.findOne({ 'history._id': historyID }).populate(['history.user']);
-        const history = program.history.id(historyID);
-
-
-        res.json(history)
-    })
+    .get(isLoggedIn, getHistoryDetails)
 
 
 

@@ -235,3 +235,17 @@ module.exports.changeStatus = catchAsync(async (req, res) => {
     await program.save();
     res.redirect(`/plant/${plantID}/seg/${segInstructionID}`)
 })
+
+
+module.exports.renderProgramHistory = catchAsync(async (req, res) => {
+    const { programID } = req.params
+    const program = await SegProgram.findById(programID).populate(['history.user', { path: 'seg', populate: { path: 'segInstruction' } }]);
+    res.render('segs/history', { history: program.history.reverse(), program })
+})
+
+module.exports.getHistoryDetails = catchAsync(async (req, res) => {
+    const { historyID } = req.params
+    const program = await SegProgram.findOne({ 'history._id': historyID }).populate(['history.user']);
+    const history = program.history.id(historyID);
+    res.json(history)
+})
