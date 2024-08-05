@@ -1,7 +1,11 @@
 <% layout('/layouts/boilerplate') %>
 <link rel="stylesheet" href="/css/editPlant.css">
 
-    <h1>Edit <%= currentPlant.name %></h1>
+    <div class="d-flex justify-content-between">
+        <h3>Edit <%= currentPlant.name %></h3>
+        <%- include('../partials/modals/deletePlant')%>
+    </div>
+    
     <form action="/plant/<%= currentPlant._id %>/edit?_method=PUT" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Change Name</label>

@@ -12,6 +12,7 @@
     </div>
 <% } %>
 
+<% if (currentUser.plants.length) { %>
 <h3 class="mt-1 mb-3">Your Plants:</h3>
 <div class="row">
     <% currentUser.plants.sort((a, b) => a.name.localeCompare(b.name)).forEach((plant) => { %>
@@ -27,6 +28,7 @@
         </div>
     <% }) %>
 </div>
+<% } %>
 
 
 <% if (currentUser.plants.length !== plants.length) { 

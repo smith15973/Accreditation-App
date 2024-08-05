@@ -19,7 +19,6 @@
                 <% if (currentUser.admin) { %>
                     <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>/edit">Edit Plant Profile</a></li>
                 <%- include('../partials/modals/newArchive')%>
-                <%- include('../partials/modals/deletePlant')%>
                 <% } %>
             </ul>
         </div>
