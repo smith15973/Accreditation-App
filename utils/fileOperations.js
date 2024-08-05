@@ -4,7 +4,6 @@ const multerS3 = require('multer-s3');
 const archiver = require('archiver')
 const { PassThrough } = require('stream');
 const File = require('../models/file')
-const Archive = require('../models/archive')
 const GeneralResourcePDF = require('../models/generalResourcePDF')
 const catchAsync = require('./catchAsync');
 
@@ -160,11 +159,8 @@ const downloadZipGeneral = catchAsync(async (req, res) => {
 })
 
 const archiveDownloadZipSupportingData = catchAsync(async (req, res) => {
-    const { archiveID, segID, programID } = req.params
-    const archive = await Archive.findById(archiveID);
-    const seg = archive.segs.filter(seg => seg._id.equals(segID))[0];
-    const program = seg.programs.filter(program => program._id.equals(programID))[0];
-    const files = program.supportingDataFiles;
+    const files = res.locals.files;
+    console.log('FILES:', files)
 
     if (files.length < 1) {
         const referer = req.header('Referer') || '/';
@@ -173,7 +169,7 @@ const archiveDownloadZipSupportingData = catchAsync(async (req, res) => {
     }
 
     // Set headers for the ZIP download
-    res.setHeader('Content-Disposition', `attachment; filename=Archive ${archive.title} ${seg.segID} ${program.name} Supporting Data Files.zip`);
+    res.setHeader('Content-Disposition', `attachment; filename=${res.locals.zipName}.zip`);
     res.setHeader('Content-Type', 'application/zip');
 
     const zip = archiver('zip');

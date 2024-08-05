@@ -4,6 +4,7 @@
 }
 a {
     text-decoration: none;
+    cursor: pointer;
 }
 input:placeholder-shown {
     font-style: italic;

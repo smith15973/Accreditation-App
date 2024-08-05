@@ -3,7 +3,7 @@ const router = express.Router();
 
 
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin } = require('../middleware');
-const { createArchive, renderArchive, renderArchiveIndex, renderArchiveSeg, renderArchiveProgramHistory, getHistoryDetails } = require('../controllers/archives');
+const { createArchive, renderArchive, renderArchiveIndex, renderArchiveSeg, renderArchiveProgramHistory, getHistoryDetails, getArchiveFilesToDownload } = require('../controllers/archives');
 const { archiveDownloadZipSupportingData } = require('../utils/fileOperations');
 
 router.route('/:plantID')
@@ -24,7 +24,7 @@ router.route('/:plantID/:archiveID/seg/:segID/history/:programID/:historyID')
     .get(isLoggedIn, getHistoryDetails)
 
 router.route('/:plantID/:archiveID/seg/:segID/download/:programID')
-    .get(isLoggedIn, archiveDownloadZipSupportingData)
+    .get(isLoggedIn, getArchiveFilesToDownload, archiveDownloadZipSupportingData)
 
 
 

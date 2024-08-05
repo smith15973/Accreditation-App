@@ -2,7 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const Archive = require('../models/archive');
 const Seg = require('../models/seg');
 const SegProgram = require('../models/segProgram');
-const { date } = require('joi');
+const File = require('../models/file');
 
 
 
@@ -64,7 +64,7 @@ module.exports.createArchive = catchAsync(async (req, res) => {
                     bucket: file.bucket,
                 }
                 archiveProgram.supportingDataFiles.push(archiveFile);
-                // await File.findByIdAndDelete(file._id);
+                await File.findByIdAndDelete(file._id);
             }
 
             for (let history of program.history) {
@@ -78,10 +78,10 @@ module.exports.createArchive = catchAsync(async (req, res) => {
             }
 
             archiveSeg.programs.push(archiveProgram);
-            // await SegProgram.findByIdAndDelete(program._id);
+            await SegProgram.findByIdAndDelete(program._id);
         }
         archive.segs.push(archiveSeg);
-        // await Seg.findByIdAndDelete(seg._id);
+        await Seg.findByIdAndDelete(seg._id);
     }
     await archive.save();
 
@@ -120,4 +120,16 @@ module.exports.getHistoryDetails = catchAsync(async (req, res) => {
 
 
     res.json(history)
+})
+
+
+module.exports.getArchiveFilesToDownload = catchAsync(async (req,res, next) => {
+    const { archiveID, segID, programID } = req.params
+    const archive = await Archive.findById(archiveID);
+    const seg = archive.segs.filter(seg => seg._id.equals(segID))[0];
+    const program = seg.programs.filter(program => program._id.equals(programID))[0];
+    const files = program.supportingDataFiles;
+    res.locals.files = files;
+    res.locals.zipName = `Archive ${archive.title} ${seg.segID} ${program.name} Supporting Data Files`
+    next();
 })

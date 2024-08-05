@@ -1,7 +1,6 @@
-const { required } = require('joi');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+const { deleteFiles } = require('../utils/fileOperations');
 
 const ArchiveSchema = new Schema({
     plant: {
@@ -56,7 +55,7 @@ const ArchiveSchema = new Schema({
                 default: 'N/A'
             },
             reviewGuidance: {
-                type: String,   
+                type: String,
                 default: 'N/A'
             },
             programs: [
@@ -133,5 +132,26 @@ const ArchiveSchema = new Schema({
     ]
 });
 
+
+ArchiveSchema.pre('deleteMany', async function () {
+    try {
+        const archivesToDelete = await mongoose.model('Archive').find(this.getQuery());
+        for (let archive of archivesToDelete) {
+            for (let seg of archive.segs) {
+                for (let program of seg.programs) {
+                    const deletedFiles = program.supportingDataFiles;
+                    const keys = deletedFiles.map(df => ({ Key: df.key }));
+                    console.log('keys:', keys);
+                    if (keys.length > 0) {
+                        deleteFiles(keys);
+                    }
+
+                }
+            }
+        }
+    } catch (e) {
+        console.log('ERROR:', e)
+    }
+});
 
 module.exports = mongoose.model('Archive', ArchiveSchema);
