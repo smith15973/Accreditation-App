@@ -8,9 +8,9 @@ const File = require('../models/file');
 
 
 
-module.exports.renderArchives = catchAsync(async (req, res) => {
+module.exports.renderArchiveIndex = catchAsync(async (req, res) => {
     const { plantID } = req.params;
-    const archives = await Archive.find({ plant: plantID });
+    const archives = await Archive.find({ plant: plantID }).sort({ date: 1 });
     res.render('archives/index', { archives });
 });
 
@@ -20,12 +20,15 @@ module.exports.createArchive = catchAsync(async (req, res) => {
     const archive = new Archive(req.body.archive);
     archive.plant = plantID;
     archive.user = req.user.firstName + ' ' + req.user.lastName;
-    const segs = await Seg.find({ plant: plantID }).populate(['segPrograms', 'segInstruction']);
+    const segs = await Seg.find({ plant: plantID }).populate(['segPrograms', 'segInstruction', { path: 'segPrograms', populate: { path: 'supportingDataFiles' } }]);
 
     archive.segs = [];
     for (let seg of segs) {
         const archiveSeg = {
             segID: seg.segInstruction.segInstructionID,
+            team: seg.segInstruction.team,
+            department: seg.segInstruction.department,
+            segNum: seg.segInstruction.segNum,
             applicableAOC: seg.segInstruction.applicableAOC[0],
             reviewActivity: seg.segInstruction.reviewActivity[0],
             dataSubmittal: seg.segInstruction.dataSubmittal[0],
@@ -45,7 +48,7 @@ module.exports.createArchive = catchAsync(async (req, res) => {
             for (let file of program.supportingDataFiles) {
                 const archiveFile = {
                     location: file.location,
-                    originalname: file.originalname,
+                    originalName: file.originalName,
                     key: file.key,
                     bucket: file.bucket,
                 }
@@ -58,8 +61,20 @@ module.exports.createArchive = catchAsync(async (req, res) => {
         archive.segs.push(archiveSeg);
         await Seg.findByIdAndDelete(seg._id);
     }
-
-    console.log(archive);
     await archive.save();
+
     res.redirect(`/archives/${plantID}`);
+});
+
+module.exports.renderArchive = catchAsync(async (req, res) => {
+    const { archiveID } = req.params;
+    const archive = await Archive.findById(archiveID)
+    res.render('archives/segsIndex', { archive });
+});
+
+module.exports.renderArchiveSeg = catchAsync(async (req, res) => {
+    const { archiveID, segID } = req.params;
+    const archive = await Archive.findById(archiveID)
+    const seg = archive.segs.filter(seg => seg._id.equals(segID))[0]
+    res.render('archives/showSeg', { seg, archiveID });
 });

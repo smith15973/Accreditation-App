@@ -1,0 +1,168 @@
+<% layout('/layouts/boilerplate') %>
+  <link rel="stylesheet" href="/css/showSeg.css">
+
+    <%# if (previousSeg) {%>
+        <a href="/plant/<%#= currentPlant._id %>/seg/<%#= previousSeg._id %>" id="previousButton"
+            class="border border-0 border-start-0 border navigationButtons">
+            ←
+        </a>
+    <%# } %>
+
+    <%# if (nextSeg) {%>
+        <a href="/plant/<%#= currentPlant._id %>/seg/<%#= nextSeg._id %>" id="nextButton"
+            class="border border-0 border-start-0 border navigationButtons">
+            ←
+        </a>
+    <%# } %>
+
+
+    <div class="d-flex justify-content-between">
+        <a class="btn btn-primary" href="/archives/<%= currentPlant._id %>/<%= archiveID %>" id="backToPlantButton">Back to
+            Archive
+        </a>
+    </div>
+
+    <h3 class="text-center fw-bold">
+        <%= seg.team %> Training (Implementation and Oversight) SAT Evaluation Guide
+            (SEG)
+    </h3>
+
+    <div class="mb-5">
+        <div class="row bg-secondary fw-bold text-center">
+            <div class="col border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Applicable AO&C</p>
+            </div>
+            <div class="col border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Review Activity</p>
+            </div>
+            <div class="col border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Data Submittal</p>
+            </div>
+            <div class="col border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Review Guidance</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col fw-normal border border-1 border-dark text-break">
+                <p class="fw-bold fs-6">
+                    <%= seg.segID %>
+                </p>
+                <p class="fs-6 formattedText"><%- seg.applicableAOC %></p>
+            </div>
+            <div class="col  fw-normal border border-1 border-dark text-break">
+                <p class="fs-6 formattedText"><%- seg.reviewActivity %></p>
+            </div>
+            <div class="col  fw-normal border border-1 border-dark text-break">
+                <p class="fs-6 formattedText"><%- seg.dataSubmittal %></p>
+            </div>
+            <div class="col  fw-normal border border-1 border-dark text-break">
+                <p class="fs-6 formattedText"><%- seg.reviewGuidance %></p>
+            </div>
+        </div>
+
+        <div class="row bg-secondary">
+            <div class="col-1 text-center fw-bold border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Program</p>
+            </div>
+            <div class="col-5 text-center fw-bold border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Supporting Data</p>
+            </div>
+            <div class="col text-center fw-bold border border-1 border-dark text-break">
+                <p class="my-auto fs-6">Conclusion</p>
+            </div>
+            <div class="col text-center fw-bold border border-1 border-dark text-break">
+                <p class="my-auto fs-6">AOSR</p>
+            </div>
+        </div>
+
+        <%seg.programs.forEach((program,count)=> { %>
+            <div class="row">
+                <div class="col-1 fw-bold border border-1 border-dark fs-6 text-break">
+                    <div class="text-center pt-1 mb-2">
+                        <%= program.name %>
+                    </div>
+                    <div class="text-center mb-2">
+                        <%= program.status %>
+                    </div>
+                    
+                </div>
+
+                <div class="col-5 fw-normal border border-1 border-dark text-break">
+                    <p id="supportingData-<%=program._id%>" class="fs-6">
+                        <%- program.supportingData %>
+                    </p>
+                    <% if (program.supportingDataFiles.length > 0) { %>
+                    <div class="row mb-1">
+                        <div class=" col-md-8 col-9">
+                            <select class="form-control documentSelect" name="documentSelect" id="documentSelect">
+                                <option value="none">Select File to View</option>
+                                <% for (let file of program.supportingDataFiles) { %>
+                                    <option value="<%= file.location %>"><%=file.originalName%></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class=" col-md-4 col-3 text-center">
+                            <form class="col-" action="/archives/<%= currentPlant._id %>/<%= archiveID %>/seg/<%= seg._id %>/download/<%= program._id %>" method="get">
+                                <button class="btn btn-secondary">Download Zip</button>
+                            </form>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+
+                <div class="col fw-normal border border-1 border-dark text-break">
+                    <p id="conclusion-<%=program._id%>" class="fs-6"><%- program.conclusion %></p>
+                </div>
+                <div class="col fw-normal border border-1 border-dark text-break">
+                    <p id="aosr-<%=program._id%>" class="fs-6"><%- program.aosr %></p>
+                </div>
+            </div>
+        <% }); %>
+        <div class="text-center my-3">
+            <embed id="pdfViewer" class="rounded d-inline" type="application/pdf"
+                style="width: 100%; height: 1000px;" />
+        </div>
+
+
+
+
+
+
+        <script>
+            document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Archive <%= seg.segID%>`;
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
+                    document.querySelector('#previousButton').click();
+                } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
+                    document.querySelector('#nextButton').click();
+                }
+            })
+
+            const pdf = document.getElementById('pdfViewer')
+
+            function showDocument() {
+                
+
+                
+            }
+            
+
+            const documentSelects = document.querySelectorAll('.documentSelect');
+            documentSelects.forEach(select => {
+                    select.addEventListener('change', () => {
+                        const url = select.value;
+                        documentSelects.forEach(select => {
+                            select.value = 'none';
+                        })
+                        if (url !== 'none') {
+                            select.value = url
+                            pdf.hidden = false;
+                            pdf.src = url;
+                        } else {
+                            pdf.hidden = true
+                        }
+                        
+                    })
+                })
+        </script>

@@ -2,16 +2,27 @@
     <h1>
         <%= currentPlant.name %> Archives Index
     </h1>
-    <ul>
-        <% for (let archive of archives) { %>
-            <li>
-                <a href="/archives/<%= currentPlant._id %>/<%= archive._id %>">
+    <div class="row">
+        <div class="col-4 fs-4 fw-bold text-center border border-dark bg-light">Title</div>
+        <div class="col-6 fs-4 fw-bold text-center border border-dark bg-light">Notes</div>
+        <div class="col-2 fs-4 fw-bold text-center border border-dark bg-light">Date Archived</div>
+    </div>
+    <% for (let archive of archives) { %>
+        <div class="row">
+            <div class="col-4 border border-dark d-flex align-items-center justify-content-center">
+                <a class="text-center" href="/archives/<%= currentPlant._id %>/<%= archive._id %>">
                     <%= archive.title %>
                 </a>
-                <p>Notes: <%= archive.notes %></p>
-            </li>
-        <% } %>
-    </ul>
+            </div>
+            <div class="col-6 border border-dark d-flex align-items-center justify-content-center">
+                <p class="mb-0"><%= archive.notes %></p>
+            </div>
+            <div class="col-2 border border-dark d-flex align-items-center justify-content-center">
+                <span><%= archive.date.toLocaleString().split(',')[0] %></span>
+            </div>
+        </div>
+        
+    <% } %>
 
     <script>
         document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Archives`;

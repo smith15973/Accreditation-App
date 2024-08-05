@@ -4,6 +4,7 @@ const multerS3 = require('multer-s3');
 const archiver = require('archiver')
 const { PassThrough } = require('stream');
 const File = require('../models/file')
+const Archive = require('../models/archive')
 const GeneralResourcePDF = require('../models/generalResourcePDF')
 const catchAsync = require('./catchAsync');
 
@@ -158,4 +159,45 @@ const downloadZipGeneral = catchAsync(async (req, res) => {
     archive.finalize();
 })
 
-module.exports = { pdfUpload, imageUpload, deleteFiles, downloadZipSupportingData, downloadZipGeneral };
+const archiveDownloadZipSupportingData = catchAsync(async (req, res) => {
+    const { archiveID, segID, programID } = req.params
+    const archive = await Archive.findById(archiveID);
+    const seg = archive.segs.filter(seg => seg._id.equals(segID))[0];
+    const program = seg.programs.filter(program => program._id.equals(programID))[0];
+    const files = program.supportingDataFiles;
+
+    if (files.length < 1) {
+        const referer = req.header('Referer') || '/';
+        req.flash('error', 'No files provided.')
+        return res.redirect(referer)
+    }
+
+    // Set headers for the ZIP download
+    res.setHeader('Content-Disposition', `attachment; filename=Archive ${archive.title} ${seg.segID} ${program.name} Supporting Data Files.zip`);
+    res.setHeader('Content-Type', 'application/zip');
+
+    const zip = archiver('zip');
+    zip.on('error', err => res.status(500).send({ error: err.message }));
+
+    // Pipe the archive to the response
+    zip.pipe(res);
+
+    // Add each file to the archive
+    for (let file of files) {
+        const command = new GetObjectCommand({ Bucket, Key: file.key });
+        const stream = new PassThrough();
+        try {
+            const { Body } = await s3.send(command);
+            Body.pipe(stream);
+            zip.append(stream, { name: file.originalName });
+        } catch (err) {
+            console.error(`Error retrieving image ${file.name}:`, err);
+            stream.end(); // Close the stream on error to avoid hanging
+        }
+    }
+
+    // Finalize the archive (indicates that no more files will be appended)
+    zip.finalize();
+})
+
+module.exports = { pdfUpload, imageUpload, deleteFiles, downloadZipSupportingData, downloadZipGeneral, archiveDownloadZipSupportingData };

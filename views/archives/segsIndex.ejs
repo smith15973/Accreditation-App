@@ -1,0 +1,76 @@
+<% layout('/layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/plantHome.css">
+<% archive.segs.sort((a, b) => a.segNum - b.segNum) %>
+<div class="row mb-3">
+    <div class="col-3  p-0">
+        <div class="card">
+            <div class="img-container">
+                <img src="<%= currentPlant.image.location %>" class="img-cropped card-img-top" alt="Plant Picture">
+            </div>
+            <div class="card-body" style="flex: none;">
+                <h5 class="card-title m-0 mb-1"><%= currentPlant.name %></h5>
+                <div class="card-text text-muted">
+                    <div><%= archive.title %></div>
+                    <div><%= archive.notes %></div>
+                </div>
+            </div>
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="/plant/<%= currentPlant._id %>">Go to Current Plant Data</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="col text-center">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item fw-bold">OPPAs</li>
+                    <% for (let seg of archive.segs.filter(seg => seg.segID.includes('SEG-OPPA'))) { %>
+                        <li class="list-group-item">
+                            <a href="/archives/<%= currentPlant._id %>/<%= archive._id %>/seg/<%= seg._id %>"><%= seg.segID %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item fw-bold">OPIOs</li>
+                    <% for (let seg of archive.segs.filter(seg => seg.segID.includes('SEG-OPIO'))) { %>
+                        <li class="list-group-item">
+                            <a href="/archives/<%= currentPlant._id %>/<%= archive._id %>/seg/<%= seg._id %>"><%= seg.segID %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col text-center">
+        <div class="row">
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item fw-bold">MTPAs</li>
+                    <% for (let seg of archive.segs.filter(seg => seg.segID.includes('SEG-MTPA'))) { %>
+                        <li class="list-group-item">
+                            <a href="/archives/<%= currentPlant._id %>/<%= archive._id %>/seg/<%= seg._id %>"><%= seg.segID %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item fw-bold">MTIOs</li>
+                    <% for (let seg of archive.segs.filter(seg => seg.segID.includes('SEG-MTIO'))) { %>
+                        <li class="list-group-item">
+                            <a href="/archives/<%= currentPlant._id %>/<%= archive._id %>/seg/<%= seg._id %>"><%= seg.segID %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
