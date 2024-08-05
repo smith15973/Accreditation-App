@@ -1,6 +1,18 @@
 <% layout('/layouts/boilerplate') %>
-<h1><%= currentPlant.name %> Archives Index</h1>
+    <h1>
+        <%= currentPlant.name %> Archives Index
+    </h1>
+    <ul>
+        <% for (let archive of archives) { %>
+            <li>
+                <a href="/archives/<%= currentPlant._id %>/<%= archive._id %>">
+                    <%= archive.title %>
+                </a>
+                <p>Notes: <%= archive.notes %></p>
+            </li>
+        <% } %>
+    </ul>
 
-<script>
-    document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Archives`;
-</script>
+    <script>
+        document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Archives`;
+    </script>

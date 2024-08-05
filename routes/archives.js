@@ -1,13 +1,12 @@
 const express = require('express')
 const router = express.Router();
-const catchAsync = require('../utils/catchAsync');
 
 
-const { upload, deleteFiles } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin } = require('../middleware');
-const { renderArchives } = require('../controllers/archives');
+const { renderArchives, createArchive } = require('../controllers/archives');
 
 router.route('/:plantID')
-.get(isLoggedIn, getCurrentPlantandInstructions, renderArchives);
+.get(isLoggedIn, getCurrentPlantandInstructions, renderArchives)
+.post(isLoggedIn, getCurrentPlantandInstructions, isAdmin, createArchive)
 
 module.exports = router;

@@ -1,0 +1,89 @@
+<div class="modal fade" id="archiveModalRequest" aria-hidden="true" aria-labelledby="archiveModalRequestLabel"
+    tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="archiveModalRequestLabel">Archive <%= currentPlant.name %> SEGs</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="archiveTitle" class="form-label
+                        fs-6">Archive Name</label>
+                    <input type="text" class="form-control" id="archiveTitle" name="archive[title]" required>
+                </div>
+                <div class="mb-3">
+                    <label for="archiveNotes" class="form-label
+                        fs-6">Notes</label>
+                    <textarea class="form-control" id="archiveNotes" name="archive[notes]" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#archiveModalConfirm" data-bs-toggle="modal" id="requestButton" disabled>Archive</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="archiveModalConfirm" aria-hidden="true" aria-labelledby="archiveModalConfirmLabel"
+    tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="archiveModalConfirmLabel">Confirm Archive of <%= currentPlant.name %> SEGs</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to archive the SEGs for <%= currentPlant.name %>? The data will be saved in the Archives section and no longer editable.</p>
+                <label class="form-label" for="typeConfirm">Please enter <b>archive</b> to confirm.</label>
+                <input class="form-control" type="text" id="typeConfirm" placeholder="archive" required>
+                <form id="archiveForm" action="/archives/<%= currentPlant._id %>" method="post">
+                    <input type="hidden" name="archive[title]" id="hiddenTitle">
+                    <input type="hidden" name="archive[notes]" id="hiddenNotes">
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-target="#archiveModalRequest" data-bs-toggle="modal" id="requestButton">Back</button>
+                <button id="confirmButton" type="submit" form="archiveForm" class="btn btn-primary" disabled>
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<li style="cursor: pointer;" class="list-group-item text-warning" data-bs-target="#archiveModalRequest"
+    data-bs-toggle="modal">Create Archive</li>
+
+
+    <script>
+        const archiveTitle = document.getElementById('archiveTitle');
+        const archiveNotes = document.getElementById('archiveNotes');
+        const requestButton = document.getElementById('requestButton');
+        const typeConfirm = document.getElementById('typeConfirm');
+        const confirmButton = document.getElementById('confirmButton');
+
+        function titleValidation() {
+            if (archiveTitle.value.length > 0) {
+                requestButton.disabled = false;
+            } else {
+                requestButton.disabled = true;
+            }
+            document.getElementById('hiddenTitle').value = archiveTitle.value;
+        }
+
+        archiveNotes.addEventListener('input', () => {
+            document.getElementById('hiddenNotes').value = archiveNotes.value;
+        });
+
+        function confirmValidation() {
+            if (typeConfirm.value === 'archive') {
+                confirmButton.disabled = false;
+            } else {
+                confirmButton.disabled = true;
+            }
+        }
+
+        archiveTitle.addEventListener('input', titleValidation);
+        typeConfirm.addEventListener('input', confirmValidation);
+    </script>
