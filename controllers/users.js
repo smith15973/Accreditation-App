@@ -140,3 +140,10 @@ module.exports.approveOrChangeMemberStatus = catchAsync(async (req, res) => {
         await plant.save()
         res.redirect(`/user/manage/${plantID}`);
     });
+
+    module.exports.searchForUsers = catchAsync(async (req, res) => {
+        
+        const searchRequest = req.query.search;
+        const users = await User.find({"$or": [ { "firstName": { "$regex": searchRequest, "$options": "i" } }, { "lastName": { "$regex": searchRequest, "$options": "i" } }, { "email": { "$regex": searchRequest, "$options": "i" } } ]}).limit(5);
+        res.json(users)
+    });

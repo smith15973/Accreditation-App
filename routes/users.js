@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const { storeReturnTo, validateUser } = require('../middleware');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
-const { renderRegister, renderLogin, logout, login, requestPlantAccess, viewMembers, approveOrChangeMemberStatus, removeMember, register, microsoftAuthenticate, renderMicrosoftLogin } = require('../controllers/users');
+const { renderRegister, renderLogin, logout, login, requestPlantAccess, viewMembers, approveOrChangeMemberStatus, removeMember, register, microsoftAuthenticate, renderMicrosoftLogin, searchForUsers } = require('../controllers/users');
 
 
 
@@ -25,6 +25,9 @@ router.route('/login')
     .post(storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/user/login' }), login);
 
 router.get('/logout', logout);
+
+router.route('/manage/search')
+    .get(isLoggedIn, searchForUsers)
 
 router.route('/:userID/request/:plantID')
     .put(isLoggedIn, requestPlantAccess)

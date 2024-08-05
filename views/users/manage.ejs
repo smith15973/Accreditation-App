@@ -11,7 +11,10 @@
     </select>
 </h1>
 
-
+<input type="text" id="userSearch" class="form-control mb-2" placeholder="Search Users">
+<ul class="list-group mb-2" id="searchResultBox">
+    
+</ul>
 <% if (requestingUsers.length && currentUser.admin) { %>
 <h3>Requests for Access</h3>
 <ul class="list-group mb-3">
@@ -50,22 +53,21 @@
         <li class="list-group-item">
             <div class="row">
                 <div class="col-3 col-sm- my-auto">
-                    <b>Name:</b> <%= user.firstName %> <%= user.lastName %>
+                    <%= user.firstName %> <%= user.lastName %>
                 </div>
                 <div class="col-3 col-sm- my-auto">
-                    <b>Email:</b> <%= user.email %>
+                    <%= user.email %>
                 </div>
                 <div class="col-3 col-sm- text-start my-auto">
                     <% if (currentUser.admin) { %>
                     <form class="d-flex align-items-center" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=PUT&rank=changed" method="post">
-                        <label class="me-2" for="adminSelect"><b>Rank:</b></label>
                         <select class="rankSelect form-control" name="rank" id="adminSelect">
                             <option value="member">Member</option>
                             <option <%= user.admin ? 'selected' : '' %> value="admin">Admin</option>
                         </select>
                     </form>
                     <% } else { %>
-                        <b>Rank:</b> <%= user.admin ? 'Admin' : 'Member' %>
+                        <%= user.admin ? 'Admin' : 'Member' %>
                     <% } %>
                 </div>
                 <div class="col-3 col-sm- text-end my-auto">
@@ -83,5 +85,7 @@
 
 <script>
     document.querySelector('title').innerHTML = `ARC <%=currentPlant.name%> Manage Members`;
+    const currentPlantID = '<%= currentPlant._id %>'
+    const currentUserAdmin = '<%= currentUser.admin %>'
 </script>
 <script src="/js/manageUsers.js"></script>
