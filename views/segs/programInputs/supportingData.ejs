@@ -175,8 +175,7 @@
             <button class="btn btn-secondary" onclick="closePDF()">Close</button>
         </div>
         <div class="text-center">
-            <embed id="pdfWindow" class="rounded d-inline" type="application/pdf"
-                style="width: 100%; height: 1000px;" onload="hideLoading()" />
+            <iframe id="pdfWindow" class="rounded d-inline" style="width: 100%; height: 1000px;" onload="hideLoading()"></iframe>
         </div>
         <div class="loading" id="loading"
             style="display: block; position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); z-index: 1000;">
@@ -195,6 +194,15 @@
             const socket = io();
             let updateData;
             document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('pdfWindow').addEventListener('load', () => {
+                    hideLoading();
+                });
+                document.getElementById('pdfWindow').addEventListener('change', () => {
+                    hideLoading();
+                });
+
+                
+
                 setDeleteChecks();
                 const savingIcon = document.querySelector('#savingIcon');
                 const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {

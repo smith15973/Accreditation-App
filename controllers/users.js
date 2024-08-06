@@ -32,7 +32,7 @@ module.exports.register = catchAsync(async (req, res) => {
         password = password.trim();
         firstName = firstName.trim();
         lastName = lastName.trim();
-        const foundUser = await User.findOne({email});
+        const foundUser = await User.findOne({ email });
         if (foundUser) {
             req.flash('error', 'Email is already registered');
             return res.redirect('/user/register');
@@ -100,50 +100,93 @@ module.exports.viewMembers = catchAsync(async (req, res) => {
 });
 
 module.exports.approveOrChangeMemberStatus = catchAsync(async (req, res) => {
-        const { plantID, userID } = req.params;
-        const user = await User.findById(userID);
-        const plant = await Plant.findById(plantID);
+    const { plantID, userID } = req.params;
+    const user = await User.findById(userID);
+    const plant = await Plant.findById(plantID);
 
-        if (req.query.rank === 'changed') {
-            if (req.body.rank === 'admin') {
-                user.admin = true;
-            } else if (req.body.rank === 'member') {
-                user.admin = false;
+    if (req.query.rank === 'changed') {
+        if (req.body.rank === 'admin') {
+            user.admin = true;
+        } else if (req.body.rank === 'member') {
+            user.admin = false;
+        }
+        await user.save();
+        return res.redirect(`/user/manage/${plantID}`);
+    }
+
+    if (req.query.status === 'requested') {
+        user.requestedPlants = user.requestedPlants.filter(id => id.toString() !== plantID)
+    }
+    user.plants.push(plantID)
+    plant.users.push(userID)
+    await user.save();
+    await plant.save();
+    res.redirect(`/user/manage/${plantID}`);
+})
+module.exports.removeMember = catchAsync(async (req, res) => {
+    const { plantID, userID } = req.params;
+    const user = await User.findById(userID);
+    const plant = await Plant.findById(plantID);
+    if (req.query.status === 'requested') {
+        // Remove the plantID from the requestedPlants array
+        user.requestedPlants = user.requestedPlants.filter(id => id.toString() !== plantID);
+    } else {
+        // Remove the plantID from the plants array
+        user.plants = user.plants.filter(id => id.toString() !== plantID);
+        plant.users = plant.users.filter(id => id.toString() !== userID)
+
+    }
+    await user.save();
+    await plant.save()
+    res.redirect(`/user/manage/${plantID}`);
+});
+
+module.exports.searchForUsers = catchAsync(async (req, res) => {
+
+    const searchRequest = req.query.search;
+console.log(searchRequest);
+
+if (searchRequest) {
+    // Split the search request by spaces
+    const searchTerms = searchRequest.split(' ').filter(term => term);
+
+    // Create regex patterns for each term
+    const regexTerms = searchTerms.map(term => new RegExp(term, 'i'));
+
+    // Build the aggregation pipeline
+    const pipeline = [
+        {
+            $match: {
+                "$or": [
+                    { "firstName": { "$in": regexTerms } },
+                    { "lastName": { "$in": regexTerms } },
+                    { "email": { "$in": regexTerms } }
+                ]
             }
-            await user.save();
-            return res.redirect(`/user/manage/${plantID}`);
+        },
+        {
+            $addFields: {
+                score: {
+                    $add: [
+                        { $cond: [{ $regexMatch: { input: "$firstName", regex: regexTerms[0] } }, 1, 0] },
+                        { $cond: [{ $regexMatch: { input: "$lastName", regex: regexTerms[0] } }, 1, 0] },
+                        { $cond: [{ $regexMatch: { input: "$email", regex: regexTerms[0] } }, 1, 0] }
+                    ]
+                }
+            }
+        },
+        {
+            $sort: { score: -1 }
+        },
+        {
+            $limit: 5
         }
+    ];
 
-        if (req.query.status === 'requested') {
-            user.requestedPlants = user.requestedPlants.filter(id => id.toString() !== plantID)
-        }
-        user.plants.push(plantID)
-        plant.users.push(userID)
-        await user.save();
-        await plant.save();
-        res.redirect(`/user/manage/${plantID}`);
-    })
-    module.exports.removeMember = catchAsync(async (req, res) => {
-        const { plantID, userID } = req.params;
-        const user = await User.findById(userID);
-        const plant = await Plant.findById(plantID);
-        if (req.query.status === 'requested') {
-            // Remove the plantID from the requestedPlants array
-            user.requestedPlants = user.requestedPlants.filter(id => id.toString() !== plantID);
-        } else {
-            // Remove the plantID from the plants array
-            user.plants = user.plants.filter(id => id.toString() !== plantID);
-            plant.users = plant.users.filter(id => id.toString() !== userID)
-
-        }
-        await user.save();
-        await plant.save()
-        res.redirect(`/user/manage/${plantID}`);
-    });
-
-    module.exports.searchForUsers = catchAsync(async (req, res) => {
-        
-        const searchRequest = req.query.search;
-        const users = await User.find({"$or": [ { "firstName": { "$regex": searchRequest, "$options": "i" } }, { "lastName": { "$regex": searchRequest, "$options": "i" } }, { "email": { "$regex": searchRequest, "$options": "i" } } ]}).limit(5);
-        res.json(users)
-    });
+    // Find users
+    const users = await User.aggregate(pipeline);
+    res.json(users);
+} else {
+    res.json([]); // or handle empty search request as needed
+}
+});

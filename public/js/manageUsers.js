@@ -12,14 +12,15 @@ const resultBox = document.getElementById('searchResultBox');
 
 userSearch.addEventListener('input', async () => {
     const search = userSearch.value.trim();
-
+    console.log(search)
     resultBox.innerHTML = '';
     if (search !== '') {
         response = await axios.get(`/user/manage/search?search=${search}`)
         const users = response.data
         for (let user of users) {
             const li = document.createElement('li');
-            li.classList.add('list-group-item')
+            li.classList.add('list-group-item', 'bg-light');
+            
 
                 if (currentUserAdmin === 'false') {
                     li.innerHTML = `
