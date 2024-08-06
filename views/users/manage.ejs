@@ -59,7 +59,7 @@
                     <%= user.email %>
                 </div>
                 <div class="col-3 col-sm- text-start my-auto">
-                    <% if (currentUser.admin) { %>
+                    <% if (currentUser.admin && !user.admin) { %>
                     <form class="d-flex align-items-center" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=PUT&rank=changed" method="post">
                         <select class="rankSelect form-control" name="rank" id="adminSelect">
                             <option value="member">Member</option>

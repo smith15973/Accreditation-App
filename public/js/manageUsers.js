@@ -16,7 +16,7 @@ userSearch.addEventListener('input', async () => {
     resultBox.innerHTML = '';
     if (search !== '') {
         response = await axios.get(`/user/manage/search?search=${search}`)
-        users = response.data
+        const users = response.data
         for (let user of users) {
             const li = document.createElement('li');
             li.classList.add('list-group-item')
@@ -24,14 +24,14 @@ userSearch.addEventListener('input', async () => {
                 if (currentUserAdmin === 'false') {
                     li.innerHTML = `
                     <div class="row">
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userName-${user._id}">
                             ${user.firstName} ${user.lastName}
                         </div>
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userEmail-${user._id}">
                             ${user.email}
                         </div>
-                        <div class="col-3 col-sm- text-start my-auto">
-                            ${user.admin}
+                        <div class="col-3 col-sm- text-start my-auto" id="userRank-${user._id}">
+                            ${user.admin ? 'Admin' : 'Member'}
                         </div>
                         <div class="col-3 col-sm- text-end my-auto">
                             
@@ -43,14 +43,14 @@ userSearch.addEventListener('input', async () => {
                 else if (user.requestedPlants.includes(currentPlantID)) {
                     li.innerHTML = `
                     <div class="row">
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userName-${user._id}">
                             ${user.firstName} ${user.lastName}
                         </div>
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userEmail-${user._id}">
                             ${user.email}
                         </div>
-                        <div class="col-3 col-sm- text-start my-auto">
-                            ${user.admin}
+                        <div class="col-3 col-sm- text-start my-auto" id="userRank-${user._id}">
+                            ${user.admin ? 'Admin' : 'Member'}
                         </div>
                         <div class="col-3 col-sm- text-end my-auto">
                             <form class="d-inline" action="/user/${user._id}/manage/${currentPlantID}?_method=DELETE&status=requested" method="post">
@@ -64,14 +64,14 @@ userSearch.addEventListener('input', async () => {
                 } else if (user.plants.includes(currentPlantID)) {
                     li.innerHTML = `
                     <div class="row">
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userName-${user._id}">
                             ${user.firstName} ${user.lastName}
                         </div>
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userEmail-${user._id}">
                             ${user.email}
                         </div>
-                        <div class="col-3 col-sm- text-start my-auto">
-                            ${user.admin}
+                        <div class="col-3 col-sm- text-start my-auto" id="userRank-${user._id}">
+                            ${user.admin ? 'Admin' : 'Member'}
                         </div>
                         <div class="col-3 col-sm- text-end my-auto">
                             <form class="d-inline" action="/user/<%= user._id %>/manage/<%= currentPlant._id %>?_method=DELETE" method="post">
@@ -82,14 +82,14 @@ userSearch.addEventListener('input', async () => {
                 } else {
                     li.innerHTML = `
                     <div class="row">
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userName-${user._id}">
                             ${user.firstName} ${user.lastName}
                         </div>
-                        <div class="col-3 col-sm- my-auto">
+                        <div class="col-3 col-sm- my-auto" id="userEmail-${user._id}">
                             ${user.email}
                         </div>
-                        <div class="col-3 col-sm- text-start my-auto">
-                            ${user.admin}
+                        <div class="col-3 col-sm- text-start my-auto" id="userRank-${user._id}">
+                            ${user.admin ? 'Admin' : 'Member'}
                         </div>
                         <div class="col-3 col-sm- text-end my-auto">
                             <form class="d-inline" action="/user/${user._id}/manage/${currentPlantID}?_method=PUT" method="post">
