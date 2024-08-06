@@ -1,51 +1,55 @@
-const socket = io();
-let updateData;
-document.addEventListener('DOMContentLoaded', () => {
-    const savingIcon = document.querySelector('#savingIcon');
-    const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
-        element.setAttribute('style', 'width: 100%'); // Add width property
-        element.setAttribute('style', 'min-height: 300px;'); // Add height property
-
-        element.addEventListener('input', (e) => {
-            socket.emit('conclusionUpdate', { programID, text: element.innerHTML });
-        });
-
-        socket.on('conclusionUpdate', (data) => {
-            if (element.parentElement.parentElement.id === `conclusion-${data.programID}`) {
-                if (savingIcon.innerHTML !== 'EDITING...') {
-                    savingIcon.innerHTML = 'EDITING...'
-                }
-                if (!document.activeElement.classList.contains('nicEdit-main')) {
-                    element.innerHTML = data.text;
-                    element.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                    element.classList.add('disabled')
-                }
-            }
-        });
-    });
-
-    const nicEditElement = document.querySelector('.nicEdit-main');
-    let oldText = nicEditElement.innerHTML;
-
-    updateData = async () => {
-        if (oldText !== nicEditElement.innerHTML) {
-            oldText = nicEditElement.innerHTML;
-            const data = { conclusion: nicEditElement.innerHTML };
-            try {
-                const response = await axios.put(`/plant/${currentPlantID}/seg/${segInstructionID}/conclusion/${programID}`, data);
-
-            } catch (error) {
-                console.error('There was an error making the request:', error);
-            }
-        }
-        if (savingIcon.innerHTML !== 'Saved') {
-            savingIcon.innerHTML = 'Saved'
-            nicEditElement.style.backgroundColor = ''
-        }
+const savingIcon = document.querySelector('#savingIcon');
+let oldText = document.querySelector(`#conclusionTextArea-${programID}`).innerHTML;
+const createEditorInstance = (id, config) => {
+    const instance = SUNEDITOR.create(id, config);
+    instance.onInput = (contents, core) => {
+        const conclusionText = core.getContents();
+        instance.save();
+        socket.emit('conclusionUpdate', { programID, text: conclusionText });
     };
+    return instance;
+};
+const conclusionID = `conclusionTextArea-${programID}`;
+const conclusionInstance = createEditorInstance(conclusionID, editorConfig);
 
-    setInterval(updateData, 100000);
-});
+
+const socket = io();
+socket.on('conclusionUpdate', (data) => {
+    if (document.querySelector(`#conclusionTextArea-${data.programID}`) && savingIcon.innerHTML !== 'EDITING...') {
+        savingIcon.innerHTML = 'EDITING...'
+    }
+
+    const focus = document.activeElement;
+    if (!focus.classList.contains("se-wrapper-inner")) {
+        const conclusionTextBox = document.querySelector(`#conclusionTextArea-${data.programID}`);
+        if (conclusionTextBox) {
+            conclusionInstance.setContents(data.text)
+            conclusionInstance.save();
+        }
+    }
+})
+
+
+
+const updateData = async () => {
+    conclusionInstance.save();
+    const conclusionText = conclusionInstance.getContents();
+    if (oldText !== conclusionText) {
+        oldText = conclusionText;
+        const data = { conclusion: conclusionText };
+        try {
+            const response = await axios.put(`/plant/${currentPlantID}/seg/${segInstructionID}/conclusion/${programID}`, data);
+
+        } catch (error) {
+            console.error('There was an error making the request:', error);
+        }
+    }
+    if (savingIcon.innerHTML !== 'Saved') {
+        savingIcon.innerHTML = 'Saved'
+    }
+};
+
+setInterval(updateData, 100000);
 
 window.addEventListener('beforeunload', (e) => {
     updateData()

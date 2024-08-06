@@ -1,51 +1,56 @@
-const socket = io();
-let updateData;
-document.addEventListener('DOMContentLoaded', () => {
-    const savingIcon = document.querySelector('#savingIcon');
-    const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
-        element.setAttribute('style', 'width: 100%'); // Add width property
-        element.setAttribute('style', 'min-height: 300px;'); // Add height property
-
-        element.addEventListener('input', (e) => {
-            socket.emit('aosrUpdate', { programID, text: element.innerHTML });
-        });
-
-        socket.on('aosrUpdate', (data) => {
-            if (element.parentElement.parentElement.id === `aosr-${data.programID}`) {
-                if (savingIcon.innerHTML !== 'EDITING...') {
-                    savingIcon.innerHTML = 'EDITING...'
-                }
-                if (!document.activeElement.classList.contains('nicEdit-main')) {
-                    element.innerHTML = data.text;
-                    element.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                    element.classList.add('disabled')
-                }
-            }
-        });
-    });
-
-    const nicEditElement = document.querySelector('.nicEdit-main');
-    let oldText = nicEditElement.innerHTML;
-
-    updateData = async () => {
-        if (oldText !== nicEditElement.innerHTML) {
-            oldText = nicEditElement.innerHTML;
-            const data = { aosr: nicEditElement.innerHTML };
-            try {
-                const response = await axios.put(`/plant/${currentPlantID}/seg/${segInstructionID}/aosr/${programID}`, data);
-
-            } catch (error) {
-                console.error('There was an error making the request:', error);
-            }
-        }
-        if (savingIcon.innerHTML !== 'Saved') {
-            savingIcon.innerHTML = 'Saved'
-            nicEditElement.style.backgroundColor = ''
-        }
+const savingIcon = document.querySelector('#savingIcon');
+let oldText = document.querySelector(`#aosrTextArea-${programID}`).innerHTML;
+const createEditorInstance = (id, config) => {
+    const instance = SUNEDITOR.create(id, config);
+    instance.onInput = (contents, core) => {
+        const aosrText = core.getContents();
+        
+        instance.save();
+        socket.emit('aosrUpdate', { programID, text: aosrText });
     };
+    return instance;
+};
+const aosrID = `aosrTextArea-${programID}`;
+const aosrInstance = createEditorInstance(aosrID, editorConfig);
 
-    setInterval(updateData, 100000);
-});
+
+const socket = io();
+socket.on('aosrUpdate', (data) => {
+    if (document.querySelector(`#aosrTextArea-${data.programID}`) && savingIcon.innerHTML !== 'EDITING...') {
+        savingIcon.innerHTML = 'EDITING...'
+    }
+
+    const focus = document.activeElement;
+    if (!focus.classList.contains("se-wrapper-inner")) {
+        const aosrTextBox = document.querySelector(`#aosrTextArea-${data.programID}`);
+        if (aosrTextBox) {
+            aosrInstance.setContents(data.text)
+            aosrInstance.save();
+        }
+    }
+})
+
+
+
+const updateData = async () => {
+    aosrInstance.save();
+    const aosrText = aosrInstance.getContents();
+    if (oldText !== aosrText) {
+        oldText = aosrText;
+        const data = { aosr: aosrText };
+        try {
+            const response = await axios.put(`/plant/${currentPlantID}/seg/${segInstructionID}/aosr/${programID}`, data);
+
+        } catch (error) {
+            console.error('There was an error making the request:', error);
+        }
+    }
+    if (savingIcon.innerHTML !== 'Saved') {
+        savingIcon.innerHTML = 'Saved'
+    }
+};
+
+setInterval(updateData, 100000);
 
 window.addEventListener('beforeunload', (e) => {
     updateData()

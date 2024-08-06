@@ -32,8 +32,8 @@
                     <div class="d-inline" id="savingIcon">Saved</div>
                 </div>
             </div>
-            <div id="conclusion-<%= program._id %>">
-                <textarea class="form-control"
+            <div id="conclusion">
+                <textarea id="conclusionTextArea-<%= program._id %>" class="form-control"
                 name="conclusion"><%= program.conclusion[0] !== '' ? program.conclusion[0] : '' %></textarea>
             </div>
             
@@ -46,8 +46,7 @@
 
 
         <!-- NicEdit -->
-        <script src="/js/nicEdit.js" type="text/javascript"></script>
-        <script type="text/javascript">bkLib.onDomLoaded(nicEditors.allTextAreas);</script>
+        
   
         <script>
             const programID = '<%=program._id%>';

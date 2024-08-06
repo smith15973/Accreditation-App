@@ -8,6 +8,7 @@ socket.on('supportingDataUpdate', (data) => {
 })
 socket.on('conclusionUpdate', (data) => {
     const id = 'conclusion-' + data.programID;
+    console.log(data.text)
     if (document.querySelector('#' + id)) {
         document.querySelector('#' + id).innerHTML = data.text
     }
