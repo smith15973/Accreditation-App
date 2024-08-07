@@ -67,3 +67,14 @@ select {
     right: 0px;
     rotate: 180deg;
 }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px auto;
+}
+
+td {
+    border: 1px solid black;
+    padding: 5px;
+}
