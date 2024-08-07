@@ -1,7 +1,7 @@
 const savingIcon = document.querySelector('#savingIcon');
 const aosrID = `aosrTextArea-${programID}`;
 const aosrInstance = createEditorInstance(aosrID, editorConfig);
-aosrInstance.onChange = (contents, core) => {
+aosrInstance.onInput = (contents, core) => {
     const aosrText = core.getContents();
     socket.emit('aosrUpdate', { programID, text: aosrText });
 };

@@ -1,9 +1,10 @@
 const socket = io();
 
+const conclusionTextBox = document.querySelector(`#conclusionTextArea-${programID}`);
 const savingIcon = document.querySelector('#savingIcon');
 const conclusionID = `conclusionTextArea-${programID}`;
 const conclusionInstance = createEditorInstance(conclusionID, editorConfig);
-conclusionInstance.onChange = (contents, core) => {
+conclusionInstance.onInput = (contents, core) => {
     const conclusionText = core.getContents();
     socket.emit('conclusionUpdate', { programID, text: conclusionText });
 };
@@ -19,7 +20,6 @@ socket.on('conclusionUpdate', (data) => {
 
     const focus = document.activeElement;
     if (!focus.classList.contains("se-wrapper-inner")) {
-        const conclusionTextBox = document.querySelector(`#conclusionTextArea-${data.programID}`);
         if (conclusionTextBox) {
             conclusionInstance.setContents(data.text)
             conclusionInstance.save();

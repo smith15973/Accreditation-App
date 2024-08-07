@@ -8,7 +8,8 @@ const savingIcon = document.querySelector('#savingIcon');
 
 const supportingDataID = `supportingDataTextArea-${programID}`;
 const supportingDataInstance = createEditorInstance(supportingDataID, editorConfig);
-supportingDataInstance.onChange = (contents, core) => {
+//originally onChange, but was too slow, doesn't get any changes to styling
+supportingDataInstance.onInput = (contents, core) => {
     const supportingDataText = core.getContents();
     socket.emit('supportingDataUpdate', { programID, text: supportingDataText });
 };
