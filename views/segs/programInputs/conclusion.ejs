@@ -27,10 +27,6 @@
                 <h1 class="fs-3 d-inline">
                     <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Conclusion
                 </h1>
-                <div class="mx-2 d-inline">
-                    <button id="saveConclusionButton" type="button" onclick="updateData()" class="btn btn-success me-1">Save</button>
-                    <div class="d-inline" id="savingIcon">Saved</div>
-                </div>
             </div>
             <div id="conclusion">
                 <textarea id="conclusionTextArea-<%= program._id %>" class="form-control"
