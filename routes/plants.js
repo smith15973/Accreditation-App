@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { pdfUpload, imageUpload, downloadZipSupportingData } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess, validatePlant } = require('../middleware');
-const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion, getHistoryDetails, renderProgramHistory, updateHistory } = require('../controllers/plants');
+const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, changeStatus, renderAOSR, renderConclusion, getHistoryDetails, renderProgramHistory, updateHistory, uploadSupportingDataFiles } = require('../controllers/plants');
 
 
 
@@ -25,15 +25,11 @@ router.route('/:plantID/edit')
 router.route('/:plantID/seg/:segInstructionID')
     .get(renderSeg);
 
-
-
-
-
 /* supportingData */
 router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
     .get(renderSupportingData)
     .post(downloadZipSupportingData)
-    .put(pdfUpload.array('fileInput'), editProgramData)
+    .put(pdfUpload.array('fileInput'), uploadSupportingDataFiles)
     .delete(deleteSupportingDataFiles)
 
 router.route('/:plantID/seg/:segInstructionID/:programID/history')
@@ -48,16 +44,10 @@ router.route('/:plantID/seg/:segInstructionID/history/:historyID')
 /* conclusion */
 router.route('/:plantID/seg/:segInstructionID/conclusion/:programID')
     .get(renderConclusion)
-    .put(editProgramData)
 
 /* aosr */
 router.route('/:plantID/seg/:segInstructionID/aosr/:programID')
     .get(renderAOSR)
-    .put(editProgramData)
-
-/* status */
-router.route('/:plantID/seg/:segInstructionID/status/:programID')
-    .put(changeStatus)
 
 
 module.exports = router;

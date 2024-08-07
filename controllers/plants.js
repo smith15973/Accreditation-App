@@ -108,40 +108,11 @@ module.exports.renderSupportingData = catchAsync(async (req, res) => {
     res.render('segs/programInputs/supportingData', { program });
 })
 
-module.exports.editProgramData = catchAsync(async (req, res) => {
+module.exports.uploadSupportingDataFiles = catchAsync(async (req, res) => {
     const { programID } = req.params;
-    const { supportingData, conclusion, aosr } = req.body;
     const program = await SegProgram.findById(programID);
-    if (typeof supportingData !== 'undefined' && supportingData !== program.supportingData[0]) {
-        program.supportingData = supportingData;
-        const history = {
-            event: 'Supporting Data Updated',
-            date: Date.now(),
-            details: supportingData,
-            user: req.user._id
-        }
-        program.history.push(history);
-    }
-    if (typeof conclusion !== 'undefined' && conclusion !== program.conclusion[0]) {
-        program.conclusion = conclusion;
-        const history = {
-            event: 'Conclusion Updated',
-            date: Date.now(),
-            details: conclusion,
-            user: req.user._id
-        }
-        program.history.push(history);
-    }
-    if (typeof aosr !== 'undefined' && aosr !== program.aosr[0]) {
-        program.aosr = aosr;
-        const history = {
-            event: 'AOSR Updated',
-            date: Date.now(),
-            details: aosr,
-            user: req.user._id
-        }
-        program.history.push(history);
-    }
+    
+    
     if (typeof req.files !== 'undefined' && req.files.length > 0) {
         const files = req.files.map(f => ({ location: f.location, originalName: f.originalname, key: f.key, bucket: f.bucket, program: programID, uploadDate: Date.now() }));
 
@@ -162,11 +133,77 @@ module.exports.editProgramData = catchAsync(async (req, res) => {
             const file = await new File(upFile).save();
             program.supportingDataFiles.push(file._id);
         }
-
     }
     await program.save()
     await program.populate('supportingDataFiles');
     return res.json({ admin: req.user.admin, program });
+})
+
+
+
+module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {
+    const { plantID, segInstructionID, programID } = req.params;
+    const deletedFilesIDs = req.body.files;
+    const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
+    await File.deleteMany({ _id: { $in: deletedFilesIDs } });
+    const keys = deletedFiles.map(df => ({ Key: df.key }));
+
+    const program = await SegProgram.findById(programID);
+    program.supportingDataFiles.pull(...deletedFilesIDs);
+    deleteFiles(keys);
+
+    const history = {
+        event: `${deletedFiles.length} files deleted from Supporting Data`,
+        date: Date.now(),
+        details: deletedFiles.map(f => f.originalName).join(','),
+        user: req.user._id
+    }
+    program.history.push(history);
+    await program.save();
+    res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
+});
+
+
+
+/* conclusion */
+module.exports.renderConclusion = catchAsync(async (req, res) => {
+    const { programID } = req.params;
+    const program = await SegProgram.findById(programID).populate('seg').populate({ path: 'seg', populate: 'segInstruction' });
+
+    res.render('segs/programInputs/conclusion', { program });
+})
+
+/* aosr */
+module.exports.renderAOSR = catchAsync(async (req, res) => {
+    const { programID } = req.params;
+    const program = await SegProgram.findById(programID).populate('seg').populate({ path: 'seg', populate: 'segInstruction' });
+
+    res.render('segs/programInputs/aosr', { program });
+})
+
+
+/* status */
+module.exports.changeStatus = catchAsync(async (req, res) => {
+    console.log(programID)
+    const { plantID, segInstructionID, programID } = req.params;
+    const program = await SegProgram.findById(programID);
+    program.status = req.body.status;
+    await program.save();
+    res.redirect(`/plant/${plantID}/seg/${segInstructionID}`)
+})
+
+
+module.exports.renderProgramHistory = catchAsync(async (req, res) => {
+    const { programID } = req.params
+    const program = await SegProgram.findById(programID).populate(['history.user', { path: 'seg', populate: { path: 'segInstruction' } }]);
+    res.render('segs/history', { history: program.history.reverse(), program })
+})
+
+module.exports.getHistoryDetails = catchAsync(async (req, res) => {
+    const { historyID } = req.params
+    const program = await SegProgram.findOne({ 'history._id': historyID }).populate(['history.user']);
+    const history = program.history.id(historyID);
+    res.json(history)
 })
 
 module.exports.updateHistory = catchAsync(async (req, res) => {
@@ -213,85 +250,4 @@ module.exports.updateHistory = catchAsync(async (req, res) => {
     }
     await program.save();
     res.json('History Updated');
-})
-
-module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {
-    const { plantID, segInstructionID, programID } = req.params;
-    const deletedFilesIDs = req.body.files;
-    const deletedFiles = await File.find({ _id: { $in: deletedFilesIDs } });
-    await File.deleteMany({ _id: { $in: deletedFilesIDs } });
-    const keys = deletedFiles.map(df => ({ Key: df.key }));
-
-    const program = await SegProgram.findById(programID);
-    program.supportingDataFiles.pull(...deletedFilesIDs);
-    deleteFiles(keys);
-
-    const history = {
-        event: `${deletedFiles.length} files deleted from Supporting Data`,
-        date: Date.now(),
-        details: deletedFiles.map(f => f.originalName).join(','),
-        user: req.user._id
-    }
-    program.history.push(history);
-    await program.save();
-    res.redirect(`/plant/${plantID}/seg/${segInstructionID}/supportingData/${programID}`);
-});
-
-
-
-/* conclusion */
-module.exports.renderConclusion = catchAsync(async (req, res) => {
-    const { programID } = req.params;
-    const program = await SegProgram.findById(programID).populate('seg').populate({ path: 'seg', populate: 'segInstruction' });
-
-    res.render('segs/programInputs/conclusion', { program });
-})
-
-module.exports.editConclusion = catchAsync(async (req, res) => {
-    const { plantID, segInstructionID, programID } = req.params;
-    const program = await SegProgram.findById(programID);
-    program.conclusion = req.body.conclusion;
-    await program.save();
-    res.redirect(`/plant/${plantID}/seg/${segInstructionID}/conclusion/${programID}`)
-})
-
-/* aosr */
-module.exports.renderAOSR = catchAsync(async (req, res) => {
-    const { programID } = req.params;
-    const program = await SegProgram.findById(programID).populate('seg').populate({ path: 'seg', populate: 'segInstruction' });
-
-    res.render('segs/programInputs/aosr', { program });
-})
-
-module.exports.editAOSR = catchAsync(async (req, res) => {
-    const { plantID, segInstructionID, programID } = req.params;
-    const program = await SegProgram.findById(programID);
-    program.aosr = req.body.aosr;
-    await program.save();
-    res.redirect(`/plant/${plantID}/seg/${segInstructionID}/aosr/${programID}`)
-})
-
-
-/* status */
-module.exports.changeStatus = catchAsync(async (req, res) => {
-    console.log(programID)
-    const { plantID, segInstructionID, programID } = req.params;
-    const program = await SegProgram.findById(programID);
-    program.status = req.body.status;
-    await program.save();
-    res.redirect(`/plant/${plantID}/seg/${segInstructionID}`)
-})
-
-
-module.exports.renderProgramHistory = catchAsync(async (req, res) => {
-    const { programID } = req.params
-    const program = await SegProgram.findById(programID).populate(['history.user', { path: 'seg', populate: { path: 'segInstruction' } }]);
-    res.render('segs/history', { history: program.history.reverse(), program })
-})
-
-module.exports.getHistoryDetails = catchAsync(async (req, res) => {
-    const { historyID } = req.params
-    const program = await SegProgram.findOne({ 'history._id': historyID }).populate(['history.user']);
-    const history = program.history.id(historyID);
-    res.json(history)
 })
