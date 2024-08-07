@@ -36,10 +36,10 @@ AZURE_REDIRECT_URL=<br>
 
 If you want to deploy this project, <a href="https://www.sammeechward.com/deploying-full-stack-js-to-aws-ec2">here</a> is the example I followed to setup an EC2 instance on AWS.
 
-
 <h3>Useful Links</h3>
 <a href="https://github.com/JiHong88/suneditor/tree/master">SunEditor (RTF)</a>
-<br>
+<br/>
+<br/>
 
 © 2024 Noah Smith (nosmith2004@gmail.com), All Rights Reserved.
 
