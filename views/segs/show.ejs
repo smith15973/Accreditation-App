@@ -1,3 +1,14 @@
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px auto;
+    }
+    td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+</style>
 <% layout('/layouts/boilerplate') %>
   <link rel="stylesheet" href="/css/showSeg.css">
 
@@ -54,19 +65,19 @@
 
                         <div class="row">
                             <div class="col fw-normal border border-1 border-dark text-break">
-                                <p class="fw-bold fs-6">
+                                <div class="fw-bold fs-6">
                                     <%= seg.segInstruction.segInstructionID %>
-                                </p>
-                                <p class="fs-6 formattedText"><%- seg.segInstruction.applicableAOC %></p>
+                                </div>
+                                <div class="fs-6 formattedText mb-2"><%- seg.segInstruction.applicableAOC %></div>
                             </div>
                             <div class="col  fw-normal border border-1 border-dark text-break">
-                                <p class="fs-6 formattedText"><%- seg.segInstruction.reviewActivity %></p>
+                                <div class="fs-6 formattedText mb-2"><%- seg.segInstruction.reviewActivity %></div>
                             </div>
                             <div class="col  fw-normal border border-1 border-dark text-break">
-                                <p class="fs-6 formattedText"><%- seg.segInstruction.dataSubmittal %></p>
+                                <div class="fs-6 formattedText mb-2"><%- seg.segInstruction.dataSubmittal %></div>
                             </div>
                             <div class="col  fw-normal border border-1 border-dark text-break">
-                                <p class="fs-6 formattedText"><%- seg.segInstruction.reviewGuidance %></p>
+                                <div class="fs-6 formattedText mb-2"><%- seg.segInstruction.reviewGuidance %></div>
                             </div>
                         </div>
 
@@ -126,11 +137,11 @@
 
                                 <div class="col fw-normal border border-1 border-dark text-break clickable-div"
                                     onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/conclusion/<%= program._id %>', '_blank', 'noopener,noreferrer')">
-                                    <div id="conclusion-<%=program._id%>" class="fs-6"><%- program.conclusion %></div>
+                                    <div id="conclusion-<%=program._id%>" class="fs-6 mb-2"><%- program.conclusion %></div>
                                 </div>
                                 <div class="col fw-normal border border-1 border-dark text-break clickable-div"
                                     onclick="window.open('/plant/<%= currentPlant._id %>/seg/<%= seg.segInstruction._id %>/aosr/<%= program._id %>', 'noopener,noreferrer')">
-                                    <div id="aosr-<%=program._id%>" class="fs-6"><%- program.aosr %></div>
+                                    <div id="aosr-<%=program._id%>" class="fs-6 mb-2"><%- program.aosr %></div>
                                 </div>
                             </div>
                             <% }); %>

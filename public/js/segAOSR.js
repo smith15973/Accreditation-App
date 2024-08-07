@@ -2,9 +2,8 @@ const savingIcon = document.querySelector('#savingIcon');
 let oldText = document.querySelector(`#aosrTextArea-${programID}`).innerHTML;
 const aosrID = `aosrTextArea-${programID}`;
 const aosrInstance = createEditorInstance(aosrID, editorConfig);
-aosrInstance.onInput = (contents, core) => {
+aosrInstance.onChange = (contents, core) => {
     const aosrText = core.getContents();
-    aosrInstance.save();
     socket.emit('aosrUpdate', { programID, text: aosrText });
 };
 

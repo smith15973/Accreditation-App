@@ -1,18 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
-        element.setAttribute('style', 'width: 100%'); // Add width property
-        element.setAttribute('style', 'min-height: 300px;'); // Add height property
-    });
-});
-let originalText;
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.nicEdit-main')) {
-        originalText = document.querySelector('.nicEdit-main').innerHTML;
-    }
-})
-
-
-
 function addProgramReviewed() {
     const container = document.getElementById('programContainer');
     const newProgram = document.createElement('div');
@@ -47,3 +32,8 @@ document.querySelector('#confirmSegEditForm').addEventListener('submit', (e) => 
         input.disabled = false;
     })
 })
+
+const applicableAOC = createEditorInstance('applicableAOC', editorConfig);
+const reviewActivity = createEditorInstance('reviewActivity', editorConfig);
+const dataSubmittal = createEditorInstance('dataSubmittal', editorConfig);
+const reviewGuidance = createEditorInstance('reviewGuidance', editorConfig);

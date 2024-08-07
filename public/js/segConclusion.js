@@ -4,9 +4,8 @@ let oldText = document.querySelector(`#conclusionTextArea-${programID}`).innerHT
 
 const conclusionID = `conclusionTextArea-${programID}`;
 const conclusionInstance = createEditorInstance(conclusionID, editorConfig);
-conclusionInstance.onInput = (contents, core) => {
+conclusionInstance.onChange = (contents, core) => {
     const conclusionText = core.getContents();
-    conclusionInstance.save();
     socket.emit('conclusionUpdate', { programID, text: conclusionText });
 };
 

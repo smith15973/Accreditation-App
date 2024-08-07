@@ -10,9 +10,8 @@ let oldText = document.querySelector(`#supportingDataTextArea-${programID}`).inn
 
 const supportingDataID = `supportingDataTextArea-${programID}`;
 const supportingDataInstance = createEditorInstance(supportingDataID, editorConfig);
-supportingDataInstance.onInput = (contents, core) => {
+supportingDataInstance.onChange = (contents, core) => {
     const supportingDataText = core.getContents();
-    supportingDataInstance.save();
     socket.emit('supportingDataUpdate', { programID, text: supportingDataText });
 };
 
