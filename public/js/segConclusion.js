@@ -1,19 +1,17 @@
+const socket = io();
 const savingIcon = document.querySelector('#savingIcon');
 let oldText = document.querySelector(`#conclusionTextArea-${programID}`).innerHTML;
-const createEditorInstance = (id, config) => {
-    const instance = SUNEDITOR.create(id, config);
-    instance.onInput = (contents, core) => {
-        const conclusionText = core.getContents();
-        instance.save();
-        socket.emit('conclusionUpdate', { programID, text: conclusionText });
-    };
-    return instance;
-};
+
 const conclusionID = `conclusionTextArea-${programID}`;
 const conclusionInstance = createEditorInstance(conclusionID, editorConfig);
+conclusionInstance.onInput = (contents, core) => {
+    const conclusionText = core.getContents();
+    conclusionInstance.save();
+    socket.emit('conclusionUpdate', { programID, text: conclusionText });
+};
 
 
-const socket = io();
+
 socket.on('conclusionUpdate', (data) => {
     if (document.querySelector(`#conclusionTextArea-${data.programID}`) && savingIcon.innerHTML !== 'EDITING...') {
         savingIcon.innerHTML = 'EDITING...'

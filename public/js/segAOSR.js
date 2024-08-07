@@ -1,17 +1,12 @@
 const savingIcon = document.querySelector('#savingIcon');
 let oldText = document.querySelector(`#aosrTextArea-${programID}`).innerHTML;
-const createEditorInstance = (id, config) => {
-    const instance = SUNEDITOR.create(id, config);
-    instance.onInput = (contents, core) => {
-        const aosrText = core.getContents();
-        
-        instance.save();
-        socket.emit('aosrUpdate', { programID, text: aosrText });
-    };
-    return instance;
-};
 const aosrID = `aosrTextArea-${programID}`;
 const aosrInstance = createEditorInstance(aosrID, editorConfig);
+aosrInstance.onInput = (contents, core) => {
+    const aosrText = core.getContents();
+    aosrInstance.save();
+    socket.emit('aosrUpdate', { programID, text: aosrText });
+};
 
 
 const socket = io();

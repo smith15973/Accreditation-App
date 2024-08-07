@@ -118,3 +118,8 @@ const editorConfig = {
     placeholder: 'Start typing something...',
 }
 
+const createEditorInstance = (id, config) => {
+    const instance = SUNEDITOR.create(id, config);
+    return instance;
+};
+

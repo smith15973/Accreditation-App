@@ -1,94 +1,88 @@
 const socket = io();
-let updateData;
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('pdfWindow').addEventListener('load', () => {
-        hideLoading();
-    });
-    document.getElementById('pdfWindow').addEventListener('change', () => {
-        hideLoading();
-    });
 
 
 
-    setDeleteChecks();
-    const savingIcon = document.querySelector('#savingIcon');
-    const editors = document.querySelectorAll('div.nicEdit-main').forEach((element, i) => {
-        element.setAttribute('style', 'width: 100%'); // Add width property
-        element.setAttribute('style', 'min-height: 300px;'); // Add height property
+setDeleteChecks();
 
-        element.addEventListener('input', (e) => {
-            socket.emit('supportingDataUpdate', { programID, text: element.innerHTML });
-        });
+const savingIcon = document.querySelector('#savingIcon');
+let oldText = document.querySelector(`#supportingDataTextArea-${programID}`).innerHTML;
 
-        socket.on('supportingDataUpdate', (data) => {
-            if (element.parentElement.parentElement.id === `supportingData-${data.programID}`) {
-                if (savingIcon.innerHTML !== 'EDITING...') {
-                    savingIcon.innerHTML = 'EDITING...'
-                }
-                if (!document.activeElement.classList.contains('nicEdit-main')) {
-                    element.innerHTML = data.text;
-                    element.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-                    element.classList.add('disabled')
-                }
-            }
-        });
-    });
 
-    const nicEditElement = document.querySelector('.nicEdit-main');
-    let oldText = nicEditElement.innerHTML;
+const supportingDataID = `supportingDataTextArea-${programID}`;
+const supportingDataInstance = createEditorInstance(supportingDataID, editorConfig);
+supportingDataInstance.onInput = (contents, core) => {
+    const supportingDataText = core.getContents();
+    supportingDataInstance.save();
+    socket.emit('supportingDataUpdate', { programID, text: supportingDataText });
+};
 
-    updateData = async () => {
-        if (oldText !== nicEditElement.innerHTML) {
-            oldText = nicEditElement.innerHTML;
-            const data = { supportingData: nicEditElement.innerHTML };
-            try {
-                const response = await axios.put(`/plant/${currentPlantID}/seg/${segID}/supportingData/${programID}`, data);
-            } catch (error) {
-                alert('There was an error making the request. Please try again.');
-            }
+socket.on('supportingDataUpdate', (data) => {
+    if (document.querySelector(`#supportingDataTextArea-${data.programID}`) && savingIcon.innerHTML !== 'EDITING...') {
+        savingIcon.innerHTML = 'EDITING...'
+    }
+
+    const focus = document.activeElement;
+    if (!focus.classList.contains("se-wrapper-inner")) {
+        const supportingDataTextBox = document.querySelector(`#supportingDataTextArea-${data.programID}`);
+        if (supportingDataTextBox) {
+            supportingDataInstance.setContents(data.text)
+            supportingDataInstance.save();
         }
-        if (savingIcon.innerHTML !== 'Saved') {
-            savingIcon.innerHTML = 'Saved'
-            nicEditElement.style.backgroundColor = ''
-        }
-
-        const fileInput = document.querySelector('input[type="file"]');
-        if (fileInput.files.length > 0) {
-            const formData = new FormData();
-            // Append each file individually
-            for (let i = 0; i < fileInput.files.length; i++) {
-                formData.append('fileInput', fileInput.files[i]);
-            }
-            fileInput.value = '';
-
-            formData.append('supportingData', nicEditElement.innerHTML);
-
-
-            try {
-                const response = await axios.put(`/plant/${currentPlantID}/seg/${segID}/supportingData/${programID}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-                appendFile(response.data.program.supportingDataFiles, response.data.admin);
-                document.getElementById('loadingCircle').style.display = 'none';
-                document.getElementById('overlay').style.display = 'none';
-                document.body.style.pointerEvents = 'auto';
-
-            } catch (error) {
-                hideLoading()
-                alert('There was an error making the request. Please try again.')
-            }
-
-        }
-    };
-
-    setInterval(updateData, 100000);
-});
-
-window.addEventListener('beforeunload', (e) => {
-    updateData()
+    }
 })
+
+const updateData = async () => {
+    supportingDataInstance.save();
+    const supportingDataText = supportingDataInstance.getContents();
+    if (oldText !== supportingDataText) {
+        oldText = supportingDataText;
+        const data = { supportingData: supportingDataText };
+        try {
+            const response = await axios.put(`/plant/${currentPlantID}/seg/${segID}/supportingData/${programID}`, data);
+
+        } catch (error) {
+            console.error('There was an error making the request:', error);
+        }
+    }
+    if (savingIcon.innerHTML !== 'Saved') {
+        savingIcon.innerHTML = 'Saved'
+    }
+
+    const fileInput = document.querySelector('#fileInput');
+    if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        // Append each file individually
+        for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('fileInput', fileInput.files[i]);
+        }
+        fileInput.value = '';
+
+        formData.append('supportingData', supportingDataText);
+
+
+        try {
+            const response = await axios.put(`/plant/${currentPlantID}/seg/${segID}/supportingData/${programID}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            appendFile(response.data.program.supportingDataFiles, response.data.admin);
+            document.getElementById('loadingCircle').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.body.style.pointerEvents = 'auto';
+
+        } catch (error) {
+            hideLoading()
+            alert('There was an error making the request. Please try again.')
+        }
+
+    }
+};
+
+setInterval(updateData, 100000);
+
+
+
 
 
 function setDeleteChecks() {
@@ -192,8 +186,6 @@ function fileInputSubmit() {
 
 }
 
-document.querySelector('#fileInput').onchange = fileInputSubmit;
-
 function hideLoading() {
     document.getElementById('loading').style.display = 'none';
 }
@@ -275,10 +267,29 @@ function appendFile(files, admin) {
     setDeleteChecks();
 }
 
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
-        document.querySelector('#previousButton').click();
-    } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
-        document.querySelector('#nextButton').click();
+function arrowKeyNavigation(e) {
+    if (!document.activeElement.classList.contains("sun-editor-editable")) {
+        if (e.key === 'ArrowLeft' && document.querySelector('#previousButton')) {
+            document.querySelector('#previousButton').click();
+        } else if (e.key === 'ArrowRight' && document.querySelector('#nextButton')) {
+            document.querySelector('#nextButton').click();
+        }
+        if (e.key === 'Escape' && document.getElementById('pdfSection').style.display === 'block') {
+            closePDF();
+        }
     }
+}
+
+document.addEventListener('keydown', (e) => {
+    arrowKeyNavigation(e);
+})
+
+document.getElementById('pdfWindow').addEventListener('load', () => {
+    hideLoading();
+});
+
+document.querySelector('#fileInput').onchange = fileInputSubmit;
+
+window.addEventListener('beforeunload', (e) => {
+    updateData()
 })
