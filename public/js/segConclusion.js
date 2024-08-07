@@ -1,13 +1,14 @@
 const socket = io();
-const savingIcon = document.querySelector('#savingIcon');
-let oldText = document.querySelector(`#conclusionTextArea-${programID}`).innerHTML;
 
+const savingIcon = document.querySelector('#savingIcon');
 const conclusionID = `conclusionTextArea-${programID}`;
 const conclusionInstance = createEditorInstance(conclusionID, editorConfig);
 conclusionInstance.onChange = (contents, core) => {
     const conclusionText = core.getContents();
     socket.emit('conclusionUpdate', { programID, text: conclusionText });
 };
+
+let oldText = conclusionInstance.getContents();
 
 
 
@@ -49,7 +50,9 @@ const updateData = async () => {
 setInterval(updateData, 100000);
 
 window.addEventListener('beforeunload', (e) => {
-    updateData()
+    if (oldText !== conclusionInstance.getContents()) {
+        e.preventDefault()
+    }
 })
 
 

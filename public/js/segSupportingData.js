@@ -5,8 +5,6 @@ const socket = io();
 setDeleteChecks();
 
 const savingIcon = document.querySelector('#savingIcon');
-let oldText = document.querySelector(`#supportingDataTextArea-${programID}`).innerHTML;
-
 
 const supportingDataID = `supportingDataTextArea-${programID}`;
 const supportingDataInstance = createEditorInstance(supportingDataID, editorConfig);
@@ -14,6 +12,7 @@ supportingDataInstance.onChange = (contents, core) => {
     const supportingDataText = core.getContents();
     socket.emit('supportingDataUpdate', { programID, text: supportingDataText });
 };
+let oldText = supportingDataInstance.getContents();
 
 socket.on('supportingDataUpdate', (data) => {
     if (document.querySelector(`#supportingDataTextArea-${data.programID}`) && savingIcon.innerHTML !== 'EDITING...') {
@@ -290,5 +289,7 @@ document.getElementById('pdfWindow').addEventListener('load', () => {
 document.querySelector('#fileInput').onchange = fileInputSubmit;
 
 window.addEventListener('beforeunload', (e) => {
-    updateData()
+    if (oldText !== supportingDataInstance.getContents()) {
+        e.preventDefault()
+    }
 })

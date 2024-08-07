@@ -1,11 +1,11 @@
 const savingIcon = document.querySelector('#savingIcon');
-let oldText = document.querySelector(`#aosrTextArea-${programID}`).innerHTML;
 const aosrID = `aosrTextArea-${programID}`;
 const aosrInstance = createEditorInstance(aosrID, editorConfig);
 aosrInstance.onChange = (contents, core) => {
     const aosrText = core.getContents();
     socket.emit('aosrUpdate', { programID, text: aosrText });
 };
+let oldText = aosrInstance.getContents();
 
 
 const socket = io();
@@ -47,7 +47,9 @@ const updateData = async () => {
 setInterval(updateData, 100000);
 
 window.addEventListener('beforeunload', (e) => {
-    updateData()
+    if (oldText !== aosrInstance.getContents()) {
+        e.preventDefault()
+    }
 })
 
 
