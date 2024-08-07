@@ -86,13 +86,16 @@ io.on('connection', (socket) => {
     });
 });
 io.on('connection', (socket) => {
-    socket.on('supportingDataUpdate', (data) => {
+    socket.on('supportingDataUpdate', async (data) => {
+        const program = await SegProgram.findByIdAndUpdate(data.programID, {supportingData: data.text}, {new: true})
        io.emit('supportingDataUpdate', data);
     });
-    socket.on('conclusionUpdate', (data) => {
+    socket.on('conclusionUpdate', async (data) => {
+        const program = await SegProgram.findByIdAndUpdate(data.programID, {conclusion: data.text}, {new: true})
        io.emit('conclusionUpdate', data);
     });
-    socket.on('aosrUpdate', (data) => {
+    socket.on('aosrUpdate', async (data) => {
+        const program = await SegProgram.findByIdAndUpdate(data.programID, {aosr: data.text}, {new: true})
        io.emit('aosrUpdate', data);
     });
 

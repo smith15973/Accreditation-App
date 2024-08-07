@@ -1,27 +1,14 @@
-const socket = io();
-
-
-
 setDeleteChecks();
 
-const savingIcon = document.querySelector('#savingIcon');
-
-const supportingDataID = `supportingDataTextArea-${programID}`;
-const supportingDataInstance = createEditorInstance(supportingDataID, editorConfig);
-//originally onChange, but was too slow, doesn't get any changes to styling
+const socket = io();
+const supportingDataInstance = createEditorInstance(`supportingDataTextArea-${programID}`, editorConfig);
 supportingDataInstance.onInput = (contents, core) => {
     const supportingDataText = core.getContents();
-    socket.emit('supportingDataUpdate', { programID, text: supportingDataText });
+    socket.emit('supportingDataUpdate', { programID, text: supportingDataText, userID, userName });
 };
-let oldText = supportingDataInstance.getContents();
 
 socket.on('supportingDataUpdate', (data) => {
-    if (document.querySelector(`#supportingDataTextArea-${data.programID}`) && savingIcon.innerHTML !== 'EDITING...') {
-        savingIcon.innerHTML = 'EDITING...'
-    }
-
-    const focus = document.activeElement;
-    if (!focus.classList.contains("se-wrapper-inner")) {
+    if (userID !== data.userID) {
         const supportingDataTextBox = document.querySelector(`#supportingDataTextArea-${data.programID}`);
         if (supportingDataTextBox) {
             supportingDataInstance.setContents(data.text)
@@ -30,23 +17,13 @@ socket.on('supportingDataUpdate', (data) => {
     }
 })
 
-const updateData = async () => {
-    supportingDataInstance.save();
-    const supportingDataText = supportingDataInstance.getContents();
-    if (oldText !== supportingDataText) {
-        oldText = supportingDataText;
-        const data = { supportingData: supportingDataText };
-        try {
-            const response = await axios.put(`/plant/${currentPlantID}/seg/${segID}/supportingData/${programID}`, data);
 
-        } catch (error) {
-            console.error('There was an error making the request:', error);
-        }
-    }
-    if (savingIcon.innerHTML !== 'Saved') {
-        savingIcon.innerHTML = 'Saved'
-    }
 
+
+
+
+const uploadFiles = async () => {
+    showFileInputLoading()
     const fileInput = document.querySelector('#fileInput');
     if (fileInput.files.length > 0) {
         const formData = new FormData();
@@ -56,9 +33,6 @@ const updateData = async () => {
         }
         fileInput.value = '';
 
-        formData.append('supportingData', supportingDataText);
-
-
         try {
             const response = await axios.put(`/plant/${currentPlantID}/seg/${segID}/supportingData/${programID}`, formData, {
                 headers: {
@@ -66,23 +40,14 @@ const updateData = async () => {
                 }
             });
             appendFile(response.data.program.supportingDataFiles, response.data.admin);
-            document.getElementById('loadingCircle').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-            document.body.style.pointerEvents = 'auto';
+            clearFileInputLoading()
 
         } catch (error) {
-            hideLoading()
-            alert('There was an error making the request. Please try again.')
+            clearFileInputLoading()
+            alert('There was an error uploading the files. Please try again.')
         }
-
     }
 };
-
-setInterval(updateData, 100000);
-
-
-
-
 
 function setDeleteChecks() {
     const deleteCheckboxes = document.querySelectorAll('.deleteCheck');
@@ -177,15 +142,20 @@ function showPDF(location) {
     document.getElementById('pdfSection').style.display = 'block';
 }
 
-function fileInputSubmit() {
-    document.querySelector('#saveSupportingDataButton').click();
+function showFileInputLoading() {
     document.getElementById('loadingCircle').style.display = 'block';
     document.getElementById('overlay').style.display = 'block';
     document.body.style.pointerEvents = 'none';
 
 }
 
-function hideLoading() {
+function clearFileInputLoading() {
+    document.getElementById('loadingCircle').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    document.body.style.pointerEvents = 'auto';
+}
+
+function hidePDFLoading() {
     document.getElementById('loading').style.display = 'none';
 }
 
@@ -284,13 +254,7 @@ document.addEventListener('keydown', (e) => {
 })
 
 document.getElementById('pdfWindow').addEventListener('load', () => {
-    hideLoading();
+    hidePDFLoading();
 });
 
-document.querySelector('#fileInput').onchange = fileInputSubmit;
-
-window.addEventListener('beforeunload', (e) => {
-    if (oldText !== supportingDataInstance.getContents()) {
-        e.preventDefault()
-    }
-})
+document.querySelector('#fileInput').onchange = uploadFiles;

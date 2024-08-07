@@ -52,6 +52,8 @@
             const currentPlantID = '<%=currentPlant._id%>';
             const segInstructionID = '<%=seg.segInstruction._id%>';
             const proramID = '<%=program._id%>';
+            const userID = '<%=currentUser._id %>';
+            const userName = '<%=currentUser.firstName%>' + ' ' + '<%=currentUser.lastName%>';
             document.querySelector('title').innerHTML = `ARC <%= currentPlant.name %>, <%=seg.segInstruction.segInstructionID %>, <%=program.name %>, Conclusion`;
         </script>
         <script src="/js/segConclusion.js"></script>
