@@ -12,7 +12,6 @@ const cluster = require('node:cluster');
 const { createAdapter, setupPrimary } = require('@socket.io/cluster-adapter');
 
 
-
 if (cluster.isPrimary) {
     const numCPUs = availableParallelism();
     // create one worker per available core
@@ -81,9 +80,9 @@ app.use(useragent.express());
 
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    // console.log('a user connected');
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        // console.log('user disconnected');
     });
 });
 io.on('connection', (socket) => {
@@ -198,8 +197,7 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err });
 })
 
-
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`LISTENING ON PORT ${port}!`);
 });

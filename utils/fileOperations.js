@@ -160,7 +160,6 @@ const downloadZipGeneral = catchAsync(async (req, res) => {
 
 const archiveDownloadZipSupportingData = catchAsync(async (req, res) => {
     const files = res.locals.files;
-    console.log('FILES:', files)
 
     if (files.length < 1) {
         const referer = req.header('Referer') || '/';

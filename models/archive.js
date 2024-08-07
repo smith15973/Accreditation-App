@@ -141,7 +141,6 @@ ArchiveSchema.pre('deleteMany', async function () {
                 for (let program of seg.programs) {
                     const deletedFiles = program.supportingDataFiles;
                     const keys = deletedFiles.map(df => ({ Key: df.key }));
-                    console.log('keys:', keys);
                     if (keys.length > 0) {
                         deleteFiles(keys);
                     }
