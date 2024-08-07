@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { pdfUpload, imageUpload, downloadZipSupportingData } = require('../utils/fileOperations');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess, validatePlant } = require('../middleware');
-const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion, getHistoryDetails, renderProgramHistory } = require('../controllers/plants');
+const { renderCreateNewPlant, createNewPlant, renderPlant, deletePlant, renderSupportingData, renderSeg, renderEditPlant, editPlant, deleteSupportingDataFiles, editProgramData, changeStatus, renderAOSR, renderConclusion, getHistoryDetails, renderProgramHistory, updateHistory } = require('../controllers/plants');
 
 
 
@@ -38,6 +38,7 @@ router.route('/:plantID/seg/:segInstructionID/supportingData/:programID')
 
 router.route('/:plantID/seg/:segInstructionID/:programID/history')
     .get(isLoggedIn, renderProgramHistory)
+    .post(isLoggedIn, updateHistory)
 
 router.route('/:plantID/seg/:segInstructionID/history/:historyID')
     .get(isLoggedIn, getHistoryDetails)

@@ -258,3 +258,11 @@ document.getElementById('pdfWindow').addEventListener('load', () => {
 });
 
 document.querySelector('#fileInput').onchange = uploadFiles;
+
+async function updateHistory() {
+    axios.post(`/plant/${currentPlantID}/seg/${segID}/${programID}/history`, { page: 'supportingData' })
+}
+    
+window.addEventListener('beforeunload', () => {
+    updateHistory()
+})

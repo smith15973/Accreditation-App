@@ -30,3 +30,11 @@ function arrowKeyNavigation(e) {
 document.addEventListener('keydown', (e) => {
     arrowKeyNavigation(e)
 })  
+
+async function updateHistory() {
+    axios.post(`/plant/${currentPlantID}/seg/${segInstructionID}/${programID}/history`, { page: 'conclusion' })
+}
+    
+window.addEventListener('beforeunload', () => {
+    updateHistory()
+})

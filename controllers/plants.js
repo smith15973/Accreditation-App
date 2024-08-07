@@ -169,6 +169,52 @@ module.exports.editProgramData = catchAsync(async (req, res) => {
     return res.json({ admin: req.user.admin, program });
 })
 
+module.exports.updateHistory = catchAsync(async (req, res) => {
+    console.log('updating history')
+    const { programID } = req.params;
+    const program = await SegProgram.findById(programID);
+    const currentSupportingData = program.supportingData[0];
+    const oldSupportingData = program.previousSupportingData;
+    const currentConclusion = program.conclusion[0];
+    const oldConclusion = program.previousConclusion;
+    const currentAOSR = program.aosr[0];
+    const oldAOSR = program.previousAOSR;
+    if (req.body.page === 'supportingData' && (typeof oldSupportingData === 'undefined' && typeof currentSupportingData !== 'undefined') || (typeof oldSupportingData !== 'undefined' && oldSupportingData !== currentSupportingData)) {
+        console.log('in supporting data', currentSupportingData)
+        const history = {
+            event: 'Supporting Data Updated',
+            date: Date.now(),
+            details: currentSupportingData,
+            user: req.user._id
+        }
+        program.history.push(history);
+        program.previousSupportingData = currentSupportingData;
+    }
+    if (req.body.page === 'conclusion' && (typeof oldConclusion === 'undefined' && typeof currentConclusion !== 'undefined') || (typeof oldConclusion !== 'undefined' && oldConclusion !== currentConclusion)) {
+        const history = {
+            event: 'Conclusion Updated',
+            date: Date.now(),
+            details: currentConclusion,
+            user: req.user._id
+        }
+        program.history.push(history);
+        program.previousConclusion = currentConclusion;
+    }
+    if (req.body.page === 'aosr' && (typeof oldAOSR === 'undefined' && typeof currentAOSR !== 'undefined') || (typeof oldAOSR !== 'undefined' && oldAOSR !== currentAOSR)) {
+        console.log('in aosr', )
+        const history = {
+            event: 'AOSR Updated',
+            date: Date.now(),
+            details: currentAOSR,
+            user: req.user._id
+        }
+        program.history.push(history);
+        program.previousAOSR = currentAOSR;
+    }
+    await program.save();
+    res.json('History Updated');
+})
+
 module.exports.deleteSupportingDataFiles = catchAsync(async (req, res) => {
     const { plantID, segInstructionID, programID } = req.params;
     const deletedFilesIDs = req.body.files;

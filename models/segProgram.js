@@ -24,16 +24,25 @@ const SegProgramSchema = new Schema({
             type: String,
         }
     ],
+    previousSupportingData: {
+        type: String,
+    },
     conclusion: [
         {
             type: String,
         },
     ],
+    previousConclusion: {
+        type: String,
+    },
     aosr: [
         {
             type: String,
         }
     ],
+    previousAOSR: {
+        type: String,
+    },
     status: {
         type: String,
         default: 'Incomplete',
