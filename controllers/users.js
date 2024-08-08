@@ -2,6 +2,10 @@ const User = require('../models/user');
 const Plant = require('../models/plant')
 const passport = require('passport');
 const catchAsync = require('../utils/catchAsync');
+const ResetToken = require('../models/resetToken');
+const { createResetToken, verifyJWTToken } = require('../middleware');
+const sendEmail = require('../nodemailer');
+
 
 
 
@@ -144,49 +148,106 @@ module.exports.removeMember = catchAsync(async (req, res) => {
 module.exports.searchForUsers = catchAsync(async (req, res) => {
 
     const searchRequest = req.query.search;
-console.log(searchRequest);
+    console.log(searchRequest);
 
-if (searchRequest) {
-    // Split the search request by spaces
-    const searchTerms = searchRequest.split(' ').filter(term => term);
+    if (searchRequest) {
+        // Split the search request by spaces
+        const searchTerms = searchRequest.split(' ').filter(term => term);
 
-    // Create regex patterns for each term
-    const regexTerms = searchTerms.map(term => new RegExp(term, 'i'));
+        // Create regex patterns for each term
+        const regexTerms = searchTerms.map(term => new RegExp(term, 'i'));
 
-    // Build the aggregation pipeline
-    const pipeline = [
-        {
-            $match: {
-                "$or": [
-                    { "firstName": { "$in": regexTerms } },
-                    { "lastName": { "$in": regexTerms } },
-                    { "email": { "$in": regexTerms } }
-                ]
-            }
-        },
-        {
-            $addFields: {
-                score: {
-                    $add: [
-                        { $cond: [{ $regexMatch: { input: "$firstName", regex: regexTerms[0] } }, 1, 0] },
-                        { $cond: [{ $regexMatch: { input: "$lastName", regex: regexTerms[0] } }, 1, 0] },
-                        { $cond: [{ $regexMatch: { input: "$email", regex: regexTerms[0] } }, 1, 0] }
+        // Build the aggregation pipeline
+        const pipeline = [
+            {
+                $match: {
+                    "$or": [
+                        { "firstName": { "$in": regexTerms } },
+                        { "lastName": { "$in": regexTerms } },
+                        { "email": { "$in": regexTerms } }
                     ]
                 }
+            },
+            {
+                $addFields: {
+                    score: {
+                        $add: [
+                            { $cond: [{ $regexMatch: { input: "$firstName", regex: regexTerms[0] } }, 1, 0] },
+                            { $cond: [{ $regexMatch: { input: "$lastName", regex: regexTerms[0] } }, 1, 0] },
+                            { $cond: [{ $regexMatch: { input: "$email", regex: regexTerms[0] } }, 1, 0] }
+                        ]
+                    }
+                }
+            },
+            {
+                $sort: { score: -1 }
+            },
+            {
+                $limit: 5
             }
-        },
-        {
-            $sort: { score: -1 }
-        },
-        {
-            $limit: 5
-        }
-    ];
+        ];
 
-    // Find users
-    const users = await User.aggregate(pipeline);
-    res.json(users);
-} else {
-    res.json([]); // or handle empty search request as needed
-}
+        // Find users
+        const users = await User.aggregate(pipeline);
+        res.json(users);
+    } else {
+        res.json([]); // or handle empty search request as needed
+    }
 });
+
+module.exports.renderForgotPassword = catchAsync(async (req, res) => {
+    res.render('users/forgotPassword')
+})
+
+
+module.exports.sendPasswordResetEmail = catchAsync(async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+    const resetToken = await createResetToken(user)
+
+    const link = `${process.env.APP_URL}/user/resetPassword/${resetToken}`
+    const emailHTML = `<p>You have requested to reset your password. Please click the link below to reset your password:</p>
+    <a href="${link}">Reset Password</a>`
+
+    const emailToSend = {
+        from: 'ARC', // sender address
+        to: user.email, // list of receivers
+        subject: 'Password Reset', // Subject line
+        html: emailHTML, // html body
+    }
+    sendEmail(emailToSend)
+    req.flash('success', `Password reset email sent!`)
+    res.redirect('/user/login')
+})
+
+
+module.exports.renderResetPassword = catchAsync(async (req, res) => {
+    const { resetToken } = req.params;
+    res.render('users/resetPassword', { resetToken })
+})
+
+module.exports.resetPassword = catchAsync(
+    async (req, res) => {
+        const resetToken = await ResetToken.findOne({ resetToken: req.params.resetToken }).populate('user');
+
+        let { passwords } = req.body;
+        if (passwords[0] !== passwords[1]) {
+            req.flash('error', 'Passwords do not match');
+            return res.redirect(`/user/resetPassword/${resetToken.resetToken}`);
+        }
+        const password = passwords[0];
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,25}$/;
+
+        if (!passwordRegex.test(password)) {
+            req.flash('error', 'Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character');
+            return res.redirect(`/user/resetPassword/${resetToken.resetToken}`);
+        }
+
+        const user = await User.findById(resetToken.user._id);
+        await user.setPassword(passwords[0]);
+        await user.save();
+        req.flash('success', 'Password reset successfully');
+        res.redirect('/user/login');
+    }
+);
+
+

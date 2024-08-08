@@ -7,7 +7,8 @@ const Plant = require('./models/plant');
 const SegInstruction = require('./models/segInstruction');
 const mongoose = require('mongoose');
 const { plantSchema, dueDateSchema, segInstructionSchema } = require('./schemas.js');
-const user = require('./models/user.js');
+const ResetToken = require('./models/resetToken')
+const jwt = require('jsonwebtoken')
 
 module.exports.isLoggedIn = (req, res, next) => {
     if (!req.isAuthenticated()) {
@@ -124,3 +125,59 @@ module.exports.validateUser = (req, res, next) => {
 };
 
 
+const generateJWT = (user) => {
+    let payload = {
+        user: {
+            id: user._id,
+        }
+    }
+    let token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
+    return token
+}
+
+const verifyJWTToken = (token) => {
+    try {
+          let decoded = jwt.verify(token, process.env.JWT_SECRET);
+          return {
+                error: false,
+                decoded: decoded
+          }
+    } catch (err) {
+          console.log("error decoding token");
+          console.log(err);
+          return {
+                error: true,
+                message: err.message
+          }
+    }
+}
+
+module.exports.createResetToken = async (user) => {
+    if (!user) {
+        req.flash('error', 'User does not exist!')
+        res.redirect('/user/forgotPassword')
+    }
+    let resetToken = await ResetToken.findOne({ user: user._id });
+    if (resetToken) {
+        await resetToken.deleteOne();
+    }
+    let newResetToken = new ResetToken({
+        user: user._id,
+        resetToken: generateJWT(user),
+        createdAt: new Date(),
+    })
+    
+    await newResetToken.save()
+    return newResetToken.resetToken
+}
+
+module.exports.verifyToken = catchAsync(async (req, res, next) => {
+    const { resetToken } = req.params;
+    const resetTokenObj = await ResetToken.findOne({ resetToken });
+    if (!resetTokenObj || verifyJWTToken(resetToken).error) {
+        req.flash('error', 'Invalid or expired token');
+            return res.redirect('/user/forgotPassword');
+    }
+
+    next()
+})

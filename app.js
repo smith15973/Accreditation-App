@@ -79,9 +79,6 @@ app.use(methodOverride('_method'));
 app.use(useragent.express());
 
 
-const sendEmail = require('./nodemailer');
-
-
 
 
 
@@ -116,20 +113,17 @@ io.on('connection', (socket) => {
         program.history.push(history);
         await program.save();
 
-        const users = await User.find({ plants: program.plant, admin: true });
-        let emails = users.map(user => user.email);
+        // const users = await User.find({ plants: program.plant, admin: true });
+        // let emails = users.map(user => user.email);
 
-        const emailToSend = {
-            from: 'ARC App',
-            to: emails,
-            subject: `Program Status Change: ${data.status}`,
-            text: `The ${program.plant.name} status of program "${program.name}" for ${program.seg.segInstruction.segInstructionID} has been changed to ${data.status}.`,
-            html: `The ${program.plant.name} status of program "${program.name}" for <a href="${process.env.APP_URL}/plant/${program.plant._id}/seg/${program.seg.segInstruction._id}">${program.seg.segInstruction.segInstructionID}</a> has been changed to ${data.status}.`,
-        }
-        sendEmail(emailToSend).catch(console.error);
-
-
-
+        // const emailToSend = {
+        //     from: 'ARC App',
+        //     to: emails,
+        //     subject: `Program Status Change: ${data.status}`,
+        //     text: `The ${program.plant.name} status of program "${program.name}" for ${program.seg.segInstruction.segInstructionID} has been changed to ${data.status}.`,
+        //     html: `The ${program.plant.name} status of program "${program.name}" for <a href="${process.env.APP_URL}/plant/${program.plant._id}/seg/${program.seg.segInstruction._id}">${program.seg.segInstruction.segInstructionID}</a> has been changed to ${data.status}.`,
+        // }
+        // sendEmail(emailToSend).catch(console.error);
 
         io.emit('programStatusUpdate', program);
         const seg = await Seg.findOne({ segPrograms: program._id }).populate(['segPrograms', 'segInstruction'])

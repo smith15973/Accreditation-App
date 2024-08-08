@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const { storeReturnTo, validateUser } = require('../middleware');
+const { storeReturnTo, validateUser, verifyToken } = require('../middleware');
 const { isLoggedIn, getCurrentPlantandInstructions, isAdmin, hasPlantAccess } = require('../middleware');
-const { renderRegister, renderLogin, logout, login, requestPlantAccess, viewMembers, approveOrChangeMemberStatus, removeMember, register, microsoftAuthenticate, renderMicrosoftLogin, searchForUsers } = require('../controllers/users');
+const { renderRegister, renderLogin, logout, login, requestPlantAccess, viewMembers, approveOrChangeMemberStatus, removeMember, register, microsoftAuthenticate, renderMicrosoftLogin, searchForUsers, renderResetPassword, renderForgotPassword, sendPasswordResetEmail, resetPassword } = require('../controllers/users');
 
 
 
@@ -25,6 +25,14 @@ router.route('/login')
     .post(storeReturnTo, passport.authenticate('local', { failureFlash: true, failureRedirect: '/user/login' }), login);
 
 router.get('/logout', logout);
+
+router.route('/forgotPassword')
+    .get(renderForgotPassword)
+    .post(sendPasswordResetEmail)
+
+router.route('/resetPassword/:resetToken')
+    .get(verifyToken, renderResetPassword)
+    .post(verifyToken, resetPassword)
 
 router.route('/manage/search')
     .get(isLoggedIn, searchForUsers)
