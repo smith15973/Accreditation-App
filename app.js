@@ -16,14 +16,14 @@ if (cluster.isPrimary) {
     const numCPUs = availableParallelism();
     // create one worker per available core
     for (let i = 0; i < numCPUs; i++) {
-      cluster.fork({
-        PORT: 3000 + i
-      });
+        cluster.fork({
+            PORT: 3000 + i
+        });
     }
-    
+
     // set up the adapter on the primary thread
     return setupPrimary;
-  }
+}
 
 const app = express();
 const server = createServer(app);
@@ -31,7 +31,7 @@ const io = new Server(server, {
     connectionStateRecovery: {},
     // set up the adapter on each worker thread
     adapter: createAdapter()
-  });
+});
 
 const cors = require('cors');
 const { dbURL } = require('./mongodb');
@@ -50,6 +50,7 @@ const catchAsync = require('./utils/catchAsync');
 const useragent = require('express-useragent');
 const SegProgram = require('./models/segProgram')
 const Seg = require('./models/seg')
+
 
 
 /**********import routes*************** */
@@ -78,6 +79,11 @@ app.use(methodOverride('_method'));
 app.use(useragent.express());
 
 
+const sendEmail = require('./nodemailer');
+
+
+
+
 
 io.on('connection', (socket) => {
     // console.log('a user connected');
@@ -87,16 +93,16 @@ io.on('connection', (socket) => {
 });
 io.on('connection', (socket) => {
     socket.on('supportingDataUpdate', async (data) => {
-        const program = await SegProgram.findByIdAndUpdate(data.programID, {supportingData: data.text}, {new: true})
-       io.emit('supportingDataUpdate', data);
+        const program = await SegProgram.findByIdAndUpdate(data.programID, { supportingData: data.text }, { new: true })
+        io.emit('supportingDataUpdate', data);
     });
     socket.on('conclusionUpdate', async (data) => {
-        const program = await SegProgram.findByIdAndUpdate(data.programID, {conclusion: data.text}, {new: true})
-       io.emit('conclusionUpdate', data);
+        const program = await SegProgram.findByIdAndUpdate(data.programID, { conclusion: data.text }, { new: true })
+        io.emit('conclusionUpdate', data);
     });
     socket.on('aosrUpdate', async (data) => {
-        const program = await SegProgram.findByIdAndUpdate(data.programID, {aosr: data.text}, {new: true})
-       io.emit('aosrUpdate', data);
+        const program = await SegProgram.findByIdAndUpdate(data.programID, { aosr: data.text }, { new: true })
+        io.emit('aosrUpdate', data);
     });
 
     socket.on('programStatusUpdate', async (data) => {
@@ -105,22 +111,34 @@ io.on('connection', (socket) => {
             date: Date.now(),
             user: data.userID,
         }
-        
-        const program = await SegProgram.findByIdAndUpdate(data.programID, {status: data.status}, {new: true})
+
+        const program = await SegProgram.findByIdAndUpdate(data.programID, { status: data.status }, { new: true }).populate(['plant', { path: 'seg', populate: { path: 'segInstruction' } }]);
         program.history.push(history);
         await program.save();
+
+        const users = await User.find({ plants: program.plant, admin: true });
+        let emails = users.map(user => user.email);
+
+        const emailToSend = {
+            from: 'ARC App',
+            to: emails,
+            subject: `Program Status Change: ${data.status}`,
+            text: `The ${program.plant.name} status of program "${program.name}" for ${program.seg.segInstruction.segInstructionID} has been changed to ${data.status}.`,
+            html: `The ${program.plant.name} status of program "${program.name}" for <a href="${process.env.APP_URL}/plant/${program.plant._id}/seg/${program.seg.segInstruction._id}">${program.seg.segInstruction.segInstructionID}</a> has been changed to ${data.status}.`,
+        }
+        sendEmail(emailToSend).catch(console.error);
 
 
 
 
         io.emit('programStatusUpdate', program);
-        const seg = await Seg.findOne({segPrograms: program._id}).populate(['segPrograms', 'segInstruction'])
-        let allPrograms = await SegProgram.find({plant: seg.plant}).populate({path: 'seg', populate: {path: 'segInstruction'}})
+        const seg = await Seg.findOne({ segPrograms: program._id }).populate(['segPrograms', 'segInstruction'])
+        let allPrograms = await SegProgram.find({ plant: seg.plant }).populate({ path: 'seg', populate: { path: 'segInstruction' } })
         allPrograms = allPrograms.filter(program => program.seg.segInstruction.team === seg.segInstruction.team && program.seg.segInstruction.department === seg.segInstruction.department)
-    
-        io.emit('reportTableStatusUpdate', {seg, allPrograms});
+
+        io.emit('reportTableStatusUpdate', { seg, allPrograms });
     })
-  });
+});
 
 
 
